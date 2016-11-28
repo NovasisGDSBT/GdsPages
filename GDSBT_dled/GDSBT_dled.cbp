@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="GDSBT_dled" />
+		<Option pch_mode="2" />
+		<Option compiler="imx6_gnu_arm_gcc_compiler" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/GDSBT_dled" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="imx6_gnu_arm_gcc_compiler" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/GDSBT_dled" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="imx6_gnu_arm_gcc_compiler" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-DLINUX" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api" />
+			<Add directory="DLED_src/dledsCommon/inc" />
+			<Add directory="DLED_src/dledsPlatform/inc" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/linux/osDep/include" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/shared/include" />
+		</Compiler>
+		<Linker>
+			<Add option="-lpthread" />
+			<Add library="libs/libiptcom.a" />
+			<Add library="libs/libtdcd.a" />
+		</Linker>
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/iptcom_priv.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/mdcom_priv.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/mdses.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/mdtrp.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/netdriver.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/pdcom_priv.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/vos_priv.h" />
+		<Unit filename="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv/vos_socket.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dleds.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dledsCrc32.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dledsDbg.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dledsInstall.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dledsVersion.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dledsXml.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dleds_icd.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dludatarep.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/dvs_types.h" />
+		<Unit filename="DLED_src/dledsCommon/inc/win32/dirent.h" />
+		<Unit filename="DLED_src/dledsCommon/src/dledsCrc32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DLED_src/dledsCommon/src/dledsDbg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DLED_src/dledsCommon/src/dledsInstall.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DLED_src/dledsCommon/src/dledsServer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DLED_src/dledsCommon/src/dledsXml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DLED_src/dledsPlatform/inc/dledsPlatform.h" />
+		<Unit filename="DLED_src/dledsPlatform/inc/dledsPlatformDefines.h" />
+		<Unit filename="DLED_src/dledsPlatform/src/dledsPlatform.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/GDSBT_iptcom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_App.h" />
+		<Unit filename="IPTCOM_src/PIS_Common.h" />
+		<Unit filename="IPTCOM_src/PIS_Diag.h" />
+		<Unit filename="IPTCOM_src/PIS_IptCom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_IptCom.h" />
+		<Unit filename="IPTCOM_src/infd_icd.h" />
+		<Unit filename="IPTCOM_src/mcg_eds_icd.h" />
+		<Unit filename="IPTCOM_src/serp_icd.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="GDSBT_iptcom" />
+		<Option pch_mode="2" />
+		<Option compiler="imx6_gnu_arm_gcc_compiler" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/GDSBT_iptcom" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="imx6_gnu_arm_gcc_compiler" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/GDSBT_iptcom" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="imx6_gnu_arm_gcc_compiler" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-DLINUX" />
+			<Add directory="/Devel/NOVAsom6_SDK/GdsPages/GdsPages/IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api" />
+			<Add directory="/Devel/NOVAsom6_SDK/GdsPages/GdsPages/IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv" />
+			<Add directory="/Devel/NOVAsom6_SDK/GdsPages/GdsPages/IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api" />
+		</Compiler>
+		<Linker>
+			<Add option="-lpthread" />
+			<Add library="libs/libiptcom.a" />
+			<Add library="libs/libtdcd.a" />
+		</Linker>
+		<Unit filename="IPTCOM_src/GDSBT_iptcom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_App.h" />
+		<Unit filename="IPTCOM_src/PIS_Application.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_Common.h" />
+		<Unit filename="IPTCOM_src/PIS_Diag.h" />
+		<Unit filename="IPTCOM_src/PIS_Diagnostic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_IptCom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_IptCom.h" />
+		<Unit filename="IPTCOM_src/PIS_MdProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/PIS_PdProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/infd_icd.h" />
+		<Unit filename="IPTCOM_src/mcg_eds_icd.h" />
+		<Unit filename="IPTCOM_src/serp_icd.h" />
+		<Unit filename="TFT1.car1.lCst_20160812.xml" />
+		<Unit filename="libs/libiptcom.a">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="libs/libtdcd.a">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="xml/TFT1.car1.lCst_20160812.xml" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

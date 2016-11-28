@@ -1,0 +1,6 @@
+ARCH      = linux-ppc-eldk42
+CPU       = PPC860
+TARGET_OS = LINUX
+TOOLCHAIN = ppc_6xx-
+PLATFORM_CPPFLAGS = -DO_BE -DCCUC_PLATF
+ 

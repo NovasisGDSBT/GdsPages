@@ -1,0 +1,10 @@
+#!/bin/sh
+# cleanup all the runnning processes if any
+kill -9 `pidof chrome_starter.sh`  >/dev/null 2>&1
+kill -9 `pidof backlight_counter.sh`  >/dev/null 2>&1
+kill -9 `pidof monitor_counter.sh`  >/dev/null 2>&1
+kill -9 `pidof ntp_hwclock_update.sh`  >/dev/null 2>&1
+kill -9 `pidof auto_backlight_bkg` >/dev/null 2>&1
+kill -9 `pidof chrome` >/dev/null 2>&1
+kill -9 `pidof fluxbox` >/dev/null 2>&1
+

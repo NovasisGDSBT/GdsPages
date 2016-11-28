@@ -1,0 +1,78 @@
+
+-------------- Clean: Debug in GDSBT_dled (compiler: i.MX6 GNU ARM GCC Compiler)---------------
+
+Cleaned "GDSBT_dled - Debug"
+
+-------------- Build: Debug in GDSBT_dled (compiler: i.MX6 GNU ARM GCC Compiler)---------------
+
+arm-linux-gcc -Wall -DLINUX  -g    -I../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api -IDLED_src/dledsCommon/inc -IDLED_src/dledsPlatform/inc -I../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/linux/osDep/include -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/shared/include  -c DLED_src/dledsCommon/src/dledsCrc32.c -o obj/Debug/DLED_src/dledsCommon/src/dledsCrc32.o
+arm-linux-gcc -Wall -DLINUX  -g    -I../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api -IDLED_src/dledsCommon/inc -IDLED_src/dledsPlatform/inc -I../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/linux/osDep/include -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/shared/include  -c DLED_src/dledsCommon/src/dledsDbg.c -o obj/Debug/DLED_src/dledsCommon/src/dledsDbg.o
+arm-linux-gcc -Wall -DLINUX  -g    -I../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api -IDLED_src/dledsCommon/inc -IDLED_src/dledsPlatform/inc -I../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/linux/osDep/include -I../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/shared/include  -c DLED_src/dledsCommon/src/dledsInstall.c -o obj/Debug/DLED_src/dledsCommon/src/dledsInstall.o
+DLED_src/dledsCommon/src/dledsInstall.c: In function ‘countDluFiles’:
+DLED_src/dledsCommon/src/dledsInstall.c:929:5: error: unknown type name ‘DIR’
+     DIR*            pDir = opendir(path);
+     ^
+DLED_src/dledsCommon/src/dledsInstall.c:929:5: warning: implicit declaration of function ‘opendir’ [-Wimplicit-function-declaration]
+DLED_src/dledsCommon/src/dledsInstall.c:929:28: warning: initialization makes pointer from integer without a cast [enabled by default]
+     DIR*            pDir = opendir(path);
+                            ^
+DLED_src/dledsCommon/src/dledsInstall.c:935:9: warning: implicit declaration of function ‘readdir’ [-Wimplicit-function-declaration]
+         while ((pDirent = readdir(pDir)) != NULL)
+         ^
+DLED_src/dledsCommon/src/dledsInstall.c:935:25: warning: assignment makes pointer from integer without a cast [enabled by default]
+         while ((pDirent = readdir(pDir)) != NULL)
+                         ^
+DLED_src/dledsCommon/src/dledsInstall.c:937:34: error: dereferencing pointer to incomplete type
+             len = strlen (pDirent->d_name);
+                                  ^
+DLED_src/dledsCommon/src/dledsInstall.c:940:46: error: dereferencing pointer to incomplete type
+                 if (strcmp (".dl2", &(pDirent->d_name[len - 4])) == 0)
+                                              ^
+DLED_src/dledsCommon/src/dledsInstall.c:948:9: warning: implicit declaration of function ‘closedir’ [-Wimplicit-function-declaration]
+         closedir (pDir);
+         ^
+DLED_src/dledsCommon/src/dledsInstall.c: In function ‘countSci2Files’:
+DLED_src/dledsCommon/src/dledsInstall.c:974:5: error: unknown type name ‘DIR’
+     DIR*            pDir = opendir(path);
+     ^
+DLED_src/dledsCommon/src/dledsInstall.c:974:28: warning: initialization makes pointer from integer without a cast [enabled by default]
+     DIR*            pDir = opendir(path);
+                            ^
+DLED_src/dledsCommon/src/dledsInstall.c:980:25: warning: assignment makes pointer from integer without a cast [enabled by default]
+         while ((pDirent = readdir(pDir)) != NULL)
+                         ^
+DLED_src/dledsCommon/src/dledsInstall.c:982:34: error: dereferencing pointer to incomplete type
+             len = strlen (pDirent->d_name);
+                                  ^
+DLED_src/dledsCommon/src/dledsInstall.c:985:47: error: dereferencing pointer to incomplete type
+                 if (strcmp (".sci2", &(pDirent->d_name[len - 5])) == 0)
+                                               ^
+DLED_src/dledsCommon/src/dledsInstall.c:991:53: error: dereferencing pointer to incomplete type
+                 else if (strcmp (".sci2g", &(pDirent->d_name[len - 6])) == 0)
+                                                     ^
+DLED_src/dledsCommon/src/dledsInstall.c: In function ‘removeDirectory’:
+DLED_src/dledsCommon/src/dledsInstall.c:1021:5: error: unknown type name ‘DIR’
+     DIR *d = opendir(path);
+     ^
+DLED_src/dledsCommon/src/dledsInstall.c:1021:14: warning: initialization makes pointer from integer without a cast [enabled by default]
+     DIR *d = opendir(path);
+              ^
+DLED_src/dledsCommon/src/dledsInstall.c:1029:24: warning: assignment makes pointer from integer without a cast [enabled by default]
+         while (!r && (p=readdir(d)))
+                        ^
+DLED_src/dledsCommon/src/dledsInstall.c:1036:26: error: dereferencing pointer to incomplete type
+             if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+                          ^
+DLED_src/dledsCommon/src/dledsInstall.c:1036:53: error: dereferencing pointer to incomplete type
+             if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+                                                     ^
+DLED_src/dledsCommon/src/dledsInstall.c:1040:38: error: dereferencing pointer to incomplete type
+             len = path_len + strlen(p->d_name) + 2;
+                                      ^
+DLED_src/dledsCommon/src/dledsInstall.c:1045:52: error: dereferencing pointer to incomplete type
+                 snprintf(buf, len, "%s/%s", path, p->d_name);
+                                                    ^
+Process terminated with status 1 (0 minutes, 0 seconds)
+12 errors, 9 warnings (0 minutes, 0 seconds)
+ 
+

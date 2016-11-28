@@ -1,0 +1,7 @@
+ARCH        = linux-xscale
+CPU         = i568
+TARGET_OS   = LINUX
+TOOLCHAIN   =
+OSDEP_NAME  = linux
+
+PLATFORM_CPPFLAGS = -DLINUX

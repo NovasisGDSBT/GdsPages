@@ -1,0 +1,7 @@
+ARCH        = linux-arm-hmi400
+CPU         = arm
+TARGET_OS   = LINUX
+TOOLCHAIN   = armv5b-softfloat-linux-
+OSDEP_NAME  = linux
+
+PLATFORM_CPPFLAGS = -DO_BE -DHMI400

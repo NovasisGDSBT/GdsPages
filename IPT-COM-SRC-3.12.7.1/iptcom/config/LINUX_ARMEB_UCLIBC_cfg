@@ -1,0 +1,5 @@
+ARCH      = linux-armeb-uclibc
+CPU       = XSCALE
+TARGET_OS = LINUX
+TOOLCHAIN = armeb-linux-uclibc-
+PLATFORM_CPPFLAGS = -DO_BE -DTS_HAS_FIXED_IP

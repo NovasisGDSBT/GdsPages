@@ -1,0 +1,5 @@
+ARCH      = windows-x86
+CPU       = i568
+TARGET_OS = WINDOWS
+TOOLCHAIN = i586-mingw32msvc-
+PLATFORM_CPPFLAGS = -DO_LE

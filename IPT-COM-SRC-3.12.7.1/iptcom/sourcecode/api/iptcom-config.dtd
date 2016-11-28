@@ -1,0 +1,266 @@
+<!--
+#===========================================================================
+#  COPYRIGHT     : (c) 2006 - 2012 Bombardier Inc. or its subsidiaries
+#===========================================================================
+#
+#  PRODUCT       : IPTCom
+#
+#  MODULE        : iptcom-config.dtd
+#
+#  ABSTRACT      : DTD for MITRAC CC IPTCom configuration
+#
+#  VERSION       : 3.12.1.0
+#
+#  CHANGES	 : 
+#
+#     TCMS_PLATF_CR_7779 (GW 2014-07-01)
+#        - added 'enableFrameSizeCheck'
+#
+#     TCMS_PLATF_CR_3290 (GW 2012-04-11)
+#        - added destination-id
+#
+#     TCMS_PLATF_CR_1356 (BL 2010-10-07)
+#			- added 'disable-marshalling' attribute
+#
+#===========================================================================
+-->
+
+<!-- an integer number -->
+<!ENTITY % integer "CDATA">
+
+<!-- a floating point number -->
+<!ENTITY % float "CDATA">
+
+<!-- a name starting with an underscore or letter, followed by any number
+     of underscores, letters or digits -->
+<!ENTITY % string "CDATA">
+
+<!-- a boolean value -->
+<!ENTITY % boolean "
+    ( on   | off
+    | true | false
+    | yes  | no
+    | 1    | 0 )">
+
+<!ENTITY % bus-type "(MVB|ETH)">
+
+<!ELEMENT bus-interface (telegram*)>
+<!ATTLIST bus-interface
+	name                    %string;                #IMPLIED
+	type                    %bus-type;              #IMPLIED
+	address                 %string;                #IMPLIED
+>
+
+<!ELEMENT bus-interface-list (bus-interface+)>
+
+<!ELEMENT com-parameter-list (network-parameter-ip+)>
+
+<!ELEMENT comment (#PCDATA)>
+
+<!ELEMENT cpu (comment?,
+               host*,
+               device*,
+               bus-interface-list?,
+               data-set-list?,
+               com-parameter-list?,
+               device-configuration?,
+               debug?)>
+<!ATTLIST cpu
+	name                    %string;                #IMPLIED
+>
+
+<!ELEMENT data-set (comment?, process-variable+)>
+<!ATTLIST data-set
+	data-set-id             %integer;               #REQUIRED
+	disable-marshalling     %integer;               "0"
+>
+
+<!ELEMENT data-set-list (data-set+)>
+
+<!ELEMENT debug EMPTY>
+<!ATTLIST debug
+    file-name               %string;                #IMPLIED
+    level-iptcom            (e|E|w|W)               #IMPLIED
+>
+
+<!ELEMENT device (bus-interface-list?, data-set-list?, com-parameter-list?)>
+<!ATTLIST device
+    device-uri              %string;                #REQUIRED
+>
+
+<!ELEMENT device-configuration (mem-block-list?,
+                                pd-receive?,
+                                pd-process?,
+                                md-receive?,
+                                md-process?,
+                                iptcom-process?,
+                                net-ctrl?,
+                                pd-com-parameter?,
+                                md-com-parameter?,
+                                linux-file?)>
+<!ATTLIST device-configuration
+	ipt-memory-size         %integer;               "4194304"
+>
+
+<!ELEMENT host (device-configuration)>
+<!ATTLIST host
+    host-name               %string;                #REQUIRED
+>
+
+<!ENTITY % win-priorities "
+    ( THREAD_PRIORITY_IDLE
+    | THREAD_PRIORITY_LOWEST
+    | THREAD_PRIORITY_BELOW_NORMAL
+    | THREAD_PRIORITY_NORMAL
+    | THREAD_PRIORITY_ABOVE_NORMAL
+    | THREAD_PRIORITY_HIGHEST
+    | THREAD_PRIORITY_TIME_CRITICAL )">
+
+<!ENTITY % priority-attributes "
+    windows-priority        %win-priorities;        #IMPLIED
+    linux-priority          %integer;               #IMPLIED
+    vxworks-priority        %integer;               #IMPLIED
+">
+
+<!ELEMENT iptcom-process EMPTY>
+<!ATTLIST iptcom-process
+    cycle-time              %integer;               #IMPLIED
+    %priority-attributes;
+>
+
+<!ELEMENT linux-file EMPTY>
+<!ATTLIST linux-file
+    file-name               %string;                #IMPLIED
+>
+
+<!ELEMENT md-com-parameter EMPTY>
+<!ATTLIST md-com-parameter
+    ack-timeout             %integer;               "500"
+    response-timeout        %integer;               "5000"
+    max-seq-no              %integer;               "50"
+>
+
+<!ELEMENT md-process EMPTY>
+<!ATTLIST md-process
+    cycle-time              %integer;               #IMPLIED
+    %priority-attributes;
+>
+
+<!ELEMENT md-receive EMPTY>
+<!ATTLIST md-receive
+    %priority-attributes;
+>
+
+<!ELEMENT md-receive-parameter EMPTY>
+<!ATTLIST md-receive-parameter
+	source-uri              %string;                #IMPLIED
+>
+
+<!ELEMENT md-send-parameter EMPTY>
+<!ATTLIST md-send-parameter
+	source-uri              %string;                #IMPLIED
+	destination-uri         %string;                #IMPLIED
+    ack-timeout             %integer;               #IMPLIED
+    response-timeout        %integer;               #IMPLIED
+>
+
+<!ENTITY % mem-block-size "(32|64|128|256|512|1024|2048|4096|8192|16384|32768|65536|131072)">
+
+<!ELEMENT mem-block EMPTY>
+<!ATTLIST mem-block
+    size                    %mem-block-size;        #REQUIRED
+    preallocate             %integer;               #IMPLIED
+>
+
+<!ELEMENT mem-block-list (mem-block*)>
+
+<!ELEMENT net-ctrl EMPTY>
+<!ATTLIST net-ctrl
+    linux-priority          %integer;               #IMPLIED
+>
+
+<!ELEMENT network-parameter-ip EMPTY>
+<!ATTLIST network-parameter-ip
+	name                    %string;                #IMPLIED
+	com-parameter-id        %string;                #REQUIRED
+	qos                     %integer;               #REQUIRED
+	time-to-live            %integer;               "64"
+>
+
+<!ELEMENT pd-com-parameter EMPTY>
+<!ATTLIST pd-com-parameter
+    timeout-value           %integer;               "0"
+    validity-behavior       (0 | 1)                 "0"
+    cycle-time              %integer;               "100"
+>
+
+<!ELEMENT pd-process EMPTY>
+<!ATTLIST pd-process
+    cycle-time              %integer;               #IMPLIED
+    %priority-attributes;
+>
+
+<!ELEMENT pd-receive EMPTY>
+<!ATTLIST pd-receive
+    %priority-attributes;
+>
+
+<!ELEMENT pd-receive-parameter EMPTY>
+<!ATTLIST pd-receive-parameter
+	timeout-value           %integer;               #IMPLIED
+	validity-behavior       (0 | 1)                 #IMPLIED
+	source-uri              %string;                #IMPLIED
+>
+
+<!ELEMENT pd-send-parameter EMPTY>
+<!ATTLIST pd-send-parameter
+	destination-uri         %string;                #IMPLIED
+	cycle-time              %integer;               #IMPLIED
+	redundant               %integer;               "0"
+>
+
+<!ELEMENT pd-source-filter EMPTY>
+<!ATTLIST pd-source-filter
+    filter-id               %integer;               #REQUIRED
+    source-uri              %string;                #REQUIRED
+>
+
+<!ELEMENT destination-id EMPTY>
+<!ATTLIST destination-id
+    destination-id          %integer;               #REQUIRED
+    destination-uri         %string;                #REQUIRED
+>
+
+<!ELEMENT process-variable (comment?)>
+<!ATTLIST process-variable
+    name                    %string;                #IMPLIED
+    type                    %string;                #REQUIRED
+    array-size              %integer;               "1"
+    unit                    %string;                ""
+    scale                   %float;                 "1.0"
+    zero-offset             %integer;               "0"
+	offset                  %integer;               #IMPLIED
+	check-variable-offset   %integer;               "1023"
+>
+
+<!ENTITY % telegram-type "(sink|source|passive)">
+
+<!ELEMENT telegram (comment?,
+                    md-receive-parameter?,
+                    md-send-parameter?,
+                    pd-receive-parameter?,
+                    pd-send-parameter?,
+                    pd-source-filter*)>
+<!ATTLIST telegram
+	name                    %string;                #IMPLIED
+	type                    %telegram-type;         #IMPLIED
+	data-set-id             %integer;               #IMPLIED
+	number                  %integer;               #IMPLIED
+	size                    %integer;               #IMPLIED
+	index                   %integer;               #IMPLIED
+	delay                   %integer;               "0"
+	first                   %integer;               "0"
+	com-id                  %integer;               #IMPLIED
+	com-parameter-id        %integer;               #IMPLIED
+>
+

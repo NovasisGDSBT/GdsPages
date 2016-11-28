@@ -1,0 +1,12 @@
+ARCH      = linux-arm-otn
+CPU       = XSCALE
+TARGET_OS = LINUX
+TOOLCHAIN = arm-linux-
+PLATFORM_CPPFLAGS = -DO_BE -DLINUX_ARM_OTN_PLATF -O -mbig-endian -mcpu=xscale -msoft-float -fno-common -fno-builtin -Wall \
+		    -Dlinux -D__linux__ -Dunix -DEMBED -DREDFOX -I../libs/otn/include \
+		    -I../libs/otn/include/h -I../libs/otn/include/h/msApi \
+                    -DTS_HAS_FIXED_IP
+
+PLATFORM_LDFLAGS   = -nostartfiles -nodefaultlibs -nostdlib -L../libs/otn/lib/
+LDLIBS    =  -lm -lc /usr/local/lib/gcc/arm-linux/3.4.4/be/soft-float/libgcc.a ../libs/otn/lib/crt0.o
+ 

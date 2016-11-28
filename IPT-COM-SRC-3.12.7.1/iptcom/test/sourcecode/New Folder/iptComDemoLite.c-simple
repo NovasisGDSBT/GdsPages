@@ -1,0 +1,57 @@
+/*******************************************************************************
+*  COPYRIGHT      : (c) 2006-2010 Bombardier Transportation
+********************************************************************************
+*  PROJECT        : IPTrain
+*
+*  MODULE         : iptComDemoLite.c
+*
+*  ABSTRACT       : Demo application for start up
+*
+********************************************************************************
+*  HISTORY     :
+*
+*  $Id: iptComDemoLite.c 39480 2015-11-06 05:17:02Z atnatu $
+*
+*  MODIFICATIONS (log starts 2010-08-11)
+*
+*  CR-432 (Gerhard Weiss, 12-Oct-2010)
+*  Removed warnings provoked by -W (for GCC)
+*
+*
+*******************************************************************************/
+
+/*******************************************************************************
+* INCLUDES */
+
+#include <string.h>
+
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+
+
+/*
+
+#include "iptcom.h"        
+#include "vos.h"           
+
+#include "vos_priv.h"
+#include "mdcom_priv.h"
+#include "iptcom_priv.h"
+
+*/
+ 
+int main(int argc, char *argv[])
+{
+   
+   printf("\n\nargc=%d\n",argc);
+
+   if (argc > 1)
+   {
+     printf("\n\n ARGC maggiore di 1\n");
+      //applNumber = strtol(argv[1], &p, 10);
+     //MON_PRINTF("\napplNumber=%d %d\n\n",applNumber,argc);
+   }
+
+   return 0;
+}

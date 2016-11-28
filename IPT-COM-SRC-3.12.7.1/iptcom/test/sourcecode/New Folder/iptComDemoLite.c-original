@@ -1,0 +1,1192 @@
+/*******************************************************************************
+*  COPYRIGHT      : (c) 2006-2010 Bombardier Transportation
+********************************************************************************
+*  PROJECT        : IPTrain
+*
+*  MODULE         : iptComDemoLite.c
+*
+*  ABSTRACT       : Demo application for start up
+*
+********************************************************************************
+*  HISTORY     :
+*
+*  $Id: iptComDemoLite.c 39480 2015-11-06 05:17:02Z atnatu $
+*
+*  MODIFICATIONS (log starts 2010-08-11)
+*
+*  CR-432 (Gerhard Weiss, 12-Oct-2010)
+*  Removed warnings provoked by -W (for GCC)
+*
+*
+*******************************************************************************/
+
+/*******************************************************************************
+* INCLUDES */
+
+#include <string.h>
+#if defined(WIN32)
+#include <conio.h>            /* Console io routines */
+#endif
+
+#if defined(LINUX)
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#endif
+
+#if defined(__INTEGRITY)
+#include <stdlib.h>
+#include <signal.h>
+#include <net_server/types.h>
+#include <mqueue.h>
+#include <unistd.h>
+#endif
+
+#if defined(VXWORKS)
+#include <stdlib.h>
+#include <unistd.h>
+#endif
+
+#include "iptcom.h"        /* Common type definitions for IPT  */
+#include "vos.h"           /* OS independent system calls */
+
+#include "vos_priv.h"
+#include "mdcom_priv.h"
+#include "iptcom_priv.h"
+//#include "startUpTest.h"
+
+/*******************************************************************************
+* DEFINES */
+#define NO_OF_DEV 2        /* Number of max. supported devices */
+
+#define  DEV1_TO_1_COMID_PD1       1101
+#define  DEV1_TO_1_COMID_PD1_ECHO  110111
+#define  DEV1_TO_2_COMID_PD1       1201
+#define  DEV1_TO_2_COMID_PD1_ECHO  120121
+#define  DEV1_TO_3_COMID_PD1       1301
+#define  DEV1_TO_3_COMID_PD1_ECHO  130131
+
+#define  DEV2_TO_1_COMID_PD1       2101
+#define  DEV2_TO_1_COMID_PD1_ECHO  210112
+#define  DEV2_TO_2_COMID_PD1       2201
+#define  DEV2_TO_2_COMID_PD1_ECHO  220122
+#define  DEV2_TO_3_COMID_PD1       2301
+#define  DEV2_TO_3_COMID_PD1_ECHO  230132
+
+#define  DEV3_TO_1_COMID_PD1       3101
+#define  DEV3_TO_1_COMID_PD1_ECHO  310113
+#define  DEV3_TO_2_COMID_PD1       3201
+#define  DEV3_TO_2_COMID_PD1_ECHO  320123
+#define  DEV3_TO_3_COMID_PD1       3301
+#define  DEV3_TO_3_COMID_PD1_ECHO  330133
+
+#define  DEV1_TO_1_COMID_MD1       11101
+#define  DEV1_TO_1_COMID_MD1_ECHO  1110111
+#define  DEV1_TO_2_COMID_MD1       12101
+#define  DEV1_TO_2_COMID_MD1_ECHO  1210121
+#define  DEV1_TO_3_COMID_MD1       13101
+#define  DEV1_TO_3_COMID_MD1_ECHO  1310131
+
+#define  DEV2_TO_1_COMID_MD1       21101
+#define  DEV2_TO_1_COMID_MD1_ECHO  2110112
+#define  DEV2_TO_2_COMID_MD1       22101
+#define  DEV2_TO_2_COMID_MD1_ECHO  2210122
+#define  DEV2_TO_3_COMID_MD1       23101
+#define  DEV2_TO_3_COMID_MD1_ECHO  2310132
+
+#define  DEV3_TO_1_COMID_MD1       31101
+#define  DEV3_TO_1_COMID_MD1_ECHO  3110113
+#define  DEV3_TO_2_COMID_MD1       32101
+#define  DEV3_TO_2_COMID_MD1_ECHO  3210123
+#define  DEV3_TO_3_COMID_MD1       33101
+#define  DEV3_TO_3_COMID_MD1_ECHO  3310133
+
+#define STACK  10000                        /* PD send task stack size */
+
+#if defined(WIN32)
+/* Win32 */
+
+#define POLICY 0                            /* Not used */
+#define APPL100_PRIO   THREAD_PRIORITY_ABOVE_NORMAL
+#define APPL200_PRIO   THREAD_PRIORITY_NORMAL
+#define APPL300_PRIO   THREAD_PRIORITY_NORMAL
+#define APPL400_PRIO   THREAD_PRIORITY_NORMAL
+#define APPL500_PRIO   THREAD_PRIORITY_NORMAL
+#define APPL600_PRIO   THREAD_PRIORITY_NORMAL
+#define APPL700_PRIO   THREAD_PRIORITY_NORMAL
+#define APPL1000_PRIO   THREAD_PRIORITY_BELOW_NORMAL
+#define APPL2000_PRIO   THREAD_PRIORITY_BELOW_NORMAL
+
+
+#elif defined(LINUX)
+/* Linux */
+
+/* Thread attributes SCHED_OTHER (for regular non-realtime scheduling) */
+/* SCHED_RR (realtime round-robin policy), SCHED_FIFO (realtime FIFO policy) */
+
+#define POLICY SCHED_RR
+#define APPL100_PRIO   9
+#define APPL200_PRIO   8
+#define APPL300_PRIO   7
+#define APPL400_PRIO   6
+#define APPL500_PRIO   5
+#define APPL600_PRIO   4
+#define APPL700_PRIO   3
+#define APPL1000_PRIO   2
+#define APPL2000_PRIO   2
+
+#elif defined(VXWORKS)
+/* VxWorks */
+
+#define POLICY 0                            /* Not used */
+#define APPL100_PRIO   60
+#define APPL200_PRIO   61
+#define APPL300_PRIO   62
+#define APPL400_PRIO   63
+#define APPL500_PRIO   64
+#define APPL600_PRIO   65
+#define APPL700_PRIO   66
+#define APPL1000_PRIO   102
+#define APPL2000_PRIO   103
+
+#elif defined(__INTEGRITY)
+/* Integrity */
+
+#define POLICY 0                            /* Not used */
+#define APPL100_PRIO   185
+#define APPL200_PRIO   184
+#define APPL300_PRIO   183
+#define APPL400_PRIO   182
+#define APPL500_PRIO   181
+#define APPL600_PRIO   180
+#define APPL700_PRIO   179
+#define APPL1000_PRIO   153
+#define APPL2000_PRIO   152
+
+#endif
+
+#define LINELEN   80    /* Max chars on command line */
+
+/*******************************************************************************
+* TYPEDEFS */
+typedef struct
+{
+   UINT16 a;
+   INT16 b;
+   INT8 c;
+   char d[10];
+} DATA_SET1;
+
+typedef struct
+{
+   UINT32 a;
+   INT16  b;
+} DATA_SET101;
+
+/*******************************************************************************
+* GLOBALS */
+
+void PD_showSendTable(void);
+void PD_showRecTable(void);
+
+/*******************************************************************************
+* LOCALS */
+static int trace = 0;
+static int applNo;
+
+static UINT32 pdComId1[NO_OF_DEV][NO_OF_DEV] = {{DEV1_TO_1_COMID_PD1, DEV1_TO_2_COMID_PD1},  
+                                                {DEV2_TO_1_COMID_PD1, DEV2_TO_2_COMID_PD1}};
+
+static UINT32 pdEchoComId1[NO_OF_DEV][NO_OF_DEV] = {{DEV1_TO_1_COMID_PD1_ECHO, DEV1_TO_2_COMID_PD1_ECHO},   
+                                                    {DEV2_TO_1_COMID_PD1_ECHO, DEV2_TO_2_COMID_PD1_ECHO}};  
+
+static PD_HANDLE hp1_out[NO_OF_DEV];
+static PD_HANDLE hs1_echo_in[NO_OF_DEV];
+static PD_HANDLE hs1_in[NO_OF_DEV];
+static PD_HANDLE hp1_echo_out[NO_OF_DEV];
+
+static DATA_SET1 pd_ds1_out[NO_OF_DEV][NO_OF_DEV] = {{{111,0,3,"1234"},{112,0,5,"12345"}},   
+                                                      {{121,0,3,"456"},{122,0,5,"123456"}}}; 
+
+static DATA_SET1 pd_ds1_echo_in[NO_OF_DEV];
+static DATA_SET1 pd_ds1_echo_out[NO_OF_DEV];
+
+static int pd_ds1_echo_ok[NO_OF_DEV] = {0,0}; 
+static int res_printed_PD1[NO_OF_DEV] = {0,0};
+
+/*******************************************************************************/
+
+static UINT32 mdComid1[NO_OF_DEV][NO_OF_DEV+1] = {{DEV1_TO_1_COMID_MD1, DEV2_TO_1_COMID_MD1,  0},
+                                                 {DEV1_TO_2_COMID_MD1, DEV2_TO_2_COMID_MD1,  0}};
+
+static UINT32 mdEchoComId1[NO_OF_DEV][NO_OF_DEV+1] = {{DEV1_TO_1_COMID_MD1_ECHO, DEV1_TO_2_COMID_MD1_ECHO,  0},   
+                                                      {DEV2_TO_1_COMID_MD1_ECHO, DEV2_TO_2_COMID_MD1_ECHO,  0}};  
+
+static MD_QUEUE mdq1;
+static MD_QUEUE mdqEcho1;
+static DATA_SET101 md_ds1_out[NO_OF_DEV][NO_OF_DEV] = {{{111,0},{112,0}},
+                                                      {{121,0},{122,0}}};
+static DATA_SET101 md_ds1_in;
+static DATA_SET101 md_ds1_echo_out;
+static int md_ds1_echo_ok[NO_OF_DEV] = {0,0}; 
+static int res_printed_MD1[NO_OF_DEV] = {0,0};
+
+/*******************************************************************************/
+
+#define NUM_PD_DEMO 1            
+static int demoPDxActive[NUM_PD_DEMO];
+
+#define NUM_MD_DEMO 11
+static int demoMDxActive[NUM_MD_DEMO];
+
+#define NUM_OF_MSG            100   /* Number of messages in queue */
+
+#define REMOVE_QUEUE          0     /* Don’t destroy the queue if it is in use */ 
+
+#define REMOVE_QUEUE_ALL_USE  1     /* <> 0 = Remove all use of the queue before it is destroyed */
+
+/*******************************************************************************
+* LOCAL FUNCTIONS */
+
+#if defined(WIN32) || defined(LINUX) || defined(VXWORKS)
+/*******************************************************************************
+NAME:       IPTVosGetCh
+ABSTRACT:   Returns key from keyboard buffer
+RETURNS:    Ascii code of key
+*/
+static int IPTVosGetCh()
+{
+#ifdef WIN32
+
+   return _getch();
+
+#elif defined(LINUX)
+   int c;
+   while ((c =getchar()) == EOF)
+   {
+   }
+   return(c);
+#elif defined(VXWORKS)
+
+   return getchar();
+
+#elif defined(__INTEGRITY)
+
+   return getchar();
+
+#endif
+}
+
+/*******************************************************************************
+NAME:       testGetString
+ABSTRACT:   Retrieves a string from the keyboard
+RETURNS:    TRUE if real string, FALSE if entering was interrupted
+*/
+static int getCmdString(char *pBuf, int bufSize)
+{
+   int bufIx;
+   int c;
+   static char lastCmd[LINELEN+1] = "";
+
+   bufIx = 0;
+   pBuf[bufIx] = 0;
+
+   while (1)
+   {
+      /* Get next key value */
+      c = IPTVosGetCh();
+      printf("%c", c);
+
+      /* Exit if CR or LF */
+      if (c == 10 || c == 13)
+         break;
+
+      if (c == 27)
+      {
+         /* ESC, exit without any string */
+         return 0;
+      }
+      else if (c == 8)
+      {
+         /* Backspace */
+         if (bufIx > 0)
+         {
+            bufIx--;
+            pBuf[bufIx] = 0;
+         }
+         printf(" %c",8);
+      }
+      else if (c == 16)
+      {
+         /* CTRL+P, copy last command and exit */
+         strncpy(pBuf, lastCmd, bufSize);
+         printf(pBuf);
+         break;
+      }
+      else if (c < 32)
+      {
+         /* Ignore non ascii, fix to be able to run FEDORA linux */
+      }
+      else if (bufIx < bufSize)
+      {
+         /* Add key to string */
+         pBuf[bufIx++] = (char) c;
+         pBuf[bufIx] = 0;
+      }
+      /* else too many characters, ignore */
+
+      IPTVosTaskDelay (50);
+   }
+
+   strncpy(lastCmd, pBuf, sizeof(lastCmd));
+   return 1;
+}
+#endif
+
+static void check(void)
+{
+   int i;
+   int ret = 1;
+   static int finished = 0;
+   for (i=0; i<NO_OF_DEV; i++)
+   {
+      if (!res_printed_PD1[i])
+      {
+         if (pd_ds1_echo_ok[i])
+         {
+            MON_PRINTF("Demo PD1 dev%d PD Unicast OK\n",i+1);
+            res_printed_PD1[i] = 1;
+         }
+         else
+         {
+            ret = 0;
+         }
+      }
+
+      if (!res_printed_MD1[i])
+      {
+         if (md_ds1_echo_ok[i])
+         {
+            MON_PRINTF("Demo MD1 dev%d ComId listener OK\n",i+1);
+            res_printed_MD1[i] = 1;
+         }
+         else
+         {
+            ret = 0;
+         }
+      }
+   }
+
+   if ((ret) &&(!finished))
+   {
+      MON_PRINTF("ALL DEMOS PASSED\n");
+      finished = 1;
+   }
+}
+
+/*******************************************************************************
+* GLOBAL FUNCTIONS */
+
+/*******************************************************************************
+NAME:       demoPD1Init
+ABSTRACT:   Publishing unicast ComId to all devices
+            Subscription without filtering
+
+RETURNS:    -
+*/
+int demoPD1Init(void)
+{
+   int i;
+
+   for (i=0; i<NO_OF_DEV; i++)
+   {
+	  /* Publish data to be checked */
+      hp1_out[i] = PDComAPI_pub  (1, pdComId1[applNo-1][i], 0, NULL);
+      if (hp1_out[i] == 0)
+      {
+         MON_PRINTF("PDComAPI_pub   FAILED hp1_out[%d] ComId=%d\n", i, pdComId1[applNo-1][i]);
+         return(-1);
+      }
+      else
+      {
+         MON_PRINTF("PDComAPI_pub   comid=%d\n", pdComId1[applNo-1][i]);
+      }
+
+      /* Subscribe echo from own and the other devices */
+      hs1_echo_in[i] = PDComAPI_sub(1, pdEchoComId1[applNo-1][i], 0, NULL, 0, NULL);
+      if (hs1_echo_in[i] == 0)
+      {
+         MON_PRINTF("PDComAPI_sub FAILED hs1_echo_in[%d ComId=%d\n", i, pdEchoComId1[applNo-1][i]);
+         return(-1);
+      }
+      else
+      {
+         MON_PRINTF("PDComAPI_sub comid=%d\n", pdEchoComId1[applNo-1][i]);
+      }
+
+	  /* Subscribe data from own and the other devices to be echoed */
+      hs1_in[i] = PDComAPI_sub(1, pdComId1[i][applNo-1], 0, NULL, 0, NULL);
+      if (hs1_in[i] == 0)
+      {
+         MON_PRINTF("PDComAPI_sub FAILED hs1_in[%d] ComId=%d\n", i, pdComId1[i][applNo-1]);
+         return(-1);
+      }
+      else
+      {
+         MON_PRINTF("PDComAPI_sub comid=%d\n", pdComId1[i][applNo-1]);
+      }
+	  /* Publish echo ComId */
+      hp1_echo_out[i] = PDComAPI_pub(1, pdEchoComId1[i][applNo-1], 0, NULL);
+      if (hp1_echo_out[i] == 0)
+      {
+         MON_PRINTF("PDComAPI_pub   FAILED hp1_echo_out[%d] ComId=%d\n", i, pdEchoComId1[i][applNo-1]);
+         return(-1);
+      }
+      else
+      {
+         MON_PRINTF("PDComAPI_pub   comid=%d\n", pdEchoComId1[i][applNo-1]);
+      }
+   }
+   return(IPT_OK);
+}
+
+/*******************************************************************************
+NAME:       demoPD1Run
+ABSTRACT:   Checking echoed value
+            Echo values sent from own and the other devices
+
+RETURNS:    -
+*/
+void demoPD1Run(void)
+{
+   int i;
+   int res;
+   int ret;
+   static UINT8 oldTopo = 0;
+   UINT8 state;
+   UINT8 topo;
+
+   res = tdcGetIptState(&state, &topo);
+   if ( res == TDC_OK)
+   {
+      if (state != TDC_IPT_INAUGSTATE_OK)
+      {
+         /* Avoid printout at start-up */
+         if (oldTopo != 0)
+         {
+            MON_PRINTF("demoPD1Run: tdcGetIptState returned state=%d topoCnt=%d old topo= %d\n",
+             state, topo, oldTopo);
+         }
+      }
+      else if ((topo != oldTopo) && (topo != 0))
+      {
+         ret = IPT_OK;
+         oldTopo = topo;
+         for (i=0; i<NO_OF_DEV; i++)
+         {
+            pd_ds1_echo_ok[i] = 0;
+            res = PDComAPI_renewSub(hs1_echo_in[i]);
+            if (res != IPT_OK)
+            {
+               ret = IPT_ERROR;
+            }
+
+            res = PDComAPI_renewPub(hp1_out[i]);
+            if (res != IPT_OK)
+            {
+               ret = IPT_ERROR;
+            }
+
+            res = PDComAPI_renewSub(hs1_in[i]);
+            if (res != IPT_OK)
+            {
+               ret = IPT_ERROR;
+            }
+
+            res = PDComAPI_renewPub(hp1_echo_out[i]);
+            if (res != IPT_OK)
+            {
+               ret = IPT_ERROR;
+            }
+         }
+
+         if (ret == IPT_OK)
+         {
+            MON_PRINTF("demoPD1Run: Pub and sub renewed OK. topoCnt=%d\n", topo);
+         }
+         else
+         {
+            MON_PRINTF("demoPD1Run: All pub and sub not renewed topoCnt=%d\n", topo);
+         }
+      }
+   }
+   else
+   {
+      MON_PRINTF("demoPD1Run: tdcGetIptState error=%#x\n",res);
+   }
+
+   PDComAPI_sink(1);
+
+   for (i=0; i<NO_OF_DEV; i++)
+   {
+	  (void)PDComAPI_get(hs1_echo_in[i], (BYTE*) &pd_ds1_echo_in[i], sizeof(DATA_SET1));
+
+      if (pd_ds1_echo_in[i].a == pd_ds1_out[applNo-1][i].a)
+      {
+         pd_ds1_echo_ok[i] = 1;
+      }
+      else if (pd_ds1_echo_in[i].a != 0)
+      {
+         MON_PRINTF("demoPD1Run: Wrong data %d expected %d Dev=%d\n", pd_ds1_echo_in[i].a, pd_ds1_out[applNo-1][i].a, i+1);
+      }
+      else if (trace)
+      {
+         MON_PRINTF("demoPD1Run: Wrong data %d expected %d Dev=%d\n", pd_ds1_echo_in[i].a, pd_ds1_out[applNo-1][i].a, i+1);
+      }
+      pd_ds1_out[applNo-1][i].b++;
+      PDComAPI_put(hp1_out[i], (BYTE*) &pd_ds1_out[applNo-1][i]);
+
+	  /* get and return data from own and other devices */
+      (void)PDComAPI_get(hs1_in[i], (BYTE*) &pd_ds1_echo_out[i], sizeof(DATA_SET1));
+      PDComAPI_put(hp1_echo_out[i], (BYTE*) &pd_ds1_echo_out[i]);
+   }
+
+   PDComAPI_source(1);
+
+   check();
+}
+
+/*******************************************************************************
+NAME:       demoPD1Clean
+ABSTRACT:
+RETURNS:    -
+*/
+void demoPD1Clean(void)
+{
+   int i;
+
+   for (i=0; i<NO_OF_DEV; i++)
+   {
+      PDComAPI_unpublish(&hp1_out[i]);
+      PDComAPI_unsubscribe(&hs1_echo_in[i]);
+      PDComAPI_unsubscribe(&hs1_in[i]);
+      PDComAPI_unpublish(&hp1_echo_out[i]);
+   }
+}
+
+/*******************************************************************************/
+
+/*******************************************************************************
+NAME:       demoMD1Init
+ABSTRACT:   Adding ComId Listener
+            Unicast
+            Sending data and checking echoed value
+            Echo values sent from own and the other devices
+RETURNS:    -
+*/
+int demoMD1Init(void)
+{
+   int res;
+
+   mdq1 = MDComAPI_queueCreate(NUM_OF_MSG, NULL);
+   if (mdq1 == 0)
+   {
+      printf("MDComAPI_queueCreate mdq1 failed\n");
+      return(-1);
+   }
+
+   res = MDComAPI_comIdListener(mdq1, 0, 0, mdComid1[applNo-1], NULL, 0, NULL);
+   if (res)
+   {
+      printf("MDComAPI_comIdListener mdq1 failed\n");
+      return(-1);
+   }
+
+   mdqEcho1 = MDComAPI_queueCreate(NUM_OF_MSG, NULL);
+   if (mdqEcho1 == 0)
+   {
+      printf("MDComAPI_queueCreate mdqEcho1 failed\n");
+      return(-1);
+   }
+
+   res = MDComAPI_comIdListener(mdqEcho1, 0, 0, mdEchoComId1[applNo-1], NULL, 0, NULL);
+   if (res)
+   {
+      printf("MDComAPI_ComIdListener mdqEcho1 failed\n");
+      return(-1);
+   }
+   return(IPT_OK);
+}
+
+/*******************************************************************************
+NAME:       demoMD1Run
+ABSTRACT:   Adding ComId Listener
+            Unicast
+            Sending data and checking echoed value
+            Echo values sent from own and the other devices
+RETURNS:    -
+*/
+void demoMD1Run(void)
+{
+   int i;
+   int res;
+   int ret;
+   int status;
+   UINT32 size;
+   char *pRecBuf;
+   MSG_INFO mdgetMsgInfo;
+
+   status = IPTCom_getStatus();
+
+   for (i=0; i<NO_OF_DEV; i++)
+   {
+      if (status == IPTCOM_RUN)
+      {
+         md_ds1_out[applNo-1][i].b++;
+         res = MDComAPI_putDataMsg(mdComid1[i][applNo-1],
+                                (char *)&md_ds1_out[applNo-1][i],
+                                sizeof(DATA_SET101),
+                                0,     /* caller queue */
+                                0,     /* callback function */
+                                0,     /* caller reference */
+                                0,     /* topo counter */
+                                0,     /* destination id */
+                                0,     /* Destination URI */
+                                NULL); /* Source URI */
+
+         if ((res != IPT_OK) && (trace))
+         {
+            printf("MD send failed comid=%d res=%#x\n",mdComid1[applNo-1][i],res);
+         }
+      }
+   }
+
+   do
+   {
+      size = sizeof(DATA_SET101);
+      pRecBuf = (char *)(&md_ds1_in);
+      res = MDComAPI_getMsg(mdqEcho1, &mdgetMsgInfo, &pRecBuf, &size, IPT_NO_WAIT);
+      if (res == MD_QUEUE_NOT_EMPTY)
+      {
+         if (trace)
+         {
+            printf("mdqEcho1 received ComId=%d a=%d ip=%d.%d.%d.%d\n", mdgetMsgInfo.comId, md_ds1_echo_out.a,
+                   (mdgetMsgInfo.srcIpAddr >> 24) & 0xff,  (mdgetMsgInfo.srcIpAddr >> 16) & 0xff,
+                   (mdgetMsgInfo.srcIpAddr >> 8) & 0xff,  mdgetMsgInfo.srcIpAddr  & 0xff);
+         }
+
+         for (i=0; i<NO_OF_DEV; i++)
+         {
+            if (mdgetMsgInfo.comId == mdEchoComId1[applNo-1][i])
+            {
+               if (md_ds1_in.a == md_ds1_out[applNo-1][i].a)
+               {
+                  md_ds1_echo_ok[i] = 1;
+               }
+               else
+               {
+                  printf("mdqEcho1 wrong data %d expected %d ComId=%d\n", md_ds1_in.a, md_ds1_out[applNo-1][i].a, mdgetMsgInfo.comId);
+               }
+               break;
+            }
+         }
+      }
+   }
+   while(res == MD_QUEUE_NOT_EMPTY);
+
+   do
+   {
+      size = sizeof(DATA_SET101);
+      pRecBuf = (char *)(&md_ds1_echo_out);
+      res = MDComAPI_getMsg(mdq1, &mdgetMsgInfo, &pRecBuf, &size, IPT_NO_WAIT);
+      if ((res == MD_QUEUE_NOT_EMPTY) && (status == IPTCOM_RUN))
+      {
+         if (trace)
+         {
+            printf("mdq1 received ComId=%d a=%d ip=%d.%d.%d.%d\n", mdgetMsgInfo.comId, md_ds1_echo_out.a,
+                   (mdgetMsgInfo.srcIpAddr >> 24) & 0xff,  (mdgetMsgInfo.srcIpAddr >> 16) & 0xff,
+                   (mdgetMsgInfo.srcIpAddr >> 8) & 0xff,  mdgetMsgInfo.srcIpAddr  & 0xff);
+         }
+
+         for (i=0; i<NO_OF_DEV; i++)
+         {
+            if (mdgetMsgInfo.comId == mdComid1[applNo-1][i])
+            {
+               ret = MDComAPI_putDataMsg(mdEchoComId1[i][applNo-1],
+                                      (char *)&md_ds1_echo_out,
+                                      sizeof(DATA_SET101),
+                                      0,     /* caller queue */
+                                      0,     /* callback function */
+                                      0,     /* caller reference */
+                                      0,     /* topo counter */
+                                      0,     /* destination id */
+                                      0,     /* Destination URI */
+                                      NULL); /* Source URI */
+               if (ret != IPT_OK)
+               {
+                  printf("MD send Echo failed comid=%d res=%#x\n",mdEchoComId1[i][applNo-1],ret);
+               }
+               else if (trace)
+               {
+                  printf("MD send Echo comid=%d a=%d\n",mdEchoComId1[i][applNo-1], md_ds1_echo_out.a);
+               }
+
+               break;
+            }
+         }
+      }
+   }
+   while(res == MD_QUEUE_NOT_EMPTY);
+
+   check();
+}
+
+/*******************************************************************************
+NAME:       demoMD1Clean
+ABSTRACT:
+RETURNS:    -
+*/
+void demoMD1Clean(void)
+{
+   //MDComAPI_removeListenerQ(mdq1);
+   //MDComAPI_destroyQueue(mdq1);
+   MDComAPI_removeQueue(mdq1, REMOVE_QUEUE_ALL_USE);
+
+   //MDComAPI_removeListenerQ(mdqEcho1);
+   //MDComAPI_destroyQueue(mdqEcho1);
+   MDComAPI_removeQueue(mdqEcho1, REMOVE_QUEUE_ALL_USE);
+}
+/*******************************************************************************/
+
+/*******************************************************************************
+NAME:       testIPT13Init
+ABSTRACT:
+RETURNS:    -
+*/
+int testIPT13Init(void)
+{
+
+   printf("IPTCom_handleEvent IPTCOM_EVENT_LINK_UP called...\n");
+   if (IPTCom_handleEvent(IPTCOM_EVENT_LINK_UP, NULL) != 0)
+   {
+      printf("IPTCom_handleEvent IPTCOM_EVENT_LINK_UP failed\n");
+      return -1;
+   }
+
+   printf("IPTCom_handleEvent IPTCOM_EVENT_LINK_UP passed\n");
+   return IPT_OK;
+}
+
+/*******************************************************************************
+NAME:       appl100
+ABSTRACT:   application with 100 ms cycle time
+
+RETURNS:    -
+*/
+void appl100(void)
+{
+   if(demoPDxActive[0] == 1)
+      demoPD1Run();
+}
+
+/*******************************************************************************
+NAME:       appl1000
+ABSTRACT:   application with 1000 ms cycle time
+
+RETURNS:    -
+*/
+void appl1000(void)
+{
+   if(demoMDxActive[0] == 1)
+      demoMD1Run();
+}
+
+/*******************************************************************************
+NAME:       applInit
+ABSTRACT:
+RETURNS:    -
+*/
+int applInit(int applNumber)
+{
+   int res;
+   applNo = applNumber;
+
+   /*********************/
+   /* Processdata Demos */
+   /*********************/
+   res = demoPD1Init();
+   if (res != IPT_OK)
+   {
+      return(res);
+   }
+
+   /* Register IPTCom process-data process in the C scheduler */
+   IPTVosRegisterCyclicThread(appl100,"appl100",
+                              100,
+                              POLICY,
+                              APPL100_PRIO,
+                              STACK);
+
+   /*********************/
+   /* Messagedata Demos */
+   /*********************/
+   res = demoMD1Init();
+   if (res != IPT_OK)
+   {
+      return(res);
+   }
+
+   res = testIPT13Init();
+   if (res != IPT_OK)
+   {
+      return(res);
+   }
+
+   /* Register IPTCom messagedata-process in the C scheduler */
+   IPTVosRegisterCyclicThread(appl1000,"appl1000",
+                              1000,
+                              POLICY,
+                              APPL1000_PRIO,
+                              STACK);
+   return(0);
+}
+
+/*******************************************************************************
+NAME:       applClean
+ABSTRACT:
+RETURNS:    -
+*/
+void applClean(void)
+{
+   demoPD1Clean();
+   demoMD1Clean();
+
+#ifdef MULTIPROC
+   IPTCom_MPdetach();
+#else
+   IPTVosThreadTerminate();
+   IPTCom_terminate(0);
+   IPTCom_destroy();
+#endif
+   MON_PRINTF("Demo terminated\n");
+}
+
+/*******************************************************************************
+NAME:       terminationHandler
+ABSTRACT:
+RETURNS:    -
+*/
+#if defined(LINUX)
+static void terminationHandler(int signal_number)
+{
+   MON_PRINTF("terminationHandler signal=%#x\n", signal_number);
+
+   applClean();
+
+#ifdef MULTIPROC
+   IPTCom_MPdetach();
+#else
+   IPTVosThreadTerminate();
+   IPTCom_terminate(0);
+   IPTCom_destroy();
+#endif
+   exit(EXIT_SUCCESS);
+}
+#endif
+
+static int commands(char *cmdStr)
+{
+   int i;
+
+   if (strcmp(cmdStr, "help") == 0)
+   {
+      MON_PRINTF("\nx =            exit\n");
+      MON_PRINTF("s =            PD_showSendTable\n");
+      MON_PRINTF("r =            PD_showRecTable\n");
+      MON_PRINTF("t =            trace\n");
+      MON_PRINTF("p =            display status PD/MD demos\n");
+      MON_PRINTF("c =            clear status PD-/MD-demos\n");
+      MON_PRINTF("PD(1) =        execute demo PD(1)\n");
+      MON_PRINTF("MD(1) =        execute demo MD(1)\n");
+      MON_PRINTF("PD(1) stop =   deactivate execution demo PD(1)\n");
+      MON_PRINTF("MD(1) stop =   deactivate execution demo MD(1)\n\n");
+/*
+      MON_PRINTF("PD start =     execute all demos PD\n");
+      MON_PRINTF("MD start =     execute all demos MD\n\n");
+      MON_PRINTF("PD stop =      deactivate all demos PD\n");
+      MON_PRINTF("MD stop =      deactivate all demos MD\n\n");
+*/
+   }
+
+   if(strncmp(cmdStr, "PD", 2) == 0)
+   {
+      i = atoi(cmdStr+2);
+
+      if((i > 0)&& (i <= NUM_PD_DEMO))
+      {
+         if(strncmp(cmdStr+3, " stop", 5) == 0)
+         {
+            if(demoPDxActive[i-1] == 1)
+               MON_PRINTF("PD%d deactivated\n", i);
+
+            demoPDxActive[i-1] = 0;
+         }
+         else
+         {
+            if(demoPDxActive[i-1] == 0)
+               MON_PRINTF("PD%d activated\n", i);
+
+            demoPDxActive[i-1] = 1;
+         }
+      }
+      else if(strncmp(cmdStr+2, " start", 6) == 0)
+      {
+         for(i = 0; i < NUM_PD_DEMO; ++i)
+         {
+            demoPDxActive[i] = 1;
+            MON_PRINTF("PD%d activated\n", i+1);
+         }
+      }
+      else if(strncmp(cmdStr+2, " stop", 5) == 0)
+      {
+         for(i = 0; i < NUM_PD_DEMO; ++i)
+         {
+            demoPDxActive[i] = 0;
+            MON_PRINTF("PD%d deactivated\n", i+1);
+         }
+      }
+      return 0;
+   }
+
+   if(strncmp(cmdStr, "MD", 2) == 0)
+   {
+      i = atoi(cmdStr+2);
+
+      if((i > 0)&& (i <= NUM_MD_DEMO))
+      {
+         if(strncmp(cmdStr+3, " stop", 5) == 0)
+         {
+            if(demoMDxActive[i-1] == 1)
+               MON_PRINTF("MD%d deactivated\n", i);
+
+            demoMDxActive[i-1] = 0;
+         }
+         else
+         {
+            if(demoMDxActive[i-1] == 0)
+               MON_PRINTF("MD%d activated\n", i);
+
+            demoMDxActive[i-1] = 1;
+         }
+      }
+      else if(strncmp(cmdStr+2, " start", 6) == 0)
+      {
+         for(i = 0; i < NUM_MD_DEMO; ++i)
+         {
+            demoMDxActive[i] = 1;
+            MON_PRINTF("MD%d activated\n", i+1);
+         }
+      }
+      else if(strncmp(cmdStr+2, " stop", 5) == 0)
+      {
+         for(i = 0; i < NUM_MD_DEMO; ++i)
+         {
+            demoPDxActive[i] = 0;
+            MON_PRINTF("MD%d deactivated\n", i+1);
+         }
+      }
+      return 0;
+   }
+
+   if (strcmp(cmdStr, "x") == 0)
+   {
+     return 1;
+   }
+
+   if (strcmp(cmdStr, "s") == 0)
+   {
+      PD_showSendTable();
+   }
+
+   if (strcmp(cmdStr, "r") == 0)
+   {
+      PD_showRecTable();
+   }
+
+   if (strcmp(cmdStr, "t") == 0)
+   {
+      if (trace)
+      {
+         trace = 0;
+         MON_PRINTF("Trace OFF\n");
+      }
+      else
+      {
+         trace = 1;
+         MON_PRINTF("Trace ON\n");
+      }
+   }
+
+   if (strcmp(cmdStr, "p") == 0)
+   {
+      for (i=0; i<NO_OF_DEV; i++)
+      {
+         if (pd_ds1_echo_ok[i])
+         {
+            MON_PRINTF("Demo PD1 dev%d PD Unicast OK\n",i+1);
+         }
+         else
+         {
+            MON_PRINTF("Demo PD1 dev%d PD Unicast NOT READY\n",i+1);
+         }
+
+         if (md_ds1_echo_ok[i])
+         {
+            MON_PRINTF("Demo MD1 dev%d ComId listener OK\n",i+1);
+         }
+         else
+         {
+            MON_PRINTF("Demo MD1 dev%d ComId listener NOT READY\n",i+1);
+         }
+      }
+   }
+
+   /* clear status PD-/MD-Demos */
+   if (strcmp(cmdStr, "c") == 0)
+   {
+      for (i=0; i<NO_OF_DEV; i++)
+      {
+         pd_ds1_echo_ok[i] = 0;
+         res_printed_PD1[i] = 0;
+      }
+   }
+   return(0);
+}
+/*******************************************************************************
+NAME:       main
+ABSTRACT:
+RETURNS:    -
+*/
+
+#if defined(__INTEGRITY) || defined (VXWORKS)
+int main(void)
+#else
+int main(int argc, char *argv[])
+#endif
+{
+  
+  MON_PRINTF("START MAIN !\n\n");
+   int res;
+   long applNumber;
+   UINT8 inAugState, topoCnt;
+#ifndef __INTEGRITY
+#ifndef VXWORKS
+   char *p;
+#endif
+   char cmdStr[LINELEN+1];
+#else
+   char cmdStr[100];
+#endif
+#if defined(LINUX)
+   struct sigaction sa;
+#endif
+
+#if defined(__INTEGRITY) || defined (VXWORKS)
+   applNumber = 1;
+#else
+   if (argc > 1)
+   {
+      applNumber = strtol(argv[1], &p, 10);
+   }
+   else
+   {
+      MON_PRINTF("\nMissing argument: 1, 2 or 3 !\n\n");
+      
+      return(-1);
+   }
+#endif
+#ifdef MULTIPROC
+   res = IPTCom_MPattach();
+   if (res)
+   {
+      MON_PRINTF("IPTCom_MPattach failed\n");
+      return(-1);
+   }
+#else
+   res = IPTCom_prepareInit(0, "iptcom_startUp.xml");
+#endif
+
+#if defined(LINUX)
+   memset(&sa,0,sizeof(sa));
+   sa.sa_handler = &terminationHandler;
+   sigaction(SIGINT, &sa,NULL);
+#endif
+
+   do {
+      MON_PRINTF("Wait for TDC to complete\n");
+      IPTVosTaskDelay(1000);
+      tdcGetIptState(&inAugState, &topoCnt);
+   } while (0 == topoCnt);
+
+   MON_PRINTF("\nStart Demo\n\n");
+
+   res = applInit((int)applNumber);
+   if (res != IPT_OK)
+   {
+      MON_PRINTF("\nApplication init failed\n\n");
+      return(-1);
+   }
+   MON_PRINTF("\nApplication init OK\n\n");
+
+   while (1)
+   {
+#if defined(__INTEGRITY)
+        Connection myConnection = ConnectionObjectNumber(10);
+        Buffer buf;
+
+        buf.BufferType = DataBuffer | LastBuffer;
+        buf.Length  = sizeof(cmdStr);
+        buf.Transferred = 0;
+        buf.TheAddress = (Address)cmdStr;
+
+        if (SynchronousReceive(myConnection, &buf) != Success)
+        {
+            printf("Unable to receive a IPTCom demo command\n");
+            break;
+        }
+        else
+        {
+            printf("Received a IPTCom demo command %s\n", cmdStr);
+        }
+
+        if (buf.Transferred > 0)
+        {
+            res = commands(cmdStr);
+            if (res != 0)
+            {
+               break;
+            }
+        }
+        else
+        {
+            printf("Received an empty command\n", cmdStr);
+        }
+        sleep(2);
+#else
+      printf(">");
+
+      /* Get string from console */
+      getCmdString(cmdStr, LINELEN);
+
+      printf("\n");
+      res = commands(cmdStr);
+      if (res != 0)
+      {
+         break;
+      }
+#endif
+   }
+
+   applClean();
+   return EXIT_SUCCESS;
+}

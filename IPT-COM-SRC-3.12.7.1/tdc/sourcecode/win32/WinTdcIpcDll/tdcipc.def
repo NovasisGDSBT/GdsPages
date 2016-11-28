@@ -1,0 +1,80 @@
+; tdcipc.def
+; The LIBRARY entry must be same as the name of your DLL
+LIBRARY tdcipc3
+;DESCRIPTION "TDC IPC Client Version 3.11.0.0"
+EXPORTS
+	tdcGetErrorString
+	tdcGetVersion
+	tdcGetTrnBackboneType
+	tdcGetIptState
+	tdcGetOwnIds
+   tdcGetOwnIpAddrs
+	tdcGetAddrByName
+	tdcGetAddrByNameExt
+	tdcGetUriHostPart
+	tdcLabel2CarId
+	tdcAddr2CarId
+	tdcLabel2CstId
+	tdcAddr2CstId
+	tdcCstNo2CstId
+	tdcLabel2TrnCstNo
+	tdcAddr2TrnCstNo
+	tdcGetTrnCstCnt
+	tdcGetCstCarCnt
+	tdcGetCarDevCnt
+	tdcGetCarInfo
+	tdcGetUicState
+	tdcGetUicGlobalData
+	tdcGetUicCarData
+	tdcLabel2UicCarSeqNo
+	tdcAddr2UicCarSeqNo
+	tdcUicCarSeqNo2Ids
+	tdcSetDebugLevel
+	tdcDebug
+
+	tdc
+
+  tdcStrLen
+  tdcStrStr
+	tdcStrCpy
+	tdcStrNCpy
+	tdcStrNCat
+	tdcStrCmp
+	tdcStrNCmp
+	tdcStrICmp
+	tdcStrNICmp
+
+	tdcMemCmp
+	tdcMemCpy
+	tdcMemSet
+  tdcMemClear
+
+  tdcCreateMutex
+  tdcMutexLock
+  tdcMutexUnlock
+  tdcMutexDelete
+	tdcCreateSema
+	tdcWaitSema
+	tdcSignalSema
+	tdcSemaDelete
+
+	tdcFreeMem
+  tdcAllocMem
+  tdcAllocMemChk
+	tdcSleep
+
+	tdcFopen
+	tdcFclose
+	tdcFread
+	tdcFwrite
+	tdcFeof
+	tdcFgets
+	tdcFFlush
+	tdcGetEnv
+
+	tdcPrintf
+  tdcSNPrintf
+
+
+
+

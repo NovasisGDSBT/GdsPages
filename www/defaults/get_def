@@ -1,0 +1,6 @@
+#!/bin/sh
+FILES="alarms event_list system_address ambientlight_value gpio_settings auto_backlight_bkg temperature_limits backlight_limits net_variables voltage12_value backlight_sensor_value voltage24_value carrier_temp processor_temp voltages_readout rgb_settings setup_boot"
+
+for i in $FILES; do
+	wget http://192.168.10.117:8080/$i
+done

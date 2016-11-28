@@ -1,0 +1,53 @@
+tdchosts example file for efd device
+
+127.0.0.1      lDev
+127.0.0.1      efd
+127.0.0.1      efd.lCar
+127.0.0.1      efd.carA
+127.0.0.1      efd.lCar.lCst
+127.0.0.1      efd.carA.cstA
+10.64.8.3      esdno1
+10.0.1.231     esdno1.lCar
+10.0.1.231     esdno1.carA
+10.0.1.231     esdno1.lCar.lCst
+10.0.1.231     esdno1.carA.cstA
+10.64.8.135    esdno2
+10.0.1.233     esdno3
+10.0.1.234     esdno4
+10.0.1.235     esdno5
+10.0.1.236     esdno6
+10.0.1.237     esdno7
+10.0.1.238     esdno8
+10.0.1.239     esdno9
+10.64.8.136     esdno10
+10.64.8.137     esdno11
+10.64.8.138     esdno12
+10.64.8.139     esdno13
+10.64.8.140     esdno14
+10.0.1.103     ccu-o
+10.0.1.103     ccu-o.lCar
+10.0.1.103     ccu-o.carA
+10.0.1.103     ccu-o.lCar.lCst
+10.0.1.103     ccu-o.carA.cstA
+10.0.0.3       pc
+10.0.8.11      dcu1.car01.lCst
+10.0.8.12      dcu1.car02.lCst
+10.64.8.3      testdest
+10.64.14.3     testdest2
+239.0.0.1      grpall.acar
+239.0.0.1      grpall.acar.lcst
+239.0.0.1      grpall.acar.lcst.lTrain
+239.0.0.100    grp1.acar
+239.0.0.100    grp1.acar.lcst
+239.0.0.100    grp1.acar.lcst.ltrain
+239.0.0.130    frg1      FRG
+239.0.0.130    frg1.aCar FRG
+239.0.0.131    frg2      frg
+239.0.0.131    frg2.aCar frg
+239.0.0.132    frg3      frg
+239.0.0.132    frg3.aCar frg
+239.25.0.130   frg10.aCar.ACST FRG
+239.26.0.130   frg12.aCar.acst FRG
+239.27.0.130   frg13.aCar.Acst FRG
+
+

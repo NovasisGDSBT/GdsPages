@@ -1,0 +1,94 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE cpu SYSTEM "mt-project_with_ip.dtd">
+<cpu name="TFT1" >
+<comment><![CDATA[TFT1]]></comment>
+<!-- ICD_DB_VERSION 1.0.0.0 -->
+<!-- DEVICE_INTERFACE_VERSION 1.0.10.0 -->
+<!-- GDB_TOOL_VERSION 5.10.5 -->
+<bus-interface-list>
+<bus-interface type="ETH" address="0" name="ETH_1">
+<!-- Instance Specific Telegrams -->
+<!-- Generic Telegrams -->
+ <telegram type="sink" data-set-id="2722001" size="64" name="iINFDISCtrlOp" class="absolute" com-parameter-id="2" com-id="272200100">
+ <md-receive-parameter source-uri="" />
+ <md-send-parameter destination-uri="grpTFT.aCar.lCst" />
+ </telegram>
+ <telegram type="sink" data-set-id="2722501" size="128" name="iINFDISCtrlMaint" class="absolute" com-parameter-id="2" com-id="272250100">
+ <md-receive-parameter source-uri="" />
+ <md-send-parameter destination-uri="grpTFT.aCar.lCst" />
+ </telegram>
+ <telegram type="sink" data-set-id="2723101" size="516" name="iCCUC_INFDIS" class="absolute" com-parameter-id="1" com-id="272310100">
+ <pd-receive-parameter source-uri="" timeout-value="10000"  validity-behavior="0" />
+ <pd-send-parameter destination-uri="grpTFT.aCar.lCst" cycle-time="1000"  redundant="0" />
+ </telegram>
+ <telegram type="source" data-set-id="2727901" size="190" name="oINFDisReport" class="absolute" com-parameter-id="1" com-id="272790100">
+ <pd-send-parameter destination-uri="grpIFD.aCar.lCst" cycle-time="1000"  redundant="0" />
+ </telegram>
+</bus-interface>
+</bus-interface-list> 
+<data-set-list>
+  <data-set data-set-id="2722001">
+    <!--INFDISCtrlOp-->
+    <process-variable name="CShutdownCmd" type="UINT8" offset="0" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CBacklightCmd" type="UINT8" offset="8" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved1" type="UINT8" offset="16" array-size="2" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved2" type="UINT8" offset="32" array-size="13" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CSystemMode" type="UINT8" offset="136" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved3" type="UINT8" offset="144" array-size="46" unit="" scale="1" zero-offset="0"/>
+  </data-set>
+  <data-set data-set-id="2722501">
+    <!--INFDISCtrlMaint-->
+    <process-variable name="CReset" type="UINT8" offset="0" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved1" type="UINT8" offset="8" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved2" type="UINT8" offset="16" array-size="16" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CDurationCounterReset" type="BOOLEAN8" offset="144" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CBackOnCounterReset" type="BOOLEAN8" offset="152" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CNormalStartsCounterReset" type="BOOLEAN8" offset="160" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CWdogResetsCounterReset" type="BOOLEAN8" offset="168" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="CResetAllCounters" type="BOOLEAN8" offset="176" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved3" type="UINT8" offset="184" array-size="41" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved4" type="UINT8" offset="512" array-size="18" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved5" type="UINT8" offset="656" array-size="46" unit="" scale="1" zero-offset="0"/>
+  </data-set>
+  <data-set data-set-id="2723101">
+    <!--CCUC_INFDIS-->
+    <process-variable name="ICCUCLifeSign" type="UINT16" offset="0" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved1" type="UINT16" offset="16" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="IInfdMode" type="UINT8" offset="32" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved2" type="UINT8" offset="40" array-size="3" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="IURL" type="CHAR8" offset="64" array-size="100" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved3" type="UINT8" offset="864" array-size="408" unit="" scale="1" zero-offset="0"/>
+  </data-set>
+  <data-set data-set-id="2727901">
+    <!--INFDISReport-->
+    <process-variable name="ISystemLifeSign" type="UINT16" offset="0" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="ISystemMode" type="UINT8" offset="16" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="ITestMode" type="UINT8" offset="24" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="IBacklightStatus" type="UINT8" offset="32" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved1" type="UINT8" offset="40" array-size="61" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="ITFTWorkTime" type="UINT32" offset="528" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="ITFTBacklight" type="UINT32" offset="560" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="ITFTPowerUp" type="UINT32" offset="592" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="ITFTWatchdog" type="UINT32" offset="624" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved2" type="UINT8" offset="656" array-size="48" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved3" type="UINT8" offset="1040" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FTimeoutComMod" type="UINT8" offset="1048" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved4" type="UINT8" offset="1056" array-size="4" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FWatchdogApiMod" type="BOOLEAN8" offset="1088" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FApiMod" type="BOOLEAN8" offset="1096" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved5" type="UINT8" offset="1104" array-size="2" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FBcklightFault" type="BOOLEAN8" offset="1120" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FTempSensor" type="UINT8" offset="1128" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FTempORHigh" type="BOOLEAN8" offset="1136" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FTempORLow" type="BOOLEAN8" offset="1144" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved6" type="BOOLEAN8" offset="1152" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="FAmbLightSensor" type="BOOLEAN8" offset="1160" array-size="1" unit="" scale="1" zero-offset="0"/>
+    <process-variable name="Reserved7" type="BOOLEAN8" offset="1168" array-size="44" unit="" scale="1" zero-offset="0"/>
+  </data-set>
+</data-set-list>
+
+<com-parameter-list>
+ <network-parameter-ip com-parameter-id= "1" qos= "5" name= "IP_1" time-to-live= "64"  />
+ <network-parameter-ip com-parameter-id= "2" qos= "3" name= "IP_2" time-to-live= "64"  />
+</com-parameter-list>
+</cpu>

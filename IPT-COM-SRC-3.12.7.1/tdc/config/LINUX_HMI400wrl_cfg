@@ -1,0 +1,8 @@
+ARCH        = linux-arm-hmi400wrl
+CPU         = arm
+TARGET_OS   = LINUX
+TOOLCHAIN   = arm-wrs-linux-gnueabi-arm_xscale_eb-glibc_small-
+OSDEP_NAME  = linux
+
+PLATFORM_CPPFLAGS = -DLINUX -DLUA_USE_MKSTEMP
+

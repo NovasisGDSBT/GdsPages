@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ "$1" == "" ]; then
+	echo "Usage : $0 [red|green|blue|black|white|grayscale]"
+	exit 0
+fi
+rm -rf /tmp/aa
+mkdir /tmp/aa
+cd /tmp/aa
+wget http://192.168.10.117:8080/cgi-bin/screentest_$1.cgi
+cd ..
+

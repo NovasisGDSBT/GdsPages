@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="PISTFT" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/PISTFT" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DLINUX" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/PISTFT" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="-DO_LE -O -mlittle-endian -march=armv7-a -mthumb-interwork -mfloat-abi=hard -mfpu=neon -mtune=cortex-a9 -fno-common -fno-builtin -Wall \ &#x09;&#x09;    -Dlinux -D__linux__ -Dunix" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DLINUX" />
+					<Add directory="/home/fil/Desktop/TEST_IPTCOM_PC/IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../New Folder/iptcom_startUp.xml" />
+		<Unit filename="../PIS_App.h" />
+		<Unit filename="../PIS_Application.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../PIS_Common.h" />
+		<Unit filename="../PIS_Diag.h" />
+		<Unit filename="../PIS_Diagnostic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../PIS_IptCom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../PIS_IptCom.h" />
+		<Unit filename="../PIS_MdProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../PIS_PdProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../TFT1.car1.lCst_20160812.xml" />
+		<Unit filename="../infd_icd.h" />
+		<Unit filename="../iptComDemoLite.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

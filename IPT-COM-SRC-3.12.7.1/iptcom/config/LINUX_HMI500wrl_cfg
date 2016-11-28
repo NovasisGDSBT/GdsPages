@@ -1,0 +1,8 @@
+ARCH        = linux-x86-hmi500wrl
+CPU         = i686
+TARGET_OS   = LINUX
+TOOLCHAIN   = i586-wrs-linux-gnu-i686-glibc_std-
+OSDEP_NAME  = linux
+
+PLATFORM_CPPFLAGS = -DO_LE
+

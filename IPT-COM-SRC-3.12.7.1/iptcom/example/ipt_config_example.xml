@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cpu SYSTEM "../src/api/iptcom-config.dtd" >
+<!-- example file only with elements and attributes used by IPTCom -->
+<cpu>
+
+   <!-- NOTE All start up parameters can either be configured common for all
+        devices or separatly for each device  -->
+
+   <!-- Start up parameters for device with DHCP host name efd  -->
+   <host host-name="efd">
+      <device-configuration>
+         <!-- Changed default PD receive thread/task parameters  -->
+         <pd-receive vxworks-priority="50"></pd-receive>
+
+         <!-- Changed default PD send thread/task parameters  -->
+         <!-- Only for IPTCom daemon and CSS  -->
+         <pd-process cycle-time="10" vxworks-priority="41"></pd-process>
+
+         <!-- Changed default MD receive thread/task parameters  -->
+         <md-receive vxworks-priority="42"></md-receive>
+
+         <!-- Changed default MD send thread/task parameters  -->
+         <!-- Only for IPTCom daemon and CSS  -->
+         <md-process cycle-time="100" vxworks-priority="51"></md-process>
+      </device-configuration>
+   </host>
+   
+   <!-- Start up parameters for device with DHCP host name ccu-o  -->
+   <host host-name="ccu-o">
+      <device-configuration>
+         <!-- Changed default PD receive thread/task parameters  -->
+         <pd-receive linux-priority="20"></pd-receive>
+
+         <!-- Changed default PD send thread/task parameters  -->
+         <!-- Only for IPTCom daemon and CSS  -->
+         <pd-process cycle-time="10" linux-priority="20"></pd-process>
+
+         <!-- Changed default MD receive thread/task parameters  -->
+         <md-receive linux-priority="20"></md-receive>
+
+         <!-- Changed default MD send thread/task parameters  -->
+         <!-- Only for IPTCom daemon and CSS  -->
+         <md-process cycle-time="100" linux-priority="10"></md-process>
+
+         <!-- Changed default net control thread/task parameters  -->
+         <!-- Only for Linux multiprocess primary process  -->
+         <net-ctrl linux-priority="20"></net-ctrl>
+      </device-configuration>
+   </host>
+   
+   <!-- Start up parameters for device with DHCP host name esdno1  -->
+   <host host-name="esdno1">
+      <device-configuration>
+         <!-- Changed default PD receive thread/task parameters  -->
+         <pd-receive windows-priority="THREAD_PRIORITY_ABOVE_NORMAL"></pd-receive>
+
+         <!-- Changed default PD send thread/task parameters  -->
+         <!-- Only for IPTCom daemon and CSS  -->
+         <pd-process cycle-time="10" windows-priority="THREAD_PRIORITY_ABOVE_NORMAL"></pd-process>
+
+         <!-- Changed default MD receive thread/task parameters  -->
+         <md-receive windows-priority="THREAD_PRIORITY_ABOVE_NORMAL"></md-receive>
+
+         <!-- Changed default MD send thread/task parameters  -->
+         <!-- Only for IPTCom daemon and CSS  -->
+         <md-process cycle-time="100" windows-priority="THREAD_PRIORITY_NORMAL"></md-process>
+      </device-configuration>
+   </host>
+   
+   <!-- NOTE All communication parameters can either be configured common for all 
+        devices or separatly for each device  -->
+
+   <!-- Communication parameters for device with URI name efd -->
+   <device device-uri="efd">
+      <bus-interface-list>
+         <bus-interface>
+
+            <!-- MD telegram with specified data set and destination URI -->
+            <telegram data-set-id="1" com-id="35000" com-parameter-id="7">
+               <md-send-parameter destination-uri="efd.car01.lCst.lTrain"></md-send-parameter>
+            </telegram>
+
+            <!-- MD telegram with specified data set and destination URI -->
+            <telegram data-set-id="135" com-id="35001" com-parameter-id="1">
+               <md-send-parameter destination-uri="efd.car01.lCst.lTrain"></md-send-parameter>
+            </telegram>
+
+         </bus-interface>
+      </bus-interface-list>
+      <data-set-list>
+         <!-- Data set with "single" variables -->
+         <data-set data-set-id="135">
+            <process-variable type="UINT8" array-size="1"></process-variable>
+            <process-variable type="UINT8" array-size="1"></process-variable>
+            <process-variable type="UINT32" array-size="1"></process-variable>
+         </data-set>
+      </data-set-list>
+
+      <com-parameter-list>
+         <!-- Communication parameters -->
+         <network-parameter-ip com-parameter-id="7" qos="4"></network-parameter-ip>
+      </com-parameter-list>
+   </device>
+
+   <!-- Communication parameters for device with URI name ccu-o.car01 -->
+   <device device-uri="ccu-o.car01">
+      <bus-interface-list>
+         <bus-interface>
+
+            <!-- MD telegram with specified data set and destination URI -->
+            <telegram data-set-id="1" com-id="35000" com-parameter-id="7">
+               <md-send-parameter destination-uri="efd.car01.lCst.lTrain"></md-send-parameter>
+            </telegram>
+
+            <!-- MD telegram with specified data set and destination URI -->
+            <telegram data-set-id="135" com-id="35001" com-parameter-id="1">
+               <md-send-parameter destination-uri="efd.car01.lCst.lTrain"></md-send-parameter>
+            </telegram>
+
+         </bus-interface>
+      </bus-interface-list>
+      <com-parameter-list>
+         <!-- Communication parameters -->
+         <network-parameter-ip com-parameter-id="7" qos="4"></network-parameter-ip>
+      </com-parameter-list>
+   </device>
+
+   <device device-uri="ccu-o.car01">
+      <data-set-list>
+         <!-- Data set with "single" variables -->
+         <data-set data-set-id="135">
+            <process-variable type="UINT8" array-size="1"></process-variable>
+            <process-variable type="UINT8" array-size="1"></process-variable>
+            <process-variable type="UINT32" array-size="1"></process-variable>
+         </data-set>
+      </data-set-list>
+   </device>
+
+   <device device-uri="ccu-o.car01">
+      <com-parameter-list>
+         <!-- Communication parameters -->
+         <network-parameter-ip com-parameter-id="7" qos="4"></network-parameter-ip>
+      </com-parameter-list>
+   </device>
+
+   <!-- Common communication parameters for all devices -->
+   <bus-interface-list>
+      <bus-interface>
+
+         <!-- MD telegram with specified data set and destination URI -->
+         <telegram data-set-id="10001" com-id="1001100" com-parameter-id="1">
+            <md-send-parameter destination-uri="efd.car01.lCst.lTrain"></md-send-parameter>
+         </telegram>
+
+         <!-- MD telegram without specified data set and with specified destination URI -->
+         <telegram data-set-id="" com-id="1002100" com-parameter-id="1">
+            <md-send-parameter destination-uri="efd.car01.lCst.lTrain"></md-send-parameter>
+         </telegram>
+
+         <!-- MD telegram with specified data set and without specified destination URI -->
+         <telegram data-set-id="10001" com-id="1003100" com-parameter-id="1">
+            <md-send-parameter destination-uri=""></md-send-parameter>
+         </telegram>
+         <telegram data-set-id="10001" com-id="1003101" com-parameter-id="1">
+         </telegram>
+
+         <!-- MD telegram without specified data set and destination URI -->
+         <telegram data-set-id="" com-id="1004100" com-parameter-id="1">
+            <md-send-parameter destination-uri=""></md-send-parameter>
+         </telegram>
+         <telegram com-id="1004101" com-parameter-id="1">
+         </telegram>
+      
+         <!-- MD telegram with specified data set, destination URI and acknowledge time out -->
+         <telegram data-set-id="10001" com-id="1004200" com-parameter-id="1">
+            <md-send-parameter destination-uri="efd.car01.lCst.lTrain" ack-timeout="200"></md-send-parameter>
+         </telegram>
+
+         <!-- MD telegram with specified data set, destination URI and response time out -->
+         <telegram data-set-id="10001" com-id="1004201" com-parameter-id="1">
+            <md-send-parameter destination-uri="efd.car01.lCst.lTrain" response-timeout="2000"></md-send-parameter>
+         </telegram>
+
+         <!-- MD telegram with specified data set and destination URI to a FRG multicast group -->
+         <telegram data-set-id="10001" com-id="1005100" com-parameter-id="1">
+            <md-send-parameter destination-uri="frg1.aCar"></md-send-parameter>
+         </telegram>
+
+         <!-- Telegram with specified data set and destination ID -->
+         <telegram data-set-id="10001" com-id="1005200" com-parameter-id="1">
+				<destination-id destination-id="1" destination-uri="efd.car01" />
+				<destination-id destination-id="2" destination-uri="ccu-o.car01" />
+         </telegram>
+
+         <!-- MD telegram with specified data set and destination URI to a multicast group -->
+         <telegram data-set-id="10001" com-id="1006000" com-parameter-id="1">
+            <md-send-parameter destination-uri="aFunc@grpAll.aCar"></md-send-parameter>
+				<destination-id destination-id="1" destination-uri="grp1.acar.acst" />
+         </telegram>
+         
+         <!-- MD telegram with specified data set, destination URI and source URI -->
+         <telegram data-set-id="10001" com-id="1006100" com-parameter-id="1">
+            <md-send-parameter destination-uri="efd.car01.lCst.lTrain" source-uri="func1@hmi1.car01.lCst.lTrain"></md-send-parameter>
+         </telegram>
+
+         <!-- PD telegram using default values. Publishing can only be done with destination URI defined by the application-->
+         <telegram data-set-id="10009" com-id="1006999" com-parameter-id="1">
+         </telegram>
+         
+         <!-- PD telegram with destination URI using default values for other parameters -->
+         <telegram data-set-id="10009" com-id="1007000" com-parameter-id="1">
+            <pd-send-parameter destination-uri="efd.car01.lCst"></pd-send-parameter>
+         </telegram>
+         
+         <!-- PD telegram with time out value specified and default for other parameters -->
+         <telegram data-set-id="10009" com-id="1007001" com-parameter-id="1">
+            <pd-receive-parameter timeout-value="5000"></pd-receive-parameter>
+            <pd-send-parameter destination-uri="grpAll.aCar"></pd-send-parameter>
+         </telegram>
+         
+         <!-- PD telegram with time out value and behaviour value specified and default for other parameters -->
+         <telegram data-set-id="10001" com-id="1007010" com-parameter-id="1">
+            <pd-receive-parameter timeout-value="500" validity-behavior="0"></pd-receive-parameter>
+            <pd-send-parameter destination-uri="efd.car01.lCst"></pd-send-parameter>
+			  	<pd-source-filter filter-id="1" source-uri="efd.carA.cstA"></pd-source-filter>
+			  	<pd-source-filter filter-id="2" source-uri="ccu-o.carA.cstA"></pd-source-filter>
+				<destination-id destination-id="1" destination-uri="grp1.acar.acst" />
+				<destination-id destination-id="2" destination-uri="grp2.acar.acst" />
+         </telegram>
+      
+         <!-- PD telegram with source URI specified and default for other parameters. Note can't be received unfiltered -->
+         <telegram data-set-id="10001" com-id="1007011" com-parameter-id="1">
+            <pd-receive-parameter source-uri="vcu1.car01.lCst"></pd-receive-parameter>
+            <pd-send-parameter destination-uri="efd.car01.lCst"></pd-send-parameter>
+         </telegram>
+
+         <!-- PD telegram with cycle time value specified and default for other parameters -->
+         <telegram data-set-id="10001" com-id="1007020" com-parameter-id="1">
+            <pd-send-parameter cycle-time="10" destination-uri="efd.car01.lCst"></pd-send-parameter>
+         </telegram>
+
+         <!-- PD telegram with redundant value specified and default for other parameters -->
+         <telegram data-set-id="10001" com-id="1007021" com-parameter-id="1">
+            <pd-send-parameter destination-uri="grpAll.aCar" redundant="1"></pd-send-parameter>
+         </telegram>
+
+         <!-- MD and PD telegram with all IPTCom parameters set -->
+         <telegram data-set-id="10002" com-id="1007100" com-parameter-id="1">
+            <md-send-parameter destination-uri="efd.car01.lCst.lTrain" source-uri="func1@hmi1.car01.lCst.lTrain" response-timeout="2000" ack-timeout="200"></md-send-parameter>
+            <pd-receive-parameter timeout-value="1000" source-uri="vcu1.car01.lCst" validity-behavior="1"></pd-receive-parameter>
+            <pd-send-parameter cycle-time="100" destination-uri="efd.car01.lCst" redundant="1"></pd-send-parameter>
+			  	<pd-source-filter filter-id="1" source-uri="efd.carA.cstA"></pd-source-filter>
+			  	<pd-source-filter filter-id="2" source-uri="efd.carB.cstA"></pd-source-filter>
+				<destination-id destination-id="1" destination-uri="efd.car01"></destination-id>
+				<destination-id destination-id="2" destination-uri="ccu-o.car01"></destination-id>
+         </telegram>
+      </bus-interface>
+   </bus-interface-list>
+
+   <data-set-list>
+      <!-- Data set with "single" variables -->
+      <data-set data-set-id="10001">
+         <process-variable type="UINT8" array-size="1"></process-variable>
+         <process-variable type="UINT16" array-size="1"></process-variable>
+         <process-variable type="UINT8" array-size="1"></process-variable>
+         <process-variable type="UINT32" array-size="1"></process-variable>
+      </data-set>
+
+      <!-- Data set with "single" variables and a single dataset 1 -->
+      <data-set data-set-id="10002">
+         <process-variable type="UINT16" array-size="1"></process-variable>
+         <process-variable type="1" array-size="1"></process-variable>
+         <process-variable type="UINT16" array-size="1"></process-variable>
+         <process-variable type="UINT16" array-size="1"></process-variable>
+      </data-set>
+
+      <!-- Data set with dynamic sized arrays -->
+      <data-set data-set-id="10003">
+         <process-variable type="UINT16" array-size="1"></process-variable>
+         <process-variable type="INT8" array-size="0"></process-variable>
+         <process-variable type="UINT16" array-size="1"></process-variable>
+         <process-variable type="1" array-size="0"></process-variable>
+      </data-set>
+
+      <!-- Data set with a string and a single variable -->
+      <data-set data-set-id="10004">
+         <process-variable type="STRING" array-size="22"></process-variable>
+         <process-variable type="UINT32" array-size="1"></process-variable>
+      </data-set>
+
+      <!-- Data set with an array -->
+      <data-set data-set-id="10009">
+         <process-variable type="INT32" array-size="100"></process-variable>
+      </data-set>
+
+      <!-- Data set with "single" variables and a string -->
+      <data-set data-set-id="100050">
+         <process-variable type="INT8" array-size="1"></process-variable>
+         <process-variable type="INT16" array-size="1"></process-variable>
+         <process-variable type="INT32" array-size="1"></process-variable>
+         <process-variable type="UINT8" array-size="1"></process-variable>
+         <process-variable type="UINT16" array-size="1"></process-variable>
+         <process-variable type="UINT32" array-size="1"></process-variable>
+         <process-variable type="REAL32" array-size="1"></process-variable>
+         <process-variable type="CHAR8" array-size="1"></process-variable>
+         <process-variable type="STRING" array-size="5"></process-variable>
+         <process-variable type="UNICODE16" array-size="1"></process-variable>
+         <process-variable type="BOOLEAN8" array-size="1"></process-variable>
+      </data-set>
+
+      <!-- Data set with arrays -->
+      <data-set data-set-id="100051">
+         <process-variable type="INT8" array-size="5"></process-variable>
+         <process-variable type="INT16" array-size="6"></process-variable>
+         <process-variable type="INT32" array-size="7"></process-variable>
+         <process-variable type="UINT8" array-size="8"></process-variable>
+         <process-variable type="UINT16" array-size="9"></process-variable>
+         <process-variable type="UINT32" array-size="10"></process-variable>
+         <process-variable type="REAL32" array-size="11"></process-variable>
+         <process-variable type="CHAR8" array-size="12"></process-variable>
+         <process-variable type="STRING" array-size="13"></process-variable>
+         <process-variable type="UNICODE16" array-size="14"></process-variable>
+         <process-variable type="BOOLEAN8" array-size="15"></process-variable>
+      </data-set>
+
+      <!-- Data set with arrays one array of dataset 100051 -->
+      <data-set data-set-id="100052">
+         <process-variable type="INT8" array-size="5"></process-variable>
+         <process-variable type="INT16" array-size="6"></process-variable>
+         <process-variable type="INT32" array-size="7"></process-variable>
+         <process-variable type="UINT8" array-size="8"></process-variable>
+         <process-variable type="UINT16" array-size="9"></process-variable>
+         <process-variable type="UINT32" array-size="10"></process-variable>
+         <process-variable type="REAL32" array-size="11"></process-variable>
+         <process-variable type="CHAR8" array-size="12"></process-variable>
+         <process-variable type="STRING" array-size="13"></process-variable>
+         <process-variable type="UNICODE16" array-size="14"></process-variable>
+         <process-variable type="BOOLEAN8" array-size="15"></process-variable>
+         <process-variable type="100051" name="l" array-size="3"></process-variable>
+      </data-set>
+   </data-set-list>
+
+   <com-parameter-list>
+      <!-- Communication parameters -->
+      <network-parameter-ip com-parameter-id="3" qos="3"></network-parameter-ip>
+      <network-parameter-ip com-parameter-id="4" qos="5" time-to-live="100"></network-parameter-ip>
+   </com-parameter-list>
+
+
+   <!-- Start up parameters common for all devices  -->
+   <!-- Changed memory size  -->
+   <device-configuration ipt-memory-size="5000000">
+      <!-- Changed memory block parameters  -->
+      <mem-block-list>
+         <mem-block size="32"></mem-block>
+         <mem-block size="64"></mem-block>
+         <mem-block size="128"></mem-block>
+         <mem-block size="256"></mem-block>
+         <mem-block size="512"></mem-block>
+         <mem-block size="1024"></mem-block>
+         <mem-block size="2048"></mem-block>
+         <mem-block size="4096"></mem-block>
+         <mem-block size="8192"></mem-block>
+         <mem-block size="16384"></mem-block>
+         <mem-block size="32768"></mem-block>
+         <mem-block size="65536" preallocate="4"></mem-block>
+         <mem-block size="131072" preallocate="2"></mem-block>
+      </mem-block-list>
+
+      <!-- Changed default PD communication parameters  -->
+      <pd-com-parameter timeout-value="500" validity-behavior="0" cycle-time="50"></pd-com-parameter>
+
+      <!-- Changed default MD communication parameters  -->
+      <md-com-parameter ack-timeout="300" response-timeout="20000" max-seq-no="1000"></md-com-parameter>
+
+   </device-configuration>
+
+   <!-- Debug parameters  -->
+   <debug file-name="log.txt" level-iptcom="e"></debug>
+</cpu>

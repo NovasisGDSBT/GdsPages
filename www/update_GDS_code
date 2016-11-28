@@ -1,0 +1,19 @@
+#!/bin/sh
+# cleanup all the runnning processes if any
+kill -9 `pidof chrome_starter.sh`  >/dev/null 2>&1
+kill -9 `pidof backlight_counter.sh`  >/dev/null 2>&1
+kill -9 `pidof monitor_counter.sh`  >/dev/null 2>&1
+kill -9 `pidof ntp_hwclock_update.sh`  >/dev/null 2>&1
+kill -9 `pidof auto_backlight_bkg` >/dev/null 2>&1
+get_exec www.tar
+cd /tmp
+tar xf www.tar
+
+rm -rf /tmp/store_mountpoint
+mkdir /tmp/store_mountpoint
+mount /dev/mmcblk0p3 /tmp/store_mountpoint
+rm -rf /tmp/store_mountpoint/application_storage
+mkdir /tmp/store_mountpoint/application_storage
+cp /tmp/www.tar /tmp/store_mountpoint/application_storage/.
+cp /tmp/www/AutoRun.sh /tmp/store_mountpoint/application_storage/.
+umount /tmp/store_mountpoint

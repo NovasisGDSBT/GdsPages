@@ -1,0 +1,6 @@
+ARCH      = colinux-emu
+CPU       = i686
+TARGET_OS = LINUX
+TOOLCHAIN = i686-linux-uclibc-
+PLATFORM_CPPFLAGS = -DO_LE
+ 

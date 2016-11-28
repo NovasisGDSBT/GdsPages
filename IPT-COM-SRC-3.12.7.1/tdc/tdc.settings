@@ -1,0 +1,120 @@
+#
+# $Id: tdc.settings.example 11822 2011-09-07 12:51:20Z gweiss $
+#
+# PROJECT      : TDC (IPTrain Directory Client)
+#
+# AUTHOR       : M.Ritz, PGR/3HEV-T, B.Loehr & G. Weiss, LAE/PPC/TET2
+#
+# DESCRIPTION  : This is an example TDC Settings File
+# The 'TDC Settings File' allows overwriting some of TDC's default parameters.
+# The 'TDC Settings File' is completely optional, i.e. if it is missing,
+# TDC is using the default parameters.
+# It is possible to overwrite all parameters or any subset of the parameters.
+# The 'TDC Settings File' has to be placed in the working directory of the
+# TDC-Daemon with a fixed filename: 'tdc.settings'. The structure of the
+# settings file is quite easy:
+# It consists of white chararcters (spaces or tabs), assignments and optional
+# comments. A comment starts with the character '#' and continues to the
+# end of the line. A white character simply seperates identifiers but has
+# no other meaning. An assignment are done with a 'key = value' statement.
+# There's only one statement per line allowed.
+#
+# The following keys are defined (see description in the examples below):
+#   TDC_DBG_LEVEL_INIT             
+#   TDC_DBG_LEVEL_RUN              
+#   TDC_ENABLE_LOGFILE             
+#   TDC_LOGFILE_NAME               
+#   TDC_LOGFILE_MODE               
+#   TDC_IPTDIR_SERVER_EMULATION    
+#   TDC_COMID_100_FILENAME         
+#   TDC_COMID_101_FILENAME         
+#   TDC_COMID_102_FILENAME         
+#   TDC_CHECK_MC_SUPPORT
+#   TDC_ENABLE_STANDALONE_SUPPORT
+#   TDC_CSTSTA_FILENAME
+#
+# REMARKS      :
+#
+# DEPENDENCIES : ---
+#
+# (C) 2009-2011, Bombardier Inc. or its subsidiaries.  All rights reserved
+#
+###############################################################################
+
+
+# Examples
+
+#####   TDC_DBG_LEVEL_INIT   ###################################################
+#####      defines the debug level during initialization.
+#####      VALUE RANGE:      INFO, WARNING, ERROR
+#####      DEFAULT VALUE:    ERROR
+TDC_DBG_LEVEL_INIT = ERROR
+
+#####   TDC_DBG_LEVEL_RUN    ###################################################
+#####      defines the debug level after initialization
+#####      i.e. after the first validly received MD-Telegram
+#####      VALUE RANGE:      INFO, WARNING, ERROR
+#####      DEFAULT VALUE:    ERROR
+TDC_DBG_LEVEL_RUN = ERROR
+
+#####   TDC_ENABLE_LOGFILE   ###################################################
+#####      allows logging to a file in addition to console-logging
+#####      VALUE RANGE:      TRUE, FALSE
+#####      DEFAULT VALUE:    FALSE
+TDC_ENABLE_LOGFILE = FALSE
+
+#####   TDC_LOGFILE_NAME     ###################################################
+#####      allows to specify a Logfilename (including valid path)
+#####      (applies only if TDC_ENABLE_LOGFILE is set to TRUE).
+#####      VALUE RANGE:      any valid filename (ensure access rights!)
+#####      DEFAULT VALUE:    tdcd.report
+TDC_LOGFILE_NAME = tdcd.report
+
+#####   TDC_LOGFILE_MODE     ###################################################
+#####      allows to set the logging mode 
+#####      (applies only if TDC_ENABLE_LOGFILE is set to TRUE).
+#####      VALUE RANGE:      APPEND, OVERWRITE
+#####      DEFAULT VALUE:    OVERWRITE
+TDC_LOGFILE_MODE = OVERWRITE
+
+#####   TDC_IPTDIR_SERVER_EMULATION   ########################################## 
+#####      allows to emulate IPTDir-Server (telegrams). In emulation mode, the 
+#####      telegrams are read from filesystem rather via IPTCom
+#####      VALUE RANGE:     TRUE, FALSE
+#####      DEFAULT VALUE:   FALSE
+TDC_IPTDIR_SERVER_EMULATION = FALSE
+
+#####   TDC_COMID_100_FILENAME   ###############################################
+#####      specifies a filename (incl. path) which contains a ComId 100 Telegram
+#####      DEFAULT VALUE:   tdcTestPD.bin
+TDC_COMID_100_FILENAME = tdcTestPD.bin
+
+#####   TDC_COMID_101_FILENAME   ###############################################
+#####      specifies a filename (incl. path) which contains a ComId 101 Telegram
+#####      DEFAULT VALUE:   tdcTestIptMD.bin
+TDC_COMID_101_FILENAME = tdcTestIptMD.bin
+
+#####   TDC_COMID_102_FILENAME   ###############################################
+#####      specifies a filename (incl. path) which contains a ComId 102 Telegram
+#####      DEFAULT VALUE:   tdcTestUicMD.bin
+TDC_COMID_102_FILENAME = tdcTestUicMD.bin
+
+#####   TDC_CHECK_MC_SUPPORT   #################################################
+#####      Not only wait for valid IP address, but also for Multicast Support, 
+#####      i.e. until Route for MC is setup up correctly
+#####      VALUE RANGE:     TRUE, FALSE
+#####      DEFAULT VALUE:   TRUE
+TDC_CHECK_MC_SUPPORT = TRUE
+
+#####   TDC_ENABLE_STANDALONE_SUPPORT   ########################################
+#####      enables the TDC to operate without an active IPT Directory server.
+#####      A valid consist configuration file (cstSta.xml) must be present.
+#####      DEFAULT VALUE:   FALSE
+TDC_ENABLE_STANDALONE_SUPPORT = FALSE
+
+#####   TDC_CSTSTA_FILENAME   ##################################################
+#####      specifies a filename (incl. path) of a valid consist configuration
+#####      file (for standalone support) 
+#####      DEFAULT VALUE:   cstSta.xml
+TDC_CSTSTA_FILENAME = cstSta.xml
+

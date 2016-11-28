@@ -1,0 +1,2 @@
+#!/bin/sh
+gst-launch-0.10 videotestsrc | mfw_v4lsink

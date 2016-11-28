@@ -1,0 +1,10 @@
+ARCH        = linux-ppc
+CPU         = PPC860
+TARGET_OS   = LINUX
+TOOLCHAIN   = powerpc-linux-
+OSDEP_NAME  = linux
+
+PLATFORM_CPPFLAGS = -DLINUX
+
+
+

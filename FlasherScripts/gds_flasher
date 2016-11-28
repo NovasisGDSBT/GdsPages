@@ -1,0 +1,142 @@
+#!/bin/sh
+EMMC="/dev/mmcblk1"
+uSD="/dev/mmcblk0"
+UBOOT_BIN="u-boot_NOVAsom6.imx"
+SPLASH="splash.bmp.gz"
+URAMDISK="NOVAsom6Initrd"
+KERNEL="NOVAsom6Kernel"
+PARAMS="NOVAsom6.params"
+DTB="imx6q-novasom.dtb"
+EMMC_SYS_LOC="/sys/devices/soc0/soc.1/2100000.aips-bus/219c000.usdhc/mmc_host/mmc1/mmc1:0001"
+
+
+
+if ! [ -b ${EMMC} ]; then
+	echo "${EMMC} not found"
+	exit 0
+fi
+
+mount ${uSD}p2 /mnt
+FILES="${UBOOT_BIN} ${SPLASH} ${URAMDISK} ${KERNEL} ${PARAMS} ${DTB}"
+for i in ${FILES} ; do
+        if ! [ -f /mnt/${i} ]; then
+                MISSING="Missing $i"
+		echo "${MISSING}"
+                umount /mnt
+                exit 0
+	else
+		cp /mnt/${i} /tmp/.
+        fi
+done
+[ -d /mnt/application_storage ] && cp -r /mnt/application_storage /tmp/.
+umount /mnt
+
+mount ${EMMC}p3 /mnt
+if [ "$?" == "0" ]; then
+	mkdir /tmp/backup
+	[ -d /mnt/webparams ] && cp -r /mnt/webparams /tmp/backup/.
+	[ -d /mnt/application_storage ] && cp -r /mnt/webparams /tmp/backup/.
+	[ -d /mnt/sysconfig ] && cp -r /mnt/sysconfig /tmp/backup/.
+fi
+umount /mnt
+
+dd if=/dev/zero of=${EMMC} bs=4M count=1; sync
+fdisk ${EMMC} << __EOF__
+n
+p
+1
+
++512M
+t
+b
+n
+p
+3
+
++16M
+n
+p
+2
+
+
+
+w
+__EOF__
+
+
+echo "Formatting Partition 1"
+mkfs.vfat -F 12 ${EMMC}p1 -n BootK10
+echo "Formatting Partition 2"
+mkfs.ext2 ${EMMC}p2 -LRootFSK10 << __EOF__
+y
+__EOF__
+
+mkfs.ext2 ${EMMC}p3 -LExtDataK10 << __EOF__
+y
+__EOF__
+
+
+echo "Step 1 : Flashing u-boot ... "
+usleep 100000
+# remove write protection
+echo 0 > /sys/block/mmcblk1boot0/force_ro
+# enable boot partition 0
+echo 8 > ${EMMC_SYS_LOC}/boot_config
+# set width as 8 bit
+echo 2 > ${EMMC_SYS_LOC}/boot_bus_config
+usleep 100000
+dd if=/dev/zero of=${EMMC}boot0 bs=4M count=1; sync
+sync
+dd if=/tmp/${UBOOT_BIN} of=${EMMC}boot0 bs=512 seek=2; sync
+sync
+# set back write protection
+usleep 100000
+echo 1 > /sys/block/mmcblk1boot0/force_ro
+usleep 100000
+echo 8 > ${EMMC_SYS_LOC}/boot_config
+usleep 100000
+rm /tmp/${UBOOT_BIN}
+echo "Done"
+
+echo "Step 2 : Flashing Kernel and Initrd  ... "
+mount -t vfat ${EMMC}p1 /mnt/.
+FILES="${UBOOT_BIN} ${SPLASH} ${URAMDISK} ${KERNEL} ${PARAMS} ${DTB}"
+
+cp /tmp/${KERNEL} /mnt/NOVAsom6Kernel
+cp /tmp/${URAMDISK} /mnt/NOVAsom6Initrd
+cp /tmp/${PARAMS} /mnt/NOVAsom6.params
+cp /tmp/${SPLASH} /mnt/.
+cp /tmp/${DTB} /mnt/.
+umount /mnt
+sync
+sleep 1
+echo "Done"
+
+mount ${EMMC}p3 /mnt
+if [ -d /tmp/application_storage ]; then
+	echo -n "Restoring application_storage ... "
+	rm -rf /mnt/application_storage 
+	cp -r /tmp/application_storage /mnt
+	mv /mnt/application_storage/AutoRun.sh_GDS /mnt/application_storage/AutoRun.sh
+	echo "Done"
+fi
+
+if [ -d /tmp/backup ]; then
+	echo -n "Restoring backup data ... "
+	cp -r /tmp/backup/* /mnt
+	echo "Done"
+fi
+
+umount /mnt
+
+echo 0 > /sys/block/mmcblk1boot0/force_ro
+echo 8 > ${EMMC_SYS_LOC}/boot_config
+echo 2 > ${EMMC_SYS_LOC}/boot_bus_config
+echo 8 > ${EMMC_SYS_LOC}/boot_config
+echo 1 > /sys/block/mmcblk1boot0/force_ro
+echo 8 > ${EMMC_SYS_LOC}/boot_config
+
+echo "Flashed" > /tmp/system_flashed
+SdlSplash &
+sleep 1
+SdlSplashWrite VIEW_SYSINFO

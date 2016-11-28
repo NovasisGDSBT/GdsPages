@@ -1,0 +1,19 @@
+#!/bin/sh
+TIMEOUT=30
+while ! [ -f /tmp/system_ready ]; do
+	sleep 1
+	let TIMEOUT=${TIMEOUT}-1                   
+	if [ "${TIMEOUT}" == "0" ]; then
+		break                                          
+	fi
+done  
+sleep 10
+
+if ! [ -f /tmp/rgb_matrix ]; then
+	echo "255,0,0" > /tmp/rgb_matrix
+	echo "0,255,0" >> /tmp/rgb_matrix
+	echo "0,0,255" >> /tmp/rgb_matrix
+	echo "0,0,0"   >> /tmp/rgb_matrix
+	echo "2,2,2"   >> /tmp/rgb_matrix
+fi
+/tmp/www/NovaCSC f /tmp/rgb_matrix

@@ -1,0 +1,2 @@
+#!/bin/sh
+wget http://192.168.10.117:8080/cgi-bin/screentest_green.cgi

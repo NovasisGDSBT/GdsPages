@@ -1,0 +1,6 @@
+ARCH      = linux-ppc-uclibc
+CPU       = PPC860
+TARGET_OS = LINUX
+TOOLCHAIN = powerpc-linux-uclibc-
+PLATFORM_CPPFLAGS = -DO_BE -DCCUC_PLATF
+ 

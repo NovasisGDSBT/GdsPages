@@ -1,0 +1,17 @@
+ARCH        = vxworks-ppc-css2
+CPU         = PPC603
+TARGET_OS   = VXWORKS
+TOOLCHAIN   = ppc
+OSDEP_NAME  = css
+
+PLATFORM_CPPFLAGS = -DCPU=$(CPU) -DO_DC                        \
+                    -I$(WIND_BASE)/target/h                    \
+                    -I$(RTS_PATH)/2.3.0.5                      \
+                    -msoft-float                               \
+                    -fstrength-reduce -fno-builtin             \
+
+
+
+
+
+

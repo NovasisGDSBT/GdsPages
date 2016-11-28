@@ -1,0 +1,31 @@
+# depslib dependency file v1.0
+1458808430 source:/Devel/NOVAsom6_SDK/CodeBlocks/Apps/NovaCSC/color_temp_functions.c
+	<unistd.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<fcntl.h>
+	<linux/fb.h>
+	<linux/fs.h>
+	<sys/mman.h>
+	<sys/ioctl.h>
+	<sys/stat.h>
+	<math.h>
+	"main.h"
+
+1458808248 /Devel/NOVAsom6_SDK/CodeBlocks/Apps/NovaCSC/main.h
+
+1458808248 source:/Devel/NOVAsom6_SDK/CodeBlocks/Apps/NovaCSC/main.c
+	<unistd.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<fcntl.h>
+	<linux/fb.h>
+	<linux/fs.h>
+	<sys/mman.h>
+	<sys/ioctl.h>
+	<sys/stat.h>
+	<math.h>
+	"main.h"
+

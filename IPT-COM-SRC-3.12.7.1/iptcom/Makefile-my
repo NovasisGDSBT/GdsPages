@@ -1,0 +1,472 @@
+#//
+#// $Id: Makefile 11878 2012-11-12 17:51:45Z hlindbom $
+#//
+#// DESCRIPTION	 iptcom top level Makefile
+#//
+#// AUTHOR			 Bernhard Remenyi 			...
+#//
+#// All rights reserved. Reproduction, modification, use or disclosure
+#// to third parties without express authority is forbidden.
+#// Copyright Bombardier Transportation GmbH, Germany, 2004.
+#//
+
+ .EXPORT_ALL_VARIABLES:
+
+# make VERBOSE=1 if you want so all output
+ifdef VERBOSE
+SILENCE_CMD =
+else
+ ifeq ($(OS), Windows_NT) 
+  SILENCE_CMD = > nul
+ else
+  SILENCE_CMD = > /dev/null
+ endif
+.SILENT:
+endif
+
+vpath %.c sourcecode/iptcom sourcecode/mdcom sourcecode/pdcom sourcecode/netdriver sourcecode/vos sourcecode/tdcsim test/sourcecode example
+vpath %.cpp sourcecode/iptcom sourcecode/mdcom sourcecode/pdcom sourcecode/netdriver sourcecode/vos sourcecode/tdcsim test/sourcecode example
+
+RM = rm -f
+MD = mkdir -p
+CP = cp
+
+ifeq ($(OS), Windows_NT)
+TOPDIR:=$(shell cd;)
+else
+TOPDIR	:= $(shell if [ "$$PWD" != "" ]; then echo $$PWD; else pwd; fi)
+#export TOPDIR
+endif
+
+#Check if configuration present
+ifeq (config/config.mk,$(wildcard config/config.mk)) 
+# load ARCH and CPU specific configuration
+include config/config.mk
+
+CROSS_COMPILE:=$(TOOLCHAIN)
+
+ifeq ($(DEBUG), TRUE)
+ifeq ($(TARGET_OS), LINUX)
+	OUTDIR = output/$(ARCH)-singleproc-dbg
+	OUTDIR2 = output/$(ARCH)-multiproc-dbg
+	EXPORT = export-iptcom/$(ARCH)-singleproc-dbg
+	EXPORT2 = export-iptcom/$(ARCH)-multiproc-dbg
+	TESTEXPORT = export-iptcom-test/$(ARCH)-singleproc-dbg
+	TESTEXPORT2 = export-iptcom-test/$(ARCH)-multiproc-dbg
+	TRANSPORT = transport/$(ARCH)-singleproc-dbg
+	TRANSPORT2 = transport/$(ARCH)-multiproc-dbg
+else
+	OUTDIR = output/$(ARCH)-dbg
+	EXPORT = export-iptcom/$(ARCH)-dbg
+	TESTEXPORT = export-iptcom-test/$(ARCH)-dbg
+	STARTTESTEXPORT = export-iptcom-test/$(ARCH)-startup-dbg
+	TRANSPORT = transport/$(ARCH)-dbg
+endif
+	TDC_OUTDIR_STATIC = output/$(ARCH)-static-dbg
+	TDC_OUTDIR_SHARED = output/$(ARCH)-shared-dbg
+else
+ifeq ($(TARGET_OS), LINUX)
+	OUTDIR = output/$(ARCH)-singleproc-rel
+	OUTDIR2 = output/$(ARCH)-multiproc-rel
+	EXPORT = export-iptcom/$(ARCH)-singleproc-rel
+	EXPORT2 = export-iptcom/$(ARCH)-multiproc-rel
+	TESTEXPORT = export-iptcom-test/$(ARCH)-singleproc-rel
+	TESTEXPORT2 = export-iptcom-test/$(ARCH)-multiproc-rel
+	TRANSPORT = transport/$(ARCH)-singleproc-rel
+	TRANSPORT2 = transport/$(ARCH)-multiproc-rel
+else
+	OUTDIR = output/$(ARCH)-rel
+	EXPORT = export-iptcom/$(ARCH)-rel
+	TESTEXPORT = export-iptcom-test/$(ARCH)-rel
+	STARTTESTEXPORT = export-iptcom-test/$(ARCH)-startup-rel
+	TRANSPORT = transport/$(ARCH)-rel
+endif
+	TDC_OUTDIR_STATIC = output/$(ARCH)-static-rel
+	TDC_OUTDIR_SHARED = output/$(ARCH)-shared-rel
+endif
+
+# load global configuration
+include config.mk
+
+SUBDIRS	= sourcecode
+
+OBJS = iptcom.o iptcom_config.o iptcom_parse.o iptcom_snmp.o iptcom_statistic.o \
+		 iptcom_table.o iptcom_util.o iptcom_xml.o \
+		 mdcom.o mdlistener.o mdses.o mdtrp.o \
+		 netdriver.o \
+		 pdcom.o pdcom_receive.o pdcom_send.o pdcom_util.o \
+		 tdcsim.o \
+		 vos.o vos_dbgutil.o vos_mem.o     
+
+INITOBJS =	
+
+CPPOBJS = pdcom_cls.o mdcom_cls.o iptcom_cls.o
+
+INITCPPOBJS = 
+
+#TESTOBJS = testC.o test_md.o test_pd.o test_util.o testmain.o testCPP.o test_mdCPP.o example.o api_check.o
+TESTOBJS = testC.o test_md.o test_pd.o test_pdCPP.o test_util.o test_utilCPP.o testmain.o testCPP.o test_mdCPP.o \
+			test_mdAddComidListener.o test_mdAddComidListenerCPP.o test_mdAddUriListener.o test_mdAddUriListenerCPP.o \
+			test_mdPut.o test_mdPutCPP.o test_mdPutRequest.o test_mdPutRequestCPP.o \
+			test_pdPublish.o test_pdPublishCPP.o test_pdSubscribe.o test_pdSubscribeCPP.o \
+			test_pdRedundant.o test_pdRedundantCPP.o test_pdGetPut.o test_pdGetPutCPP.o \
+			test_pdDataTransfer.o test_pdDataTransferCPP.o test_mdDataset.o
+TESTSTARTUPOBJS = startUpTest.o
+CHECKOBJS = example.o api_check.o api_checkCPP.o
+
+DAEMONOBJ = iptcom_daemon.o
+
+#########################################################################
+all:		outdir lib lib_obj test multiproc
+
+
+ifeq ($(TARGET_OS), LINUX)
+lib:		outdir $(OUTDIR)/libiptcom.a
+
+lib_obj: 
+
+#multiproc:	outdir2 lib2 daemon test2	
+multiproc:	outdir2 lib2 daemon
+
+lib2: 	outdir2 $(OUTDIR2)/libiptcom.a $(OUTDIR2)/libiptcomsh.so
+
+daemon:		$(OUTDIR2)/iptcom_d
+
+#test: 	test/$(OUTDIR)/test_c	test/$(TESTEXPORT)/startUpTest	test/$(OUTDIR)/check_c
+
+test2:	test/$(OUTDIR2)/test_cl	test/$(TESTEXPORT2)/startUpTest_cl	test/$(OUTDIR2)/check_cl
+
+endif
+
+ifeq ($(TARGET_OS), WINDOWS)
+lib:	
+
+lib_obj: 
+
+multiproc:
+
+test: 	
+endif
+
+#ifeq ($(TARGET_OS), VXWORKS)
+#lib:	
+
+#lib_obj: outdir $(OUTDIR)/libiptcom.o
+
+#multiproc:
+
+#test: 	test/$(OUTDIR)/test_c.out	test/$(STARTTESTEXPORT)/startUpTest.out	test/$(OUTDIR)/check_c.out
+#endif
+
+$(OUTDIR)/libiptcom.a:	$(addprefix $(OUTDIR)/,$(notdir $(CPPOBJS))) \
+						$(addprefix $(OUTDIR)/,$(notdir $(INITCPPOBJS))) \
+						$(addprefix $(OUTDIR)/,$(notdir $(INITOBJS))) \
+						$(addprefix $(OUTDIR)/,$(notdir $(OBJS))) 
+			@$(ECHO) ' ### Library $(@F) $(ARCH)'
+			$(RM) -f $@
+			$(AR) cq $@ $^
+ifeq ($(TARGET_OS), LINUX)
+			cp -f $(@) $(EXPORT)/
+endif
+
+$(OUTDIR2)/libiptcom.a: 	$(addprefix $(OUTDIR2)/,$(notdir $(CPPOBJS))) \
+							$(addprefix $(OUTDIR2)/,$(notdir $(INITCPPOBJS))) \
+							$(addprefix $(OUTDIR2)/,$(notdir $(INITOBJS))) \
+							$(addprefix $(OUTDIR2)/,$(notdir $(OBJS))) 
+			@$(ECHO) ' ### Library $(@F) $(ARCH)'
+			$(RM) -f $@
+			$(AR) cq $@ $^
+
+
+$(OUTDIR2)/libiptcomsh.so: 	$(addprefix $(OUTDIR2)/,$(addsuffix _pic.o,$(basename $(notdir $(CPPOBJS))))) \
+							$(addprefix $(OUTDIR2)/,$(addsuffix _pic.o,$(basename $(notdir $(OBJS)))))
+			@$(ECHO) ' ### Shared Library $(@F) $(ARCH)'
+			$(RM) -f $@
+			$(CC) $(CFLAGS) -shared -Wl,-soname,libiptcom.so.3 $^ -o $@ -lstdc++
+#			$(AR) cq $@ $^
+			cp -f $(@) $(EXPORT2)/
+
+
+#
+# Incremental library including TDC. Used as runtime loadable object
+# for VxWorks only.
+#
+
+#$(OUTDIR)/libiptcom.o:	$(addprefix $(OUTDIR)/,$(notdir $(CPPOBJS))) \
+#						$(addprefix $(OUTDIR)/,$(notdir $(INITCPPOBJS))) \
+#						$(addprefix $(OUTDIR)/,$(notdir $(INITOBJS))) \
+#						$(addprefix $(OUTDIR)/,$(notdir $(OBJS))) \
+#						../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+#			@$(ECHO) ' ### Incremental Library $(@F) $(ARCH)'
+#			$(RM) -f $@
+#			$(LD) -o $@ -i $^
+#			cp -f $(@) $(TRANSPORT)/
+
+
+ifeq ($(TARGET_OS), LINUX)
+
+$(OUTDIR2)/iptcom_d: 	$(addprefix $(OUTDIR2)/,$(notdir $(DAEMONOBJ))) \
+						$(OUTDIR2)/libiptcom.a \
+						../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+						@$(ECHO) ' ### IPTCom daemon $(@F) $(ARCH)'
+						$(CC) $(addprefix $(OUTDIR2)/,$(notdir $(DAEMONOBJ))) \
+						$(LDFLAGS) $(CFLAGS) $(LDLIBS)\
+						-L$(OUTDIR2)/ -L../tdc/$(TDC_OUTDIR_STATIC) -lpthread -liptcom -ltdcd \
+						-o $@
+						cp -f $(@) $(EXPORT2)/
+
+#Test single process
+test/$(OUTDIR)/test_c:	$(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+					$(OUTDIR)/libiptcom.a \
+					../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+					@$(ECHO) ' ### Test application $(@F) $(ARCH)'
+					$(CC) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR)/ -L../tdc/$(TDC_OUTDIR_STATIC) -lpthread -liptcom -ltdcd \
+					-lstdc++ \
+					-o $@
+					cp -f $(@) test/$(TESTEXPORT)
+
+test/$(TESTEXPORT)/startUpTest:	$(addprefix test/$(OUTDIR)/,$(notdir $(TESTSTARTUPOBJS))) \
+					$(OUTDIR)/libiptcom.a \
+					../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+					@$(ECHO) ' ### StartUp Testapplication $(@F) $(ARCH)'
+					$(CC) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTSTARTUPOBJS))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR)/ -L../tdc/$(TDC_OUTDIR_STATIC) -lpthread -liptcom -ltdcd \
+					-lstdc++ \
+					-o $@
+
+
+test/$(OUTDIR)/check_c: 	$(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS))) \
+					$(OUTDIR)/libiptcom.a \
+					../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+					@$(ECHO) ' ### Check application $(@F) $(ARCH)'
+					$(CC) $(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR)/ -L../tdc/$(TDC_OUTDIR_STATIC) -lpthread -liptcom -ltdcd \
+					-lstdc++ \
+					-o $@
+
+#Test multi process
+test/$(OUTDIR2)/test_c: 	$(addprefix test/$(OUTDIR2)/,$(notdir $(TESTOBJS))) \
+					$(OUTDIR2)/libiptcom.a \
+					../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+					@$(ECHO) ' ### Test application Multi Process $(@F) $(ARCH)'
+					$(CC) 	$(addprefix test/$(OUTDIR2)/,$(notdir $(TESTOBJS))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR2)/ -L../tdc/$(TDC_OUTDIR_STATIC) -lpthread -liptcom -ltdcd \
+					-lstdc++ \
+					-o $@
+
+test/$(OUTDIR2)/test_cl: $(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(TESTOBJS))))) \
+					$(OUTDIR2)/libiptcomsh.so \
+					../tdc/$(TDC_OUTDIR_SHARED)/libtdcipcsh.so 
+					@$(ECHO) ' ### Test application Multi Process Client $(@F) $(ARCH)'
+					$(CC) 	$(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(TESTOBJS))))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR2)/ -L../tdc/$(TDC_OUTDIR_SHARED) -lpthread -liptcomsh -ltdcipcsh \
+					-lstdc++ \
+					-o $@
+					cp -f $(@) test/$(TESTEXPORT2)
+
+test/$(TESTEXPORT2)/startUpTest_cl: $(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(TESTSTARTUPOBJS))))) \
+					$(OUTDIR2)/libiptcomsh.so \
+					../tdc/$(TDC_OUTDIR_SHARED)/libtdcipcsh.so
+					@$(ECHO) ' ### Test application Multi Process Client $(@F) $(ARCH)'
+					$(CC) 	$(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(TESTSTARTUPOBJS))))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR2)/ -L../tdc/$(TDC_OUTDIR_SHARED) -lpthread -liptcomsh -ltdcipcsh \
+					-lstdc++ \
+					-o $@
+
+test/$(OUTDIR2)/check_c:	$(addprefix test/$(OUTDIR2)/,$(notdir $(CHECKOBJS))) \
+					$(OUTDIR2)/libiptcom.a \
+					../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+					@$(ECHO) ' ### Check application Multi Process $(@F) $(ARCH)'
+					$(CC) 	$(addprefix test/$(OUTDIR2)/,$(notdir $(CHECKOBJS))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR2)/ -L../tdc/$(TDC_OUTDIR_STATIC) -lpthread -liptcom -ltdcd \
+					-lstdc++ \
+					-o $@
+
+test/$(OUTDIR2)/check_cl: $(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(CHECKOBJS))))) \
+					$(OUTDIR2)/libiptcomsh.so \
+					../tdc/$(TDC_OUTDIR_SHARED)/libtdcipcsh.so
+					@$(ECHO) ' ### Check application Multi Process Client $(@F) $(ARCH)'
+					$(CC) 	$(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(CHECKOBJS))))) \
+					$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+					-L$(OUTDIR2)/ -L../tdc/$(TDC_OUTDIR_SHARED) -lpthread -liptcomsh -ltdcipcsh \
+					-lstdc++ \
+					-o $@
+
+endif
+
+#ifeq ($(TARGET_OS), WINDOWS)
+#test/$(OUTDIR)/test_c.exe: 	$(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+#						$(OUTDIR)/libiptcom.a \
+#						../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+#						@$(ECHO) ' ### Test application $(@F) $(ARCH)'
+#						$(CC) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+#						$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+#						-L$(OUTDIR)/ -L../tdc/$(TDC_OUTDIR_STATIC) \
+#						-liptcom -ltdcd -lws2_32 -lwinmm -liphlpapi \
+#						../libs/win32/PThread/pthreadVC2.lib \
+#						 -lstdc++ \
+#						-o $@
+#
+#test/$(OUTDIR)/check_c.exe:	$(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS))) \
+#						$(OUTDIR)/libiptcom.a \
+#						../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+#						@$(ECHO) ' ### Test application $(@F) $(ARCH)'
+#						$(CC) $(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS))) \
+#						$(LDFLAGS) $(CFLAGS) $(LDLIBS) \
+#						-L$(OUTDIR)/ -L../tdc/$(TDC_OUTDIR_STATIC) \
+#						-liptcom -ltdcd -lws2_32 -lwinmm -liphlpapi \
+#						../libs/win32/PThread/pthreadVC2.lib \
+#						 -lstdc++ \
+#						-o $@
+#endif 		
+
+#ifeq ($(TARGET_OS), VXWORKS)
+
+#test/$(OUTDIR)/test_c.out:	$(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+#						$(OUTDIR)/libiptcom.a \
+#						../tdc/$(OUTDIR)/libtdcd.a
+#						@$(ECHO) ' ### Test application $(@F)'
+#						$(LD) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+#						$(LDFLAGS) $(LDLIBS) \
+#						-L$(OUTDIR)/ -L../tdc/$(OUTDIR) -liptcom -ltdcd \
+#						-r -o $@
+#
+#test/$(OUTDIR)/test_c.out: 	$(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS)))  
+#						@$(ECHO) ' ### Test application $(@F) $(ARCH)'
+#						$(LD) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS))) \
+#						-r -o $@
+#						cp -f $(@) test/$(TESTEXPORT)/
+#
+#test/$(STARTTESTEXPORT)/startUpTest.out: 	$(addprefix test/$(OUTDIR)/,$(notdir $(TESTSTARTUPOBJS))) 
+#						@$(ECHO) ' ### StartUp Testapplication $(@F) $(ARCH)'
+#						$(LD) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTSTARTUPOBJS))) \
+#						-r -o $@
+#
+#
+#test/$(OUTDIR)/check_c.out:	$(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS))) \
+#						$(OUTDIR)/libiptcom.a \
+#						../tdc/$(TDC_OUTDIR_STATIC)/libtdcd.a
+#						@$(ECHO) ' ### Check application $(@F) $(ARCH)'
+#						$(LD) $(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS))) \
+#						$(LDFLAGS) $(LDLIBS) \
+#						-L$(OUTDIR)/ -L../tdc/$(TDC_OUTDIR_STATIC) -liptcom -ltdcd \
+#						-r -o $@
+#
+#endif
+
+outdir:
+		@$(MD) -p $(OUTDIR)
+		@$(MD) -p test/$(OUTDIR)
+		@$(MD) -p $(EXPORT)
+#ifeq ($(TARGET_OS), VXWORKS)
+#		@$(MD) -p $(TRANSPORT)
+#		@$(MD) -p test/$(STARTTESTEXPORT)
+#endif
+		@$(MD) -p test/$(TESTEXPORT)
+
+outdir2:
+		@$(MD) -p $(OUTDIR2)
+		@$(MD) -p test/$(OUTDIR2)
+		@$(MD) -p $(EXPORT2)
+		@$(MD) -p test/$(TESTEXPORT2)
+
+releaseclean:
+	@$(ECHO) ' ### IPTCom Release cleaning '
+	$(RM) $(addprefix $(OUTDIR)/,$(notdir $(CPPOBJS)))
+	$(RM) $(addprefix $(OUTDIR)/,$(notdir $(INITCPPOBJS)))
+	$(RM) $(addprefix $(OUTDIR)/,$(notdir $(INITOBJS)))
+	$(RM) $(addprefix $(OUTDIR)/,$(notdir $(OBJS))) 
+	$(RM) $(addprefix $(OUTDIR2)/,$(notdir $(CPPOBJS)))
+	$(RM) $(addprefix $(OUTDIR2)/,$(notdir $(INITCPPOBJS)))
+	$(RM) $(addprefix $(OUTDIR2)/,$(notdir $(INITOBJS)))
+	$(RM) $(addprefix $(OUTDIR2)/,$(notdir $(OBJS))) 
+	$(RM) $(addprefix $(OUTDIR2)/,$(addsuffix _pic.o,$(basename $(notdir $(CPPOBJS)))))
+	$(RM) $(addprefix $(OUTDIR2)/,$(addsuffix _pic.o,$(basename $(notdir $(OBJS)))))
+	$(RM) $(addprefix $(OUTDIR2)/,$(notdir $(DAEMONOBJ)))
+	$(RM) $(addprefix test/$(OUTDIR)/,$(notdir $(TESTOBJS)))
+	$(RM) $(addprefix test/$(OUTDIR2)/,$(notdir $(TESTOBJS)))
+	$(RM) $(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(TESTOBJS)))))
+	$(RM) $(addprefix test/$(OUTDIR)/,$(notdir $(CHECKOBJS)))
+	$(RM) $(addprefix test/$(OUTDIR2)/,$(notdir $(CHECKOBJS)))
+	$(RM) $(addprefix test/$(OUTDIR2)/,$(addsuffix _client.o,$(basename $(notdir $(CHECKOBJS)))))
+	$(MAKE) -C appl	releaseclean
+ifeq ($(TARGET_OS), WINDOWS)
+	$(RM) $(OUTDIR)/*
+	$(RM) $(OUTDIR2)/*
+	$(RM) appl/$(OUTDIR)/*
+	$(RM) appl/$(OUTDIR2)/*
+	$(RM) test/$(OUTDIR)/*
+	$(RM) test/$(OUTDIR2)/*
+endif
+
+#	$(CP) test/*.xml test/$(OUTDIR)
+#ifeq ($(TARGET_OS), LINUX)
+#ifneq ($(ARCH), linux-arm-otn)
+#	$(CP) test/*.xml test/$(OUTDIR2)
+#endif
+#endif
+
+clean:
+	$(RM) $(OUTDIR)/*
+	$(RM) appl/$(OUTDIR)/*
+	$(RM) test/$(OUTDIR)/*
+	$(RM) $(EXPORT)/*
+	$(RM) $(TRANSPORT)/*
+	$(RM) appl/$(TRANSPORT)/*
+	$(RM) test/$(TESTEXPORT)/*
+ifeq ($(TARGET_OS), LINUX)
+	$(RM) $(OUTDIR2)/*
+	$(RM) appl/$(OUTDIR2)/*
+	$(RM) test/$(OUTDIR2)/*
+	$(RM) $(EXPORT2)/*
+	$(RM) appl/$(TRANSPORT2)/*
+	$(RM) test/$(TESTEXPORT2)/*
+endif
+endif
+
+#########################################################################
+
+help:
+	@echo " " >&2
+	@echo "BUILD ENVIRONMENT FOR IPTCOM" >&2
+	@echo "Load one of the configurations below with 'make <configuration>' first:" >&2 
+	@echo "  " >&2
+	@echo "  * LINUX_ARM_NOVAsom_config  - Building for Linux on ARM binaries for Novasis's NOVAsom boards" >&2
+	@echo "  * LINUX_ARM_OTN_config      - Building for Linux on ARM binaries for OnTime Switch" >&2
+	@echo "  * LINUX_CCUC_config         - Building for Linux on CCU-C" >&2
+	@echo "  * LINUX_HMI400_config       - Building for Linux on HMI400" >&2
+	@echo "  * LINUX_HMI500_config       - Building for Linux on HMI500" >&2
+	@echo "  * LINUX_X86_config          - Native build for Linux Desktop PC" >&2
+	@echo "  * WINDOWS_config            - Experimental Windows build" >&2
+	@echo "  * VXWORKS_PPC_config        - Building for CSS2/VXWORKS on PowerPC" >&2
+	@echo "  * VXWORKS_PPC_CSS3_config   - Building for CSS3/VXWORKS on PowerPC" >&2
+	@echo " " >&2
+	@echo "Then call 'make' or 'make all' to build everything." >&2
+	@echo "To build debug binaries, append 'DEBUG=TRUE' to the make command " >&2
+	@echo "To see the full output, append 'VERBOSE=1' to the make command " >&2
+	@echo " " >&2
+	@echo "Other builds:" >&2
+	@echo "  * make lib       - build only the libraries" >&2
+	@echo "  * make test      - build the test application" >&2
+	@echo "  * make clean     - remove all binaries and objects of the current target" >&2
+	@echo "  * make unconfig  - remove the configuration file" >&2
+	@echo "  * make distclean - make clean unconfig" >&2
+	@echo " " >&2
+
+unconfig:
+	-$(RM) config/config.mk
+
+%_config: config/%_cfg
+	cp -f config/$(@:config=cfg) config/config.mk
+
+distclean:	clean unconfig
+
+#########################################################################

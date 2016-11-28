@@ -1,0 +1,14 @@
+ARCH      = linux-arm-NOVAsom
+CPU       = FREESCALE i.MX6
+TARGET_OS = LINUX
+FILESYSTEM_ROOT = FileSystem-11
+FILESYSTEM_NAME = LuaBase
+TOOLCHAIN = /Devel/NOVAsom6_SDK/Xcompiler/ArmCompiler/usr/bin/arm-linux-
+#TOOLCHAIN = /Devel/NOVAsom6_SDK/$(FILESYSTEM_ROOT)/$(FILESYSTEM_NAME)/output/host/usr/bin/arm-linux-
+PLATFORM_CPPFLAGS = -DO_LE -O -mlittle-endian -march=armv7-a -mthumb-interwork -mfloat-abi=hard -mfpu=neon -mtune=cortex-a9 -fno-common -fno-builtin -Wall \
+		    -Dlinux -D__linux__ -Dunix
+
+# -O -mlittle-endian -march=armv7-a -mthumb-interwork -mfloat-abi=hard -mfpu=neon -mtune=cortex-a9 -fno-common -fno-builtin -Wall \
+#		    -Dlinux -D__linux__ -Dunix -DEMBED -DREDFOX -DTS_HAS_FIXED_IP
+#PLATFORM_LDFLAGS   = -nostartfiles -nodefaultlibs -nostdlib -L../libs/otn/lib/
+#LDLIBS    = -lm -lc --entry main /Devel/NOVAsom6_SDK/$(FILESYSTEM_ROOT)/$(FILESYSTEM_NAME)/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/lib/libgcc_s.so

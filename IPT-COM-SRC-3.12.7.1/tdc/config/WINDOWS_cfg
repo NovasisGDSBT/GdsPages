@@ -1,0 +1,14 @@
+ARCH        = windows-x86
+CPU         = i568
+TARGET_OS   = WINDOWS
+TOOLCHAIN   = i586-mingw32msvc-
+OSDEP_NAME  = win32
+
+PLATFORM_CPPFLAGS = -DWIN32                    \
+                    -I../libs/win32/PThread    \
+
+WIN_LIBS          = -lws2_32                                      \
+                    -lwinmm                                       \
+		              ../libs/win32/PThread/pthreadVC2.lib          \
+	                 ../libs/win32/IPHlpApi/IPHlpApi.Lib           \
+

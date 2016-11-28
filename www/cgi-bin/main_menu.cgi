@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# HEADER    
+echo "<meta http-equiv=\"Content-Type\" content=\"text/html; CHARSET=utf-8\">"
+
+echo "<html>"
+echo "<head>"
+echo "      <center><h3>MAIN MENU</h3></center>"
+echo " </head>"
+echo " <body>"
+echo "     <br>"
+
+echo "     <br>"
+#echo "     <center><a href=\"setGamma.cgi\"><input type=\"button\" value=\"Set-Gamma\"></center></a>"
+#echo "     <br>"
+echo "     <center><a href=\"settings.cgi\"><input type=\"button\" value=\"Settings\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"timezone.cgi\"><input type=\"button\" value=\"Time zone set\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"view_rval.cgi\"><input type=\"button\" value=\"View Read Variables\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"do_screentest.cgi\"><input type=\"button\" value=\"Screen Tests\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"do_start_chrome.cgi\"><input type=\"button\" value=\"Start Chromium\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"powerdown.cgi\"><input type=\"button\" value=\"Go Low Power\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"system_info.cgi\"><input type=\"button\" value=\"System Info\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"updateall.cgi\"><input type=\"button\" value=\"Update System\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"do_reboot.cgi\"><input type=\"button\" value=\"Reboot\"></center></a>"
+echo "     <br>"
+echo "     <center><a href=\"test_only.cgi\"><input type=\"button\" value=\"Change MAC ( for production only )\"></center></a>"
+SVNVERSION=`cat /tmp/www/SVN_VERSION`
+echo "<center>SVN Version : ${SVNVERSION}</center><br>"
+echo "</body>"
+echo "</html>"

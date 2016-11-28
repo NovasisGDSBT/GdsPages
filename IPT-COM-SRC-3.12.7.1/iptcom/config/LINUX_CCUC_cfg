@@ -1,0 +1,6 @@
+ARCH      = linux-ppc
+CPU       = PPC860
+TARGET_OS = LINUX
+TOOLCHAIN = powerpc-linux-
+PLATFORM_CPPFLAGS = -DO_BE -DCCUC_PLATF
+ 

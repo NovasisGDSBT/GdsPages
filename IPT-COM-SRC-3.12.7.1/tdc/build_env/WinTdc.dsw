@@ -1,0 +1,158 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNUNG: DIESE ARBEITSBEREICHSDATEI DARF NICHT BEARBEITET ODER GELÖSCHT WERDEN!
+
+###############################################################################
+
+Project: "WinLuaLib"=".\WinLuaLib.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WinTdcDaemonLib"=".\WinTdcDaemonLib.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WinTdcDaemonSimuDevLib"=".\WinTdcDaemonSimuDevLib.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WinTdcIpcDll"=".\WinTdcIpcDll.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WinTdcIpcLib"=".\WinTdcIpcLib.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WinTdcScript"=".\WinTdcScript.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name WinTdcIpcLib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name WinLuaLib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "WinTdcScriptSh"=".\WinTdcScriptSh.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name WinTdcIpcDll
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name WinLuaLib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "WinTdcTest"=".\WinTdcTest.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name WinTdcIpcLib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "WinTestDaemon"=".\WinTestDaemon.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name WinTdcDaemonLib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "WinTestDaemonSimuDev"=".\WinTestDaemonSimuDev.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name WinTdcDaemonSimuDevLib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

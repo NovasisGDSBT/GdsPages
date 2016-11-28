@@ -1,0 +1,1830 @@
+-- MIB File for Bombardier Transportation, Product IP Train, Component IPTCom
+-- $Id: bombardier_iptcom_mib.txt 11500 2010-04-07 13:28:24Z pbrander $
+
+BOMBARDIER-IPTCom-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+        enterprises, Counter       FROM RFC1155-SMI
+        OBJECT-TYPE                FROM RFC-1212;
+
+bombardier           OBJECT IDENTIFIER ::= { enterprises 18910 }
+bombardier-products  OBJECT IDENTIFIER ::= { bombardier 3 }
+bombardier-onboard   OBJECT IDENTIFIER ::= { bombardier-products 1 }
+bombardier-com       OBJECT IDENTIFIER ::= { bombardier-onboard 5 }
+iptcom-mib           OBJECT IDENTIFIER ::= { bombardier-com 1 }
+
+--     MIB Groups
+--
+--     Device group
+dev              OBJECT IDENTIFIER ::= { iptcom-mib 1 }
+--     PD group
+pd               OBJECT IDENTIFIER ::= { iptcom-mib 2 }
+--     MD group
+md               OBJECT IDENTIFIER ::= { iptcom-mib 3 }
+--     MEM group
+mem              OBJECT IDENTIFIER ::= { iptcom-mib 4 }
+--     QUEUE group
+queue            OBJECT IDENTIFIER ::= { iptcom-mib 5 }
+--     CONFIG group
+config           OBJECT IDENTIFIER ::= { iptcom-mib 6 }
+--     DEBUG group
+debug            OBJECT IDENTIFIER ::= { iptcom-mib 7 }
+
+-- the Device Group
+
+IPTComVer_dev OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "IPTCom version"
+    ::= { dev 1 }
+
+UpTime_dev OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "The uptime since last initialization."
+    ::= { dev 2 }
+
+URI_dev OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI of device."
+    ::= { dev 3 }
+
+IpAddress_dev OBJECT-TYPE
+    SYNTAX  IpAddress
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "IP address of device."
+    ::= { dev 4 }
+
+Services_dev OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Services on device. Sum of constants below:
+            1 = Process Data (PD)
+            2 = Message Data (MD)"
+    ::= { dev 5 }
+
+ClearStatistics_dev OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Clear all statistics."
+    ::= { dev 6 }
+
+-- Task table
+-- Contains information about task name,
+--  priority and cycle time.
+
+TaskTable_dev OBJECT-TYPE
+    SYNTAX  SEQUENCE OF Task_dev
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing task information."
+    ::= { dev 7 }
+
+Task_dev OBJECT-TYPE
+    SYNTAX  Task_dev
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular task."
+    INDEX   { Index_Taskdev }
+    ::= { TaskTable_dev 1 }
+
+Task_dev ::=
+    SEQUENCE {
+        Index_Taskdev Counter,
+        Name_Taskdev OCTET STRING,
+        Priority_Taskdev OCTET STRING,
+        CycleTime_Taskdev OCTET STRING
+    }
+
+Index_Taskdev OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Task index."
+    ::= { Task_dev 1 }
+
+Name_Taskdev OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Task name."
+    ::= { Task_dev 2 }
+
+Priority_Taskdev OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Task priority."
+    ::= { Task_dev 3 }
+
+CycleTime_Taskdev OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Task cycle time in ms."
+    ::= { Task_dev 4 }
+
+
+-- the Process Data (PD) Group
+
+InPackets_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received PD packets."
+    ::= { pd 1 }
+
+FCSErrors_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received PD packets with FCS errors."
+    ::= { pd 2 }
+
+ProtocolErrors_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received PD packets with wrong protocol."
+    ::= { pd 3 }
+
+TopoErrors_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received PD packets with wrong topocounter."
+    ::= { pd 4 }
+
+InPacketsNoSubscriber_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received PD packets without subscriber."
+    ::= { pd 5 }
+
+OutPackets_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of transmitted PD packets."
+    ::= { pd 6 }
+
+StatisticsTime_pd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Time since last clearing of statistics for PD."
+    ::= { pd 7 }
+
+ClearStatistics_pd OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Clear PD statistics."
+    ::= { pd 8 }
+
+
+-- PD Subscription table
+-- Contains information about which ComId and sender
+-- that are subscribed for.
+
+SubscriptionTable_pd OBJECT-TYPE
+    SYNTAX  SEQUENCE OF Subscription_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD subscription information."
+    ::= { pd 9 }
+
+Subscription_pd OBJECT-TYPE
+    SYNTAX  Subscription_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular PD subscription."
+    INDEX   { ComId_pdSub, FilterIpAddress_pdSub }
+    ::= { SubscriptionTable_pd 1 }
+
+Subscription_pd ::=
+    SEQUENCE {
+        ComId_pdSub Counter,
+        FilterIpAddress_pdSub IpAddress,
+        InPackets_pdSub Counter
+    }
+
+ComId_pdSub OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Subscribed ComId."
+    ::= { Subscription_pd 1 }
+
+FilterIpAddress_pdSub OBJECT-TYPE
+    SYNTAX  IpAddress
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Filter IP address, i.e. the IP address of the sender for this subscription,
+            0.0.0.0 in case all senders."
+    ::= { Subscription_pd 2 }
+
+InPackets_pdSub OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of packets received for this subscription."
+    ::= { Subscription_pd 3 }
+
+
+-- PD Publising table
+-- Contains information about which ComId that are published
+
+PublishingTable_pd OBJECT-TYPE
+    SYNTAX  SEQUENCE OF Publishing_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD publishing information."
+    ::= { pd 10 }
+
+Publishing_pd OBJECT-TYPE
+    SYNTAX  Publishing_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular PD publishing."
+    INDEX   { ComId_pdPub, DestIpAddress_pdPub }
+    ::= { PublishingTable_pd 1 }
+
+Publishing_pd ::=
+    SEQUENCE {
+        ComId_pdPub Counter,
+        DestIpAddress_pdPub IpAddress,
+        OutPackets_pdPub Counter
+    }
+
+ComId_pdPub OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Published ComId."
+    ::= { Publishing_pd 1 }
+
+DestIpAddress_pdPub OBJECT-TYPE
+    SYNTAX  IpAddress
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "IP address of destination for this publishing."
+    ::= { Publishing_pd 2 }
+
+OutPackets_pdPub OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of packets published for this publishing."
+    ::= { Publishing_pd 3 }
+
+-- PD joined multicast IP addresses table
+-- Contains information joined multicast IP adresses.
+
+MulticastJoinTable_pd OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MulticastJoin_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD joined multicast IP address information."
+    ::= { pd 11 }
+
+MulticastJoin_pd OBJECT-TYPE
+    SYNTAX  MulticastJoin_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular joined multicast IP address."
+    INDEX   { MulticastIpAddr_pd }
+    ::= { MulticastJoinTable_pd 1 }
+
+MulticastJoin_pd ::=
+    SEQUENCE {
+        MulticastIpAddr_pd IpAddress
+    }
+
+MulticastIpAddr_pd OBJECT-TYPE
+    SYNTAX  IpAddress
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Joined multicast IP address"
+    ::= { MulticastJoin_pd 1 }
+
+
+-- PD Subscription Group table
+-- Contains subscription schedular group information about ComId etc.
+
+SubscriptionGrpTable_pd OBJECT-TYPE
+    SYNTAX  SEQUENCE OF SubGrp_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD subscription schedular group information."
+    ::= { pd 12 }
+
+SubGrp_pd OBJECT-TYPE
+    SYNTAX  SubGrp_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular PD subscription schedular group."
+    INDEX   { GrpNo_subGrp, Index_subGrp }
+    ::= { SubscriptionGrpTable_pd 1 }
+
+SubGrp_pd ::=
+    SEQUENCE {
+        GrpNo_subGrp Counter,
+        Index_subGrp Counter,
+        ComId_subGrp Counter,
+        FilterIp_subGrp OCTET STRING,
+        Status_subGrp OCTET STRING,
+        TimOut_subGrp Counter,
+        ValBeh_subGrp OCTET STRING,
+        JoinedIpAddress_subGrp  OCTET STRING
+    }
+
+GrpNo_subGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Schedular group no."
+    ::= { SubGrp_pd 1 }
+
+Index_subGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Item index within a group"
+    ::= { SubGrp_pd 2 }
+
+ComId_subGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { SubGrp_pd 3 }
+
+
+FilterIp_subGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Source filter IP address(es)"
+    ::= { SubGrp_pd 4 }
+
+
+Status_subGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Status, data Valid, Unvalid or Never Recived
+            Valid = Received within time-out or Recived at least once if no time-out configured
+            Unvalid = Old, i.e timed out
+            Never Received = Not received at all"
+    ::= { SubGrp_pd 5 }
+
+TimOut_subGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Time-out value in ms. 0 = No time-out supervision"
+    ::= { SubGrp_pd 6 }
+
+ValBeh_subGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Behaviour at time-out.
+             Zero = set data to zero
+             Keep = keep old data"
+    ::= { SubGrp_pd 7 }
+
+JoinedIpAddress_subGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Joined multicast IP address"
+    ::= { SubGrp_pd 8 }
+
+
+-- PD publish Group table
+-- Contains publish schedular group information about ComId etc.
+
+PublishGrpTable_pd OBJECT-TYPE
+    SYNTAX  SEQUENCE OF pdPubGrp
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD publish schedular group information."
+    ::= { pd 13 }
+
+PubGrp_pd OBJECT-TYPE
+    SYNTAX  PubGrp_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular PD publish schedular group."
+    INDEX   { GrpNo_pubGrp, Index_pubGrp }
+    ::= { PublishGrpTable_pd 1 }
+
+PubGrp_pd ::=
+    SEQUENCE {
+        GrpNo_pubGrp Counter,
+        Index_pubGrp Counter,
+        ComId_pubGrp Counter,
+        DestIpAddress_pubGrp OCTET STRING,
+        CycleTime_pubGrp OCTET STRING,
+        RedundantId_pubGrp OCTET STRING,
+        RedundantState_pubGrp OCTET STRING
+    }
+
+GrpNo_pubGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Schedular group no."
+    ::= { PubGrp_pd 1 }
+
+Index_pubGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Item index within a group"
+    ::= { PubGrp_pd 2 }
+
+ComId_pubGrp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { PubGrp_pd 3 }
+
+
+DestIpAddress_pubGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Destination IP address"
+    ::= { PubGrp_pd 4 }
+
+
+CycleTime_pubGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Send cycle time"
+    ::= { PubGrp_pd 5 }
+
+
+RedundantId_pubGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redundant ID for redundant PD publishing"
+    ::= { PubGrp_pd 6 }
+
+
+RedundantState_pubGrp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redundant state.
+            Leader or Follower"
+    ::= { PubGrp_pd 7 }
+
+-- PD redundant Group table
+-- Contains redundant group information.
+
+RedundantIdTable_pd OBJECT-TYPE
+    SYNTAX  SEQUENCE OF RedId_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD redundant group information."
+    ::= { pd 14 }
+
+RedId_pd OBJECT-TYPE
+    SYNTAX  RedId_pd
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular redundant Id."
+    INDEX   { IdNo_redId }
+    ::= { RedundantIdTable_pd 1 }
+
+RedId_pd ::=
+    SEQUENCE {
+        IdNo_redId Counter,
+        RedundantState_redId OCTET STRING
+    }
+
+IdNo_redId OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redundant Id."
+    ::= { RedId_pd 1 }
+
+RedundantState_redId OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redundant state.
+            Leader or Follower"
+    ::= { RedId_pd 2 }
+
+
+-- the Message Data (MD) Group
+
+InPackets_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received MD packets."
+    ::= { md 1 }
+
+FCSErrors_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received MD packets with FCS errors."
+    ::= { md 2 }
+
+ProtocolErrors_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received MD packets with wrong protocol."
+    ::= { md 3 }
+
+TopoErrors_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received MD packets with wrong topocounter."
+    ::= { md 4 }
+
+InPacketsNoListeners_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of received MD packets without listeners."
+    ::= { md 5 }
+
+NotReturnedBuffers_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of not returned MD message buffers."
+    ::= { md 6 }
+
+OutPackets_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of transmitted MD packets."
+    ::= { md 7 }
+
+Retransmissions_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of re-transmitted MD packets."
+    ::= { md 8 }
+
+StatisticsTime_md OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Time in seconds since last clearing of statistics for MD."
+    ::= { md 9 }
+
+ClearStatistics_md OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Clear MD statistics."
+    ::= { md 10 }
+
+
+-- MD ComId Listener table
+-- Contains information about listener for ComId.
+
+ComIdListenerTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF ComIdListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD ComId listener information."
+    ::= { md 11 }
+
+ComIdListener_md OBJECT-TYPE
+    SYNTAX  ComIdListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular MD ComId listener."
+    INDEX   { ComId_clmd }
+    ::= { ComIdListenerTable_md 1 }
+
+ComIdListener_md ::=
+    SEQUENCE {
+        ComId_clmd Counter,
+        InPackets_clmd Counter
+    }
+
+ComId_clmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { ComIdListener_md 1 }
+
+InPackets_clmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of packets received for this ComId listener."
+    ::= { ComIdListener_md 2 }
+
+
+-- MD ComId FRG Listener table
+-- Contains information about FRG listener for ComId
+
+ComIdFrgListenerTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF ComIdFrgListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD ComId FRG listener information.
+            (FRG = Functional Redundancy Group)."
+    ::= { md 12 }
+
+ComIdFrgListener_md OBJECT-TYPE
+    SYNTAX  ComIdFrgListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular MD ComId FRG listener."
+    INDEX   { ComId_cflmd }
+    ::= { ComIdFrgListenerTable_md 1 }
+
+ComIdFrgListener_md ::=
+    SEQUENCE {
+        ComId_cflmd Counter,
+        InPackets_cflmd Counter
+    }
+
+ComId_cflmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { ComIdFrgListener_md 1 }
+
+InPackets_cflmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of packets received for this ComId FRG listener."
+    ::= { ComIdFrgListener_md 2 }
+
+
+-- MD URI Listener table
+-- Contains information about listener for URI.
+
+UriListenerTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF UriListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD URI listener information."
+    ::= { md 13 }
+
+UriListener_md OBJECT-TYPE
+    SYNTAX  UriListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular MD URI listener."
+    INDEX   { Index_ulmd }
+    ::= { UriListenerTable_md 1 }
+
+UriListener_md ::=
+    SEQUENCE {
+        Index_ulmd Counter,
+        Uri_ulmd OCTET STRING,
+        InPackets_ulmd Counter
+    }
+
+Index_ulmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI listener index."
+    ::= { UriListener_md 1 }
+
+Uri_ulmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI for listener as 'instance.function'."
+    ::= { UriListener_md 2 }
+
+InPackets_ulmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of packets received for this URI listener."
+    ::= { UriListener_md 3 }
+
+
+-- MD URI FRG Listener table
+-- Contains information about FRG listener for URI.
+
+UriFrgListenerTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF UriFrgListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD URI FRG listener information."
+    ::= { md 14 }
+
+UriFrgListener_md OBJECT-TYPE
+    SYNTAX  UriFrgListener_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular MD URI FRG listener."
+    INDEX   { Index_uflmd }
+    ::= { UriFrgListenerTable_md 1 }
+
+UriFrgListener_md ::=
+    SEQUENCE {
+        Index_uflmd Counter,
+        Uri_uflmd OCTET STRING,
+        InPackets_uflmd Counter
+    }
+
+Index_uflmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI FRG listener index."
+    ::= { UriFrgListener_md 1 }
+
+Uri_uflmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI for FRG listener as 'instance.function'."
+    ::= { UriFrgListener_md 2 }
+
+InPackets_uflmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of packets received for this URI FRG listener."
+    ::= { UriFrgListener_md 3 }
+
+
+-- MD joined multicast IP addresses table
+-- Contains information joined multicast IP adresses.
+
+MulticastJoinTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MulticastJoin_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD joined multicast IP address information."
+    ::= { md 15 }
+
+MulticastJoin_md OBJECT-TYPE
+    SYNTAX  MulticastJoin_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular joined multicast IP address."
+    INDEX   { MulticastIpAddr_md }
+    ::= { MulticastJoinTable_md 1 }
+
+MulticastJoin_md ::=
+    SEQUENCE {
+        MulticastIpAddr_md IpAddress
+    }
+
+MulticastIpAddr_md OBJECT-TYPE
+    SYNTAX  IpAddress
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Joined multicast IP address"
+    ::= { MulticastJoin_md 1 }
+
+
+-- MD ComId listener with detailed information table
+-- Contains information of ComId listeners.
+
+ComIdListenerDetailedTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF ComIdListenerDetailed_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD ComId listener information."
+    ::= { md 16 }
+
+ComIdListenerDetailed_md OBJECT-TYPE
+    SYNTAX  ComIdListenerDetailed_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular MD ComId listener."
+    INDEX   { ComId_cldmd, Index_cldmd }
+    ::= { ComIdListenerDetailedTable_md 1 }
+
+ComIdListenerDetailed_md ::=
+    SEQUENCE {
+        ComId_cldmd Counter,
+        Index_cldmd Counter,
+        ListenerType_cldmd OCTET STRING,
+        QueueORFunc_cldmd OCTET STRING,
+        QueueName_cldmd OCTET STRING,
+        CallerRef_cldmd OCTET STRING,
+        FrgRef_cldmd OCTET STRING,
+        RedundantState_cldmd OCTET STRING,
+        JoinedIpAddress_cldmd    OCTET STRING
+    }
+
+ComId_cldmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId"
+    ::= { ComIdListenerDetailed_md 1 }
+
+Index_cldmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Index of same ComId"
+    ::= { ComIdListenerDetailed_md 2 }
+
+ListenerType_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Listener type
+             Q = Normal queue listener
+             F = Normal Call-back function listener
+             FRGQ = FRG queue listener
+             FRGF = FRG Call-back function listener"
+    ::= { ComIdListenerDetailed_md 3 }
+
+QueueORFunc_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Queue ID
+             or
+             Call-back function address"
+    ::= { ComIdListenerDetailed_md 4 }
+
+QueueName_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Queue name"
+    ::= { ComIdListenerDetailed_md 5 }
+
+CallerRef_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Caller reference"
+    ::= { ComIdListenerDetailed_md 6 }
+
+FrgRef_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redunancy function reference"
+    ::= { ComIdListenerDetailed_md 7 }
+
+RedundantState_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redunancy function state"
+    ::= { ComIdListenerDetailed_md 8 }
+
+JoinedIpAddress_cldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Joined multicast IP address"
+    ::= { ComIdListenerDetailed_md 9 }
+
+
+-- MD URI listener with detailed information table
+-- Contains information of URI listeners.
+
+UriListenerDetailedTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF UriListenerDetailed_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD URI listener information."
+    ::= { md 17 }
+
+UriListenerDetailed_md OBJECT-TYPE
+    SYNTAX  UriListenerDetailed_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular MD URI listener."
+    INDEX   { UriIndex_uldmd, ListenerIndex_uldmd }
+    ::= { UriListenerDetailedTable_md 1 }
+
+UriListenerDetailed_md ::=
+    SEQUENCE {
+        UriIndex_uldmd Counter,
+        ListenerIndex_uldmd Counter,
+        Uri_uldmd OCTET STRING,
+        ListenerType_uldmd OCTET STRING,
+        QueueORFunc_uldmd OCTET STRING,
+        QueueName_uldmd OCTET STRING,
+        CallerRef_uldmd OCTET STRING,
+        FrgRef_uldmd OCTET STRING,
+        RedundantState_uldmd OCTET STRING,
+        JoinedIpAdrress_uldmd   OCTET STRING
+    }
+
+UriIndex_uldmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI index"
+    ::= { UriListenerDetailed_md 1 }
+
+ListenerIndex_uldmd OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Index of listener of the same URI"
+    ::= { UriListenerDetailed_md 2 }
+
+Uri_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "URI for listener as 'instance.function'."
+    ::= { UriListenerDetailed_md 3 }
+
+ListenerType_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Listener type
+             Q = Normal queue listener
+             F = Normal Call-back function listener
+             FRGQ = FRG queue listener
+             FRGF = FRG Call-back function listener"
+    ::= { UriListenerDetailed_md 4 }
+
+QueueORFunc_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Queue ID
+             or
+             Call-back function address"
+    ::= { UriListenerDetailed_md 5 }
+
+QueueName_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Queue name"
+    ::= { UriListenerDetailed_md 6 }
+
+CallerRef_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Caller reference"
+    ::= { UriListenerDetailed_md 7 }
+
+FrgRef_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redunancy function reference"
+    ::= { UriListenerDetailed_md 8 }
+
+RedundantState_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redunancy function state"
+    ::= { UriListenerDetailed_md 9 }
+
+JoinedIpAdrress_uldmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Joined multicast IP address"
+    ::= { UriListenerDetailed_md 10 }
+
+
+
+-- MD redundant Group table
+-- Contains redundant group information.
+
+RedFrgTable_md OBJECT-TYPE
+    SYNTAX  SEQUENCE OF RedFrg_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing MD redundant group information."
+    ::= { md 18 }
+
+RedFrg_md OBJECT-TYPE
+    SYNTAX  RedFrg_md
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular redundant FRG ref."
+    INDEX   { FrgRef_frgmd }
+    ::= { RedFrgTable_md 1 }
+
+RedFrg_md ::=
+    SEQUENCE {
+        FrgRef_frgmd OCTET STRING,
+        RedundantState_frgmd OCTET STRING
+    }
+
+FrgRef_frgmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "FRG reference"
+    ::= { RedFrg_md 1 }
+
+RedundantState_frgmd OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Redundant state.
+            Leader or Follower"
+    ::= { RedFrg_md 2 }
+
+
+-- the MEM Group
+
+TotalSize_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Total size of memory pool [bytes]."
+    ::= { mem 1 }
+
+FreeSize_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Size of free memory [bytes]."
+    ::= { mem 2 }
+
+MinFreeSize_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Minimum size of free memory since start [bytes]."
+    ::= { mem 3 }
+
+AllocatedBlocks_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Currently allocated number of blocks."
+    ::= { mem 4 }
+
+AllocationErrors_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of memory allocation errors."
+    ::= { mem 5 }
+
+FreeErrors_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of memory free errors."
+    ::= { mem 6 }
+
+-- Memory block table
+-- Contains information about memory blocks sizes and usage
+
+BlockTable_mem OBJECT-TYPE
+    SYNTAX  SEQUENCE OF Block_mem
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing memory block information."
+    ::= { mem 7 }
+
+Block_mem OBJECT-TYPE
+    SYNTAX  Block_mem
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular memory block."
+    INDEX   { memBlockSize }
+    ::= { BlockTable_mem 1 }
+
+Block_mem ::=
+    SEQUENCE {
+        BlockSize_mem Counter,
+        memBlockAllocated Counter,
+        memBlockUsed Counter
+    }
+
+BlockSize_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Size of memory block [bytes]."
+    ::= { Block_mem 1 }
+
+AllocatedBlock_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of allocated memory blocks."
+    ::= { Block_mem 2 }
+
+UsedBlock_mem OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of used memory blocks."
+    ::= { Block_mem 3 }
+
+
+-- Queue group
+-- Contains information about memory blocks sizes and usage
+
+Allocated_queue OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of allocated queues."
+    ::= { queue 1 }
+
+MaxAllocated_queue OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Maximum number of queues allocated at one time since start."
+    ::= { queue 2 }
+
+Failures_queue OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Number of queue failures."
+    ::= { queue 3 }
+
+
+-- Config Group
+
+PdDefaultTimeout_cfg OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Default PD receive time out [ms]."
+    ::= { config 1 }
+
+PdDefaultValidBehavior_cfg OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Default PD validity behavior [zero/keep]."
+    ::= { config 2 }
+
+PdDefaultCycleTime_cfg OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Default PD send cycle time [ms]."
+    ::= { config 3 }
+
+MdDefaultAckTimeOut_cfg OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Default MD acknowledge time out [ms]."
+    ::= { config 4 }
+
+MdDefaultResponseTimeOut_cfg OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Default MD response time out [ms]."
+    ::= { config 5 }
+
+MdMaxNoOfStoredSeqNo_cfg OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Maximum no of stored sequence numbers."
+    ::= { config 6 }
+
+-- Exchange Parameter table
+-- Contains information exchange parameter configuration
+
+exchgParTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF exchgPar
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing exchange parameter configuration information."
+    ::= { config 7 }
+
+exchgPar OBJECT-TYPE
+    SYNTAX  exchgPar
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular exchange parameter configuration."
+    INDEX   { ComId_exp }
+    ::= { exchgParTable 1 }
+
+exchgPar ::=
+    SEQUENCE {
+        ComId_exp Counter,
+        DataSetId_exp OCTET STRING,
+        ComParId_exp OCTET STRING,
+        PdSendDestUri_exp OCTET STRING,
+        PdSendCycleTime_exp OCTET STRING,
+        PdSendRedundantId_exp OCTET STRING,
+        PdRecSourceFilterUri_exp OCTET STRING,
+        PdRecTimeOut_exp OCTET STRING,
+        PdRecValidBehavior_exp OCTET STRING,
+        MdSendDestUri_exp OCTET STRING,
+        MdSendSourceUri_exp OCTET STRING,
+        MdSendAckTimeOut_exp OCTET STRING,
+        MdSendRespTimeOut_exp OCTET STRING
+    }
+
+ComId_exp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { exchgPar 1 }
+
+DataSetId_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Dataset id."
+    ::= { exchgPar 2 }
+
+ComParId_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Communication parameter id."
+    ::= { exchgPar 3 }
+
+PdSendDestUri_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD send destination URI."
+    ::= { exchgPar 4 }
+
+PdSendCycleTime_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD send cycle time [ms]."
+    ::= { exchgPar 5 }
+
+PdSendRedundantId_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD send redundant group id."
+    ::= { exchgPar 6 }
+
+PdRecSourceFilterUri_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD receive source filter URI(s)."
+    ::= { exchgPar 7 }
+
+PdRecTimeOut_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD receive time out [ms]."
+    ::= { exchgPar 8 }
+
+PdRecValidBehavior_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD receive validity behavior [zero/keep] at receive timeout."
+    ::= { exchgPar 9 }
+
+MdSendDestUri_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "MD send destination URI."
+    ::= { exchgPar 10 }
+
+MdSendSourceUri_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "MD send source URI."
+    ::= { exchgPar 11 }
+
+MdSendAckTimeOut_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "MD receive acknowledge time out [ms]."
+    ::= { exchgPar 12 }
+
+MdSendRespTimeOut_exp OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "MD receive response time out [ms]."
+    ::= { exchgPar 13 }
+
+-- PD source filter table
+-- Contains information exchange parameter PD source filter configuration
+
+sourceFilterTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF sourceFilter
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing PD source filter exchange parameter configuration information."
+    ::= { config 8 }
+
+sourceFilter OBJECT-TYPE
+    SYNTAX  sourceFilter
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular PD source filter exchange parameter configuration."
+    INDEX   { ComId_sf, FilterId_sf }
+    ::= { sourceFilterTable 1 }
+
+sourceFilter ::=
+    SEQUENCE {
+        ComId_sf Counter,
+        FilterId_sf Counter,
+        SourceUri_sf OCTET STRING
+    }
+
+ComId_sf OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { sourceFilter 1 }
+
+FilterId_sf OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD receive source filter id."
+    ::= { sourceFilter 2 }
+
+SourceUri_sf OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "PD receive source filter URI(s)."
+    ::= { sourceFilter 3 }
+
+
+-- DataSet
+-- Contains data for a specific data set
+
+dataSet OBJECT-TYPE
+    SYNTAX  dataSet
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "data for a specific data set."
+    ::= { config 9 }
+
+
+DataSetHandle OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+            "Handle for client to present data for."
+    ::= { dataSet 1 }
+
+-- Data set table
+-- Contains information about specific data set
+
+dataSetTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF dataSetVariable
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing data set variable information
+             for a specific data set.
+             Selected by setting the value of DataSetHandle"
+    ::= { dataSet 2}
+
+dataSetVariable OBJECT-TYPE
+    SYNTAX  dataSetVariable
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular data set variable ."
+    INDEX   { Index_ds }
+    ::= { dataSetTable 1 }
+
+dataSetVariable ::=
+    SEQUENCE {
+        Index_ds Counter,
+        Type_ds OCTET STRING,
+        ArraySize_ds Counter
+    }
+
+Index_ds OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set variable index."
+    ::= { dataSetVariable 1 }
+
+Type_ds OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set variable type or a sub dataset ID."
+    ::= { dataSetVariable 2 }
+
+ArraySize_ds OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set variable array size."
+    ::= { dataSetVariable 3 }
+
+-- All Data set table
+-- Contains information about all data set
+
+allDataSetTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF allDataSetVariable
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing data set variable information
+             for a all data set."
+    ::= { dataSet 3}
+
+allDataSetVariable OBJECT-TYPE
+    SYNTAX  allDataSetVariable
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular data set variable ."
+    INDEX   { DataSetId_dsa, Index_dsa }
+    ::= { allDataSetTable 1 }
+
+allDataSetVariable ::=
+    SEQUENCE {
+        DataSetId_dsa Counter,
+        Index_dsa Counter,
+        Type_dsa OCTET STRING,
+        ArraySize_dsa OCTET STRING
+    }
+
+DataSetId_dsa OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set ID."
+    ::= { allDataSetVariable 1 }
+
+Index_dsa OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set variable index."
+    ::= { allDataSetVariable 2 }
+
+Type_dsa OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set variable type or a sub dataset ID."
+    ::= { allDataSetVariable 3 }
+
+ArraySize_dsa OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Data set variable array size."
+    ::= { allDataSetVariable 4 }
+
+
+-- Communication parameter table
+-- Contains communication parameter configuration
+
+comParTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF comPar
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table information communication parameter configuration."
+    ::= { config 10 }
+
+comPar OBJECT-TYPE
+    SYNTAX  comPar
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular communication parameter configuration."
+    INDEX   { ComParId_Cp }
+    ::= { comParTable 1 }
+
+comPar ::=
+    SEQUENCE {
+        ComParId_Cp  Counter,
+        QOS_Cp Counter,
+        TTL_Cp Counter
+    }
+
+ComParId_Cp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Communication parameter Id."
+    ::= { comPar 1 }
+
+QOS_Cp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "QOS Quality Of Service."
+    ::= { comPar 2 }
+
+TTL_Cp OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "TTL Time To Live."
+    ::= { comPar 3 }
+
+--  Destination ID table
+-- Contains information exchange parameter Destination ID configuration
+
+destinationIdTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF destinationId
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "A table containing Destination ID exchange parameter configuration information."
+    ::= { config 11 }
+
+destinationId OBJECT-TYPE
+    SYNTAX  destinationId
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+            "Information about a particular destination ID exchange parameter configuration."
+    INDEX   { ComId_di, DestinationId_ds }
+    ::= { destinationIdTable 1 }
+
+destinationId ::=
+    SEQUENCE {
+        ComId_di Counter,
+        DestinationId_ds Counter,
+        DestinationUri_ds OCTET STRING
+    }
+
+ComId_di OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "ComId."
+    ::= { destinationId 1 }
+
+DestinationId_ds OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Destination id."
+    ::= { destinationId 2 }
+
+DestinationUri_ds OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+            "Destination Id destination URI."
+    ::= { destinationId 3 }
+
+-- Debug Group
+
+Mask_debug OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+            "Debug level mask, control trace outputs 
+            E = Print Error
+            W = Print Warning"
+    ::= { debug 1 }
+
+Info_debug OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+            "Debug info mask, control trace outputs 
+            D = Print Date and Time
+            C = Print Catergry, i.e. Error and/ot Warning
+            F = Print Source code file name
+            L = Print Line number of source code file"
+    ::= { debug 2 }
+
+FileName_debug OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+           "Debug file name, if used 
+            The file name is extended with an index"
+    ::= { debug 3 }
+
+FileSize_debug OBJECT-TYPE
+    SYNTAX  counter
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+            "The maximum size of the debug file" 
+    ::= { debug 4 }
+
+END

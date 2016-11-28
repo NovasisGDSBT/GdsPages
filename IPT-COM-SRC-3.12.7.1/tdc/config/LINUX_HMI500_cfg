@@ -1,0 +1,9 @@
+ARCH        = linux-x86-hmi500
+CPU         = i668
+TARGET_OS   = LINUX
+TOOLCHAIN   = i686-unknown-linux-gnu-
+OSDEP_NAME  = linux
+
+PLATFORM_CPPFLAGS = -DLINUX        \
+		    -DLUA_USE_MKSTEMP
+
