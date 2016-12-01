@@ -20,6 +20,7 @@ modules.builtin
 *.patch
 *.gcno
 *.o
+www.tar
 
 /.svn/
 /IPT-COM-SRC-3.12.7.1/iptcom/export-iptcom/
