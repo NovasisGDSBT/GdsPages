@@ -32,7 +32,7 @@ echo "     <br>"
 echo "     <center><a href=\"do_reboot.cgi\"><input type=\"button\" value=\"Reboot\"></center></a>"
 echo "     <br>"
 echo "     <center><a href=\"test_only.cgi\"><input type=\"button\" value=\"Change MAC ( for production only )\"></center></a>"
-SVNVERSION=`cat /tmp/www/SVN_VERSION`
-echo "<center>SVN Version : ${SVNVERSION}</center><br>"
+SW_VERSION=`cat /tmp/sw_version | sed 's/IMAGE_REV=//g'`
+echo "<center>Software Version : ${SW_VERSION}</center><br>"
 echo "</body>"
 echo "</html>"

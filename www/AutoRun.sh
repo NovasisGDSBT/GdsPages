@@ -127,4 +127,6 @@ touch /tmp/backlight_on
 /tmp/www/apply_rgbmatrix &
 
 
+cd /tmp/www
+./GDSBT_iptcom &
 

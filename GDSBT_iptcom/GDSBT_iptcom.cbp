@@ -65,7 +65,6 @@
 		<Unit filename="IPTCOM_src/infd_icd.h" />
 		<Unit filename="IPTCOM_src/mcg_eds_icd.h" />
 		<Unit filename="IPTCOM_src/serp_icd.h" />
-		<Unit filename="TFT1.car1.lCst_20160812.xml" />
 		<Unit filename="libs/libiptcom.a">
 			<Option target="Release" />
 		</Unit>
