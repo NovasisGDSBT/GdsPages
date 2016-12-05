@@ -49,9 +49,40 @@ else
 fi
 umount /tmp/store_mountpoint
 
+# 30 seconds management for yellow square. Note : the kernel can't gurantee the minimu 3 secs required
 export SDL_NOMOUSE=1
-/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
+COUNT=0
+LIMIT=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
+while [ "$COUNT" -ge "$LIMIT" ]; do
+	sleep 1
+        let COUNT=$COUNT+1
+done
+
+# 120 secs max timeout communication at startup
+TIMEOUTTCMS=0
+WAITTIME=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
+while [ ! -f /tmp/my_ip ]; do
+        sleep 1
+	let COUNT=$COUNT+1
+	if [ "$COUNT" -ge "$WAITTIME" ]; then
+		TIMEOUTTCMS=1
+		break
+	fi
+done
+
+# Timeout management with ERROR TYPE 1
 /tmp/www/cgi-bin/find_lvds
+if [ "$TIMEOUTTCMS" = "0" ]; then
+	/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
+else
+	/tmp/www/GdsScreenTest &
+	sleep 1
+        /tmp/www/GdsScreenTestWrite START
+	sleep 1
+	/tmp/www/GdsScreenTestWrite DIAG
+	sleep 1
+	exit 0
+fi
 
 TIMEOUT=15
 if [ -f /usr/bin/startx ]; then

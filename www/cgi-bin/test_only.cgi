@@ -1,6 +1,12 @@
 #!/bin/sh
 TEMP_IP=`ifconfig | grep Bcast | awk '{ print $2 }' | sed 's/addr://g'`
 CURRENT_IP=`echo $TEMP_IP | awk '{print $1}'`
+MAC_FROM_CMDLINE="00:4f:9f:01:00:0e"
+for MACADDR in `cat /proc/cmdline` ; do
+        echo $MACADDR | grep mac_addr > /dev/null
+        [ "$?" == "0" ] && MAC_FROM_CMDLINE=`echo "${MACADDR}" | sed 's/mac_addr=//g'`
+done
+
 
 # PARSE QUERY STRING
 if [ "$REQUEST_METHOD" == "POST" ];then
@@ -24,10 +30,10 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	    sleep 2
 	  fi
 	done
-	cp /tmp/mac_addr /tmp/store_mountpoint/sysconfig/.
 	cp /tmp/mac_addr /etc/sysconfig/.
+	cp /tmp/mac_addr /tmp/store_mountpoint/sysconfig/etc/sysconfig/.
 	umount /tmp/store_mountpoint
-	 e2fsck /dev/mmcblk0p3
+	e2fsck /dev/mmcblk0p3
 
 	echo "<html>"
 	echo"  <head>"
@@ -50,7 +56,8 @@ else
 	echo "<body>"
 fi
 
-. /etc/sysconfig/mac_addr
+
+[ -f /etc/sysconfig/mac_addr ] && . /etc/sysconfig/mac_addr
 
 # HEADER    
 echo " <form action=\"test_only.cgi\" method=\"POST\">"
