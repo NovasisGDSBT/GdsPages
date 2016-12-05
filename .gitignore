@@ -20,6 +20,8 @@ modules.builtin
 *.patch
 *.gcno
 *.o
+*.depend
+*.layout
 www.tar
 
 /.svn/

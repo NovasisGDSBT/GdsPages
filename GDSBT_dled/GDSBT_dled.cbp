@@ -4,13 +4,13 @@
 	<Project>
 		<Option title="GDSBT_dled" />
 		<Option pch_mode="2" />
-		<Option compiler="imx6_gnu_arm_gcc_compiler" />
+		<Option compiler="armelfgcc" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/GDSBT_dled" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="imx6_gnu_arm_gcc_compiler" />
+				<Option compiler="armelfgcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -19,7 +19,7 @@
 				<Option output="bin/Release/GDSBT_dled" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="imx6_gnu_arm_gcc_compiler" />
+				<Option compiler="armelfgcc" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -29,15 +29,14 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Wall" />
+			<Add option="-g" />
 			<Add option="-DLINUX" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api" />
 			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv" />
 			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api" />
+			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/shared/include" />
 			<Add directory="DLED_src/dledsCommon/inc" />
 			<Add directory="DLED_src/dledsPlatform/inc" />
-			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api" />
-			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/linux/osDep/include" />
-			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/shared/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-lpthread" />
