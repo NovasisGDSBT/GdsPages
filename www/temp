@@ -1,0 +1,1 @@
+cat /etc/sysconfig/network |  sed 's/TFT.$/TFT3/g'

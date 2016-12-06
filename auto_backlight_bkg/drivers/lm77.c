@@ -6,6 +6,7 @@ void set_lm77_device(int file)
     {
         printf("Failed to acquire bus access and/or talk to lm77.\n");
         system("echo 1 > /tmp/ext_temp_fault");
+        return;
     }
     system("echo 0 > /tmp/ext_temp_fault");
 }

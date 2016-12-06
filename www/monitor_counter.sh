@@ -16,30 +16,34 @@ fi
 
 while [ "$TRUE" == "1" ]; do
 	sleep 1
-	let COUNTER=$COUNTER+1
-	echo "MONITOR_ON_COUNTER=$COUNTER" > /tmp/monitor_on_counter
-        let SAVECOUNTER=$SAVECOUNTER+1
-        if [ $SAVECOUNTER -gt $TIMETOSAVE ]; then
-                SAVECOUNTER=0
- 
-                mkdir -p /tmp/store_mountpoint           
-	        mount /dev/mmcblk0p3 /tmp/store_mountpoint
+        if [ -f /tmp/monitor_on_reset ]; then
+                rm /tmp/monitor_on_reset		
+		echo "MONITOR_ON_COUNTER=0" > /tmp/monitor_on_counter
+                echo "Reetting BACKLIGHT_ON_COUNTER to 0, user command" >> /tmp/gds_log
+                COUNTER=0
+	else
+		let COUNTER=$COUNTER+1
+		echo "MONITOR_ON_COUNTER=$COUNTER" > /tmp/monitor_on_counter
+        	let SAVECOUNTER=$SAVECOUNTER+1
+	        if [ $SAVECOUNTER -gt $TIMETOSAVE ]; then
+        	        SAVECOUNTER=0
+ 	
+        	        mkdir -p /tmp/store_mountpoint           
+	        	mount /dev/mmcblk0p3 /tmp/store_mountpoint
 	        
-		if [ $? -eq 0 ]  # test mount OK
-		then
-		  sync
-		  cp /tmp/monitor_on_counter /tmp/store_mountpoint/webparams/tmpfile
-		  mv /tmp/store_mountpoint/webparams/tmpfile /tmp/store_mountpoint/webparams/monitor_on_counter
-		  umount /tmp/store_mountpoint
-		  echo "$0 save" >> /tmp/gds_log
-		  sync
-		  e2fsck /dev/mmcblk0p3
-		else
-		  echo "partition /dev/mmcblk0p3 busy" >> /tmp/gds_log
-		fi
-		
-		
-		
+			if [ $? -eq 0 ]  # test mount OK
+			then
+			  sync
+			  cp /tmp/monitor_on_counter /tmp/store_mountpoint/webparams/tmpfile
+			  mv /tmp/store_mountpoint/webparams/tmpfile /tmp/store_mountpoint/webparams/monitor_on_counter
+			  umount /tmp/store_mountpoint
+			  echo "$0 save" >> /tmp/gds_log
+			  sync
+			  e2fsck /dev/mmcblk0p3
+			else
+			  echo "partition /dev/mmcblk0p3 busy" >> /tmp/gds_log
+			fi
+        	fi
         fi
 done
 

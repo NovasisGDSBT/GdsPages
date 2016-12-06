@@ -1,4 +1,5 @@
 #/bin/sh
+SWVERSION="1.0.0.0rc0"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
@@ -30,6 +31,8 @@ else
 	cp /tmp/www/defaults/* /tmp/.
 	cp /tmp/www/defaults/* /tmp/store_mountpoint/webparams/.
 fi
+echo "IMAGE_REV=${SWVERSION}" > /tmp/store_mountpoint/webparams/sw_version
+cp /tmp/store_mountpoint/webparams/sw_version /tmp
 # Default set for timezone
 if [ -f /tmp/timezone ]; then
         cp /tmp/timezone /etc/timezone

@@ -1,13 +1,17 @@
 #include "../main.h"
 
-void set_tls2550_device(int file)
+int set_tls2550_device(int file)
 {
     if (ioctl(file,I2C_SLAVE,TSL2550_I2CADDR>>1) < 0)
     {
         printf("Failed to acquire bus access and/or talk to tls2550.\n");
         system("echo 1 > /tmp/ext_ambientlight_fault");
+        return 1;
     }
-    system("echo 0 > /tmp/ext_ambientlight_fault");
+    //system("echo 0 > /tmp/ext_ambientlight_fault");
+    //printf("ok to acquire bus access and/or talk to tls2550.\n");
+
+    return 0;
 }
 
 unsigned char set_tls2550_powerup(int file)
@@ -33,7 +37,6 @@ unsigned char set_tls2550_powerup(int file)
         system("echo 1 > /tmp/ext_ambientlight_fault");
         return 0;
     }
-    system("echo 0 > /tmp/ext_ambientlight_fault");
     return buf[0];
 }
 
@@ -52,7 +55,6 @@ unsigned char read_tls2550_adcs(int file,unsigned char command)
         system("echo 1 > /tmp/ext_ambientlight_fault");
         return 0;
     }
-    system("echo 0 > /tmp/ext_ambientlight_fault");
     return buf[0];
 }
 
@@ -72,7 +74,6 @@ unsigned char set_tls2550_powerdown(int file)
         system("echo 1 > /tmp/ext_ambientlight_fault");
         return 0;
     }
-    system("echo 0 > /tmp/ext_ambientlight_fault");
     return buf[0];
 }
 
@@ -91,6 +92,10 @@ unsigned int    adc0_count;
     chord_ch0 = ((ch0 & 0x7f) >> 4) & 0xff;
     step_ch0 = ch0 & 0x0f;
     adc0_count = TSL2550_chord[chord_ch0] + TSL2550_step_value[chord_ch0] * step_ch0;
+    if ( adc0_count < 50 )
+        system("echo 1 > /tmp/ext_ambientlight_fault");
+    else
+        system("echo 0 > /tmp/ext_ambientlight_fault");
     return adc0_count;
 }
 

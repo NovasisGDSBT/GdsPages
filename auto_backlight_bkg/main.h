@@ -85,7 +85,7 @@ extern  int do_light(void);
 extern  int max11607_get_voltage24(void);
 extern  int max11607_get_voltage12(void);
 
-extern  void set_tls2550_device(int file);
+extern  int set_tls2550_device(int file);
 extern  unsigned char set_tls2550_powerup(int file);
 extern  unsigned char set_tls2550_powerdown(int file);
 extern  int tls2550_get_light(int file);

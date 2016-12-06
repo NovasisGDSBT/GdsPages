@@ -136,10 +136,12 @@ char   cmd[256];
             #endif
             store_file("/tmp/ambientlight_value","AMBIENT_LIGHT",ambientlight_value);
 
-            set_tls2550_device(file);
-            set_tls2550_powerup(file);
-            backlight_sensor_value = tls2550_get_light(file);
-            store_file("/tmp/backlight_sensor_value","BACKLIGHT_SENSOR",backlight_sensor_value);
+            if ( set_tls2550_device(file) == 0)
+            {
+                set_tls2550_powerup(file);
+                backlight_sensor_value = tls2550_get_light(file);
+                store_file("/tmp/backlight_sensor_value","BACKLIGHT_SENSOR",backlight_sensor_value);
+            }
 
             #ifdef DEBUG
             printf("backlight_sensor_value : %d\n", backlight_sensor_value);

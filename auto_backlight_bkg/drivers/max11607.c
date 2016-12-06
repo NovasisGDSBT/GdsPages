@@ -8,10 +8,8 @@ unsigned char max11607_setup(int file)
     if (write(file,buf,3) != 3)
     {
         printf("%s : i2c bus write failed\n",__FUNCTION__);
-        system("echo 1 > /tmp/ext_ambientlight_fault");
         return 0;
     }
-    system("echo 0 > /tmp/ext_ambientlight_fault");
     return buf[0];
 }
 
@@ -25,12 +23,10 @@ int i;
     if (read(file,buf,LIMIT) != LIMIT)
     {
         printf("%s : i2c bus read failed\n",__FUNCTION__);
-        system("echo 1 > /tmp/ext_ambientlight_fault");
         return;
     }
     for(i=0;i<LIMIT;i+=2)
         buf[i] &= 0x03;
-    system("echo 0 > /tmp/ext_ambientlight_fault");
 }
 
 int max11607_get_light(void)
@@ -53,10 +49,8 @@ void set_max11607_device(int file)
     if (ioctl(file,I2C_SLAVE,MAX11607_I2CADDR>>1) < 0)
     {
         printf("Failed to acquire bus access and/or talk to tls2550.\n");
-        system("echo 1 > /tmp/ext_ambientlight_fault");
         return;
     }
-    system("echo 0 > /tmp/ext_ambientlight_fault");
 }
 
 

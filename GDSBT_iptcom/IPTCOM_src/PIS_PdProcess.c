@@ -10,6 +10,10 @@ extern  int CDurationCounter,CBackOnCounter,CNormalStartsCounter,CWdogResetsCoun
 extern unsigned char FBcklightFault,FTempSensor,FTempORHigh,FTempORLow,FAmbLightSensor;
 extern  char    chromium_server[256];
 
+unsigned short ISystemLifeSign=0;
+
+unsigned char ccmodTimeoutFault=0;
+
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
 
@@ -41,6 +45,8 @@ static char               URL[256];
             if(spacetime>=TIMEOUT)
             {
                 ErrorDescription=ErrorDescription|IPMODCCUTIMEOUT;
+                ccmodTimeoutFault=1;
+
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
@@ -51,25 +57,30 @@ static char               URL[256];
             prev_lifecounter=pd_InData.Lifesign.ICCUCLifeSign;
             ErrorDescription &= (~IPMODCCUTIMEOUT);
             spacetime=0;
+            ccmodTimeoutFault=0;
         }
     }
 
-    sprintf(URL,"CHROMIUM_SERVER=%s",pd_InData.LoadResource2.IURL);
-    if ( strcmp(chromium_server,URL) != 0 )
+    if ( strlen(pd_InData.LoadResource2.IURL) != 0)
     {
-        printf("\n");
-        printf("URL             : %s!\n",URL);
-        printf("chromium_server : %s!\n",chromium_server);
-        sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
-        system(sys_URL);
-        system("rm -rf /tmp/chromium_var_mountpoint");
-        system("mkdir /tmp/chromium_var_mountpoint");
-        system("mount /dev/mmcblk0p3 /tmp/chromium_var_mountpoint");
-        system("cp /tmp/chromium_var /tmp/chromium_var_mountpoint/sysconfig/etc/sysconfig/chromium_var");
-        system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
-        system("umount /tmp/chromium_var_mountpoint");
-        sprintf(chromium_server,"%s",URL);
-        printf("chromium_server is now %s !!!\n",chromium_server);
+        sprintf(URL,"CHROMIUM_SERVER=%s",pd_InData.LoadResource2.IURL);
+        if ( strcmp(chromium_server,URL) != 0 )
+        {
+            printf("\n");
+            printf("URL             : %s!\n",URL);
+            printf("chromium_server : %s!\n",chromium_server);
+            sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
+            system(sys_URL);
+            system("rm -rf /tmp/chromium_var_mountpoint");
+            system("mkdir /tmp/chromium_var_mountpoint");
+            system("mount /dev/mmcblk0p3 /tmp/chromium_var_mountpoint");
+            system("cp /tmp/chromium_var /tmp/chromium_var_mountpoint/sysconfig/etc/sysconfig/chromium_var");
+            system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
+            system("umount /tmp/chromium_var_mountpoint");
+            sprintf(chromium_server,"%s",URL);
+            printf("chromium_server is now %s !!!\n",chromium_server);
+            system("touch /tmp/start_chrome");
+        }
     }
     /*
     MON_PRINTF("%s : Lifesign.ICCUCLifeSign:%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
@@ -89,23 +100,35 @@ char    p[32];
 
 void pd_ReportProcess(BYTE *byte_pd_OutData)
 {
+    unsigned char BacklightStatus=0;
+
     CINFDISReport *pd_OutData = (CINFDISReport *)byte_pd_OutData;
+
+    pd_OutData->StatusData.ISystemLifeSign=ISystemLifeSign++;
 
     system("cat /tmp/backlight_on_counter | sed 's/BACKLIGHT_ON_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTBacklight = get_value();
 
-    system("cat /proc/uptime | sed 's/\\./ /g' | awk '{ print $1}' > /tmp/ta");
+    system("cat /tmp/monitor_on_counter | sed 's/MONITOR_ON_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTWorkTime  = get_value();
 
     system("cat /tmp/reboot_counter | sed 's/REBOOT_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTPowerUp   = get_value();
 
-    system("cat /sys/class/backlight/backlight_lvds1.29/brightness > /tmp/ta");
-    pd_OutData->StatusData.IBacklightStatus = get_value();
+    system("cat /sys/class/backlight/backlight_lvds0.28/brightness > /tmp/ta");
+    BacklightStatus=(unsigned char)get_value();
+    if(BacklightStatus>=5)
+        BacklightStatus=5;
+
+    BacklightStatus=BacklightStatus*20;
+    pd_OutData->StatusData.IBacklightStatus = BacklightStatus;
 
     pd_OutData->StatusData.ISystemMode = curr_mode;
     pd_OutData->StatusData.ITestMode = CSystemMode;
+    pd_OutData->DiagData.COMModule.FTimeoutComMod=ccmodTimeoutFault;
     pd_OutData->CntData.ITFTWatchdog  = 1;
+
+
 
     pd_OutData->DiagData.TFTFaults.FBcklightFault=FBcklightFault;
     pd_OutData->DiagData.TFTFaults.FTempSensor=FTempSensor;

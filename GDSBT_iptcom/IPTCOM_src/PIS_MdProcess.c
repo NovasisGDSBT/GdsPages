@@ -85,12 +85,12 @@ char    cmd_string[128];
     MON_PRINTF("%s :\nCBacklightCmd=%d \nCShutdownCmd=%d \nCSystemMode=%d\n\n",__FUNCTION__,md_InDataOp.CtrlCommands.CBacklightCmd,
         md_InDataOp.CtrlCommands.CShutdownCmd,md_InDataOp.CtrlCommands.CSystemMode);
 
-    if ( md_InDataOp.CtrlCommands.CBacklightCmd == 1 )
+    if ( md_InDataOp.CtrlCommands.CBacklightCmd == 2 )
     {
         sprintf(cmd_string,"echo 1 > %s/bl_power",lvds_ptr);
         system(cmd_string);
     }
-    else
+    if ( md_InDataOp.CtrlCommands.CBacklightCmd == 1 )
     {
         sprintf(cmd_string,"echo 0 > %s/bl_power",lvds_ptr);
         system(cmd_string);
@@ -194,13 +194,13 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     if ( md_InDataMaint.INFDCounterCommands.CDurationCounterReset == 1 )
     {
         CDurationCounter = 0;
-        system ("echo BACKLIGHT_ON_COUNTER=0 > /tmp/backlight_on_counter");
+        system ("touch /tmp/monitor_on_reset");
         MON_PRINTF("%s : Received Duration Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CBackOnCounterReset == 1 )
     {
         CBackOnCounter = 0;
-        system ("echo 0 > /tmp/reboot_counter");
+        system ("touch /tmp/backlight_on_reset");
         MON_PRINTF("%s : Received Back On Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CNormalStartsCounterReset == 1 )
@@ -215,7 +215,8 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         CBackOnCounter = 0;
         CNormalStartsCounter = 0;
         CWdogResetsCounter = 0;
-        system ("echo 0 > /tmp/monitor_on_counter");
+        system ("touch /tmp/monitor_on_reset");
+        system ("touch /tmp/backlight_on_reset");
         system ("echo 0 > /tmp/reboot_counter");
         MON_PRINTF("%s : Received Reset All Counters Command\n",__FUNCTION__);
     }
