@@ -35,7 +35,7 @@ FILE *fp;
         printf("Error opening file %s\n",name);
         exit (0);
     }
-    fprintf(fp,"%s=%d",var_name,val);
+    fprintf(fp,"%s=%d\n",var_name,val);
     fclose(fp);
 }
 

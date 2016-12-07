@@ -8,9 +8,6 @@ int set_tls2550_device(int file)
         system("echo 1 > /tmp/ext_ambientlight_fault");
         return 1;
     }
-    //system("echo 0 > /tmp/ext_ambientlight_fault");
-    //printf("ok to acquire bus access and/or talk to tls2550.\n");
-
     return 0;
 }
 
@@ -88,15 +85,20 @@ unsigned int    adc0_count;
 
     ch0 = read_tls2550_adcs(file,0x43);
     if (( ch0 & 0x80) == 0x0)
+    {
         return -1;
+        system("echo 1 > /tmp/ext_ambientlight_fault");
+    }
     chord_ch0 = ((ch0 & 0x7f) >> 4) & 0xff;
     step_ch0 = ch0 & 0x0f;
     adc0_count = TSL2550_chord[chord_ch0] + TSL2550_step_value[chord_ch0] * step_ch0;
-    if ( adc0_count < 50 )
-        system("echo 1 > /tmp/ext_ambientlight_fault");
-    else
+    if ( adc0_count > 50 )
+    {
         system("echo 0 > /tmp/ext_ambientlight_fault");
-    return adc0_count;
+        return adc0_count;
+    }
+    system("echo 1 > /tmp/ext_ambientlight_fault");
+    return 0;
 }
 
 

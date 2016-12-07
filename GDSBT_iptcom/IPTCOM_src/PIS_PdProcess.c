@@ -87,7 +87,7 @@ static char               URL[256];
     */
 }
 
-int get_value()
+int pd_get_value()
 {
 FILE *fp;
 char    p[32];
@@ -107,16 +107,16 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
     pd_OutData->StatusData.ISystemLifeSign=ISystemLifeSign++;
 
     system("cat /tmp/backlight_on_counter | sed 's/BACKLIGHT_ON_COUNTER=//g' > /tmp/ta");
-    pd_OutData->CntData.ITFTBacklight = get_value();
+    pd_OutData->CntData.ITFTBacklight = pd_get_value();
 
     system("cat /tmp/monitor_on_counter | sed 's/MONITOR_ON_COUNTER=//g' > /tmp/ta");
-    pd_OutData->CntData.ITFTWorkTime  = get_value();
+    pd_OutData->CntData.ITFTWorkTime  = pd_get_value();
 
     system("cat /tmp/reboot_counter | sed 's/REBOOT_COUNTER=//g' > /tmp/ta");
-    pd_OutData->CntData.ITFTPowerUp   = get_value();
+    pd_OutData->CntData.ITFTPowerUp   = pd_get_value();
 
     system("cat /sys/class/backlight/backlight_lvds0.28/brightness > /tmp/ta");
-    BacklightStatus=(unsigned char)get_value();
+    BacklightStatus=(unsigned char)pd_get_value();
     if(BacklightStatus>=5)
         BacklightStatus=5;
 
@@ -125,16 +125,19 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
 
     pd_OutData->StatusData.ISystemMode = curr_mode;
     pd_OutData->StatusData.ITestMode = CSystemMode;
+    system("cat /tmp/wdog_counter > /tmp/ta");
+    pd_OutData->CntData.ITFTWatchdog  = pd_get_value();
+
     pd_OutData->DiagData.COMModule.FTimeoutComMod=ccmodTimeoutFault;
-    pd_OutData->CntData.ITFTWatchdog  = 1;
-
-
-
     pd_OutData->DiagData.TFTFaults.FBcklightFault=FBcklightFault;
     pd_OutData->DiagData.TFTFaults.FTempSensor=FTempSensor;
     pd_OutData->DiagData.TFTFaults.FTempORHigh=FTempORHigh;
     pd_OutData->DiagData.TFTFaults.FTempORLow=FTempORLow;
     pd_OutData->DiagData.TFTFaults.FAmbLightSensor=FAmbLightSensor;
+    system("cat /tmp/api_mod > /tmp/ta");
+    pd_OutData->DiagData.ApplicationModule.FApiMod=pd_get_value();
+    system("cat /tmp/wdog_api_mod > /tmp/ta");
+    pd_OutData->DiagData.ApplicationModule.FWatchdogApiMod=pd_get_value();
 }
 
 

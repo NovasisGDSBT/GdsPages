@@ -13,7 +13,7 @@ reference:
 #include "infd_icd.h"
 int Application(void);
 
-#define TIMEOUT ((unsigned short int)10)  // 10 seconds
+#define TIMEOUT ((unsigned short int)60)  // 60 seconds
 
 
 #define     NOTAVAIBLE  ((unsigned char)0)

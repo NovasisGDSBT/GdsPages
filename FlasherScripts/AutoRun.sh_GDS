@@ -51,6 +51,9 @@ else
 	cp /tmp/store_mountpoint/reboot_counter /tmp/.
 fi
 umount /tmp/store_mountpoint
+echo "0" > /tmp/wdog_counter
+echo "0" > /tmp/api_mod
+echo "0" > /tmp/wdog_api_mod
 
 # 30 seconds management for yellow square. Note : the kernel can't gurantee the minimu 3 secs required
 export SDL_NOMOUSE=1

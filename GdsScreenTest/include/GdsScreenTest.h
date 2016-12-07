@@ -32,6 +32,7 @@
 #define FONT_PITCH              24
 
 #define     WIDTH       1920
+//#define     HEIGHT      358
 #define     HEIGHT      1080
 #define     BPP         32
 #define     NAMED_FIFO  "GdsScreenTest_fifo"
@@ -74,4 +75,7 @@ extern  int fill_squarecenter(SDL_Surface *surface,char *command, char *paramete
 extern  int fill_squareright(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val);
 extern  int fill_squarecenter_reverse(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val);
 extern  int loop_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val);
+extern  int btloop_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val);
 extern  int diag_page(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val);
+extern  int image_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val);
+extern  SDL_Surface *load_image(char *fname);

@@ -30,9 +30,11 @@ int Diagnostic(void);
 #define ERRTYPE_1   ((unsigned char)1)
 
 
-#define BCKL_FAULT_PATH "/sys/class/gpio/gpio165/value"
+//#define BCKL_FAULT_PATH "/sys/class/gpio/gpio165/value" //MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30
+#define BCKL_FAULT_PATH "/sys/class/gpio/gpio158/value" //MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30
 #define TEMPSENS_FAULT_PATH "/tmp/ext_temp_fault"
 #define TEMPSENS_VALUE_PATH "/tmp/SensorTemperatureValue"
 #define AMBLIGHT_FAULT_PATH "/tmp/ext_ambientlight_fault"
+#define AMBLIGHT_VALUE_PATH "/tmp/ambientlight_value"
 
 #endif

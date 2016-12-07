@@ -120,6 +120,8 @@ struct sigaction sa;
 
 
     MON_PRINTF("START MAIN !\n\n");
+    system("echo 1 > /sys/class/gpio/gpio162/value");
+
     bzero(chromium_server,sizeof(chromium_server));
     /* /etc/sysconfig/chromium_var contents are : CHROMIUM_SERVER=10.0.1.6 */
     fp=fopen("/etc/sysconfig/chromium_var","r");

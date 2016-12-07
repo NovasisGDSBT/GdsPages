@@ -12,6 +12,10 @@
 #define FILL_GRAYSCALE11    16
 #define LOOP_TEST           17
 #define DIAG_PAGE           18
+#define SQUARE_LEFT         19
+#define SQUARE_CENTER       20
+#define IMAGE_TEST          21
+#define SQUARE_RIGHT        22
 
 unsigned int CSystemMode,cmd_valid = 0;
 int CDurationCounter=0,CBackOnCounter=0,CNormalStartsCounter=0,CWdogResetsCounter=0;
@@ -38,17 +42,13 @@ void do_tests(int graphic_test)
         case FILL_BLACK         : system("/tmp/www/GdsScreenTestWrite FILL_BLACK"); break;
         case FILL_WHITE         : system("/tmp/www/GdsScreenTestWrite FILL_WHITE"); break;
         case FILL_GRAYSCALE11   : system("/tmp/www/GdsScreenTestWrite FILL_GRAYSCALE11"); break;
-        case LOOP_TEST          : system("/tmp/www/GdsScreenTestWrite LOOP_TEST"); break;
+        case LOOP_TEST          : system("/tmp/www/GdsScreenTestWrite BTLOOP_TEST"); break;
         case DIAG_PAGE          : system("/tmp/www/GdsScreenTestWrite DIAG_PAGE"); break;
+        case SQUARE_LEFT        : system("/tmp/www/GdsScreenTestWrite FILL_SQUARELEFT"); break;
+        case SQUARE_CENTER      : system("/tmp/www/GdsScreenTestWrite FILL_SQUARECENTER"); break;
+        case SQUARE_RIGHT       : system("/tmp/www/GdsScreenTestWrite FILL_SQUARERIGHT"); break;
+        case IMAGE_TEST         : system("/tmp/www/GdsScreenTestWrite IMAGE_TEST"); break;
     }
-
-
-//      if (IPTVosPutSemR(&semflag) != IPT_OK)
-//      {
-//         IPTVosPrint0(IPT_ERR, "do_tests: IPTVosPutSem(semflag) ERROR\n");
-//      }
-//   }
-
 }
 
 void apply_tests(int graphic_test)
@@ -144,6 +144,26 @@ char    cmd_string[128];
             MON_PRINTF("%s : CSystemMode is %d , DIAG_PAGE\n",__FUNCTION__,CSystemMode);
             cmd_valid = 1;
             break;
+#define SQUARE_LEFT         19
+#define SQUARE_CENTER       20
+#define IMAGE_TEST          21
+#define SQUARE_RIGHT        22
+        case   SQUARE_LEFT :
+            MON_PRINTF("%s : CSystemMode is %d , SQUARE_LEFT\n",__FUNCTION__,CSystemMode);
+            cmd_valid = 1;
+            break;
+        case   SQUARE_CENTER :
+            MON_PRINTF("%s : CSystemMode is %d , SQUARE_CENTER\n",__FUNCTION__,CSystemMode);
+            cmd_valid = 1;
+            break;
+        case   IMAGE_TEST :
+            MON_PRINTF("%s : CSystemMode is %d , IMAGE_TEST\n",__FUNCTION__,CSystemMode);
+            cmd_valid = 1;
+            break;
+        case   SQUARE_RIGHT :
+            MON_PRINTF("%s : CSystemMode is %d , SQUARE_RIGHT\n",__FUNCTION__,CSystemMode);
+            cmd_valid = 1;
+            break;
         default :
             MON_PRINTF("%s : CSystemMode is %d , ILLEGAL!\n",__FUNCTION__,CSystemMode);
             cmd_valid = 0;
@@ -218,6 +238,8 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         system ("touch /tmp/monitor_on_reset");
         system ("touch /tmp/backlight_on_reset");
         system ("echo 0 > /tmp/reboot_counter");
+        system ("echo 0 > /tmp/wdog_counter");
+        system ("echo 0 > /tmp/wdog_api_counter");
         MON_PRINTF("%s : Received Reset All Counters Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CWdogResetsCounterReset == 1 )

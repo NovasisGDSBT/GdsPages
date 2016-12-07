@@ -49,3 +49,19 @@ SDL_Rect    rect;
     SDL_UpdateRect(surface,rect.x,rect.y,rect.w,rect.h);
 }
 
+SDL_Surface *load_image(char *fname)
+{
+SDL_Surface *ld;
+    if ( fname == NULL )
+    {
+        printf("%s called with NULL filename\n",__FUNCTION__);
+        exit(-1);
+    }
+    ld = ((SDL_Surface *)IMG_Load(fname));
+    if ( ld == NULL)
+    {
+        printf("%s : File %s not found\n",__FUNCTION__,fname);
+        exit(-1);
+    }
+    return ld;
+}

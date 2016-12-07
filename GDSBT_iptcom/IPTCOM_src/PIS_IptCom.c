@@ -180,8 +180,8 @@ UINT8 topo;
     /* get */
     res=PDComAPI_get(hpd_in, (BYTE*) &pd_InData, sizeof(CCCUC_INFDIS));
 
-
     pd_CCUProcess(pd_InData);
+    system("echo 0 > /sys/class/gpio/gpio162/value");
 
     if(res!=IPT_OK)
         MON_PRINTF("%s : PDComAPI_get retcode %d , ILLEGAL!\n",__FUNCTION__,res);

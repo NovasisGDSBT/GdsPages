@@ -86,6 +86,16 @@ CommandsStruct Commands[]=
         .fun_ptr = diag_page,
         .retval = 0,
     },
+    {
+        .command = "BTLOOP_TEST",
+        .fun_ptr = btloop_test,
+        .retval = 0,
+    },
+    {
+        .command = "IMAGE_TEST",
+        .fun_ptr = image_test,
+        .retval = 0,
+    },
 };
 
 int array_len=(int )(sizeof(Commands) / sizeof(Commands[0]));

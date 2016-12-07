@@ -376,7 +376,7 @@ int loop_test(SDL_Surface *surface,char *command, char *parameter1, char *parame
     return ret_val;
 }
 
-char   value[32];
+char   value[128];
 void file_helper(char *fname)
 {
 FILE *fp;
@@ -404,9 +404,19 @@ SDL_Surface     *TextImage;
 
 int diag_page(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val)
 {
-char            Text[256];
+char            Text[512];
 SDL_Rect        rect = { 4,4,1920,1080};
 SDL_Color       STRINGFontColor = { 0x3f,0xaa,0xcd } , STRINGFontBgColor = { 0xec,0xec,0xe1 } ;  //376093
+
+char BackOnCounter[32];
+char DurationCounter[32];
+char NormalStartsCounter[32];
+char WDogsResetsCounter[32];
+char FBacklightFault[32];
+char FTempFault[32];
+char FTempOr[32];
+char FAmbLightSensor[32];
+int  temp_limit_low, temp_limit_high,carrier_temp;
 
     if ( system_started != 1 )
     {
@@ -428,7 +438,7 @@ SDL_Color       STRINGFontColor = { 0x3f,0xaa,0xcd } , STRINGFontBgColor = { 0xe
     sprintf(Text,"System Hardware : %s ",value);
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     rect.y += 36;
-
+    /* */
     sprintf(Text,"INFDISReport.ISystemMode : 1 -- INFDISReport.ITestMode : 18 -- INFDISReport.FBacklightStatus : ok");
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     system("cat /tmp/hw_version | grep MONITOR_SN| sed 's/MONITOR_SN=//g' > /tmp/vn");
@@ -437,15 +447,109 @@ SDL_Color       STRINGFontColor = { 0x3f,0xaa,0xcd } , STRINGFontBgColor = { 0xe
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     rect.y += 36;
 
-    file_helper("/tmp/my_ip");
+    file_helper("/tmp/my_ip"); /* */
     sprintf(Text,"INFDISReport.IDevInstance : 1 -- INFDISReport.IDevIpAddress : %s -- INFDISReport.IDevFqdn : xxx -- INFDISReport.ISystemLifeSign : Active",value);
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     rect.y += 36;
 
-    file_helper("/tmp/my_ip");
-    sprintf(Text,"INFDISReport.IWdogResetsCounter : 0 -- INFDISReport.FBcklightFault : 0 -- INFDISReport.FTempFault : 0");
+    system("cat /tmp/backlight_on_counter | grep BACKLIGHT_ON_COUNTER | sed 's/BACKLIGHT_ON_COUNTER=//g' > /tmp/vn");
+    file_helper("/tmp/vn");
+    sprintf(BackOnCounter,"%s",value);
+
+    system("cat /tmp/monitor_on_counter | grep MONITOR_ON_COUNTER | sed 's/MONITOR_ON_COUNTER=//g' > /tmp/vn");
+    file_helper("/tmp/vn");
+    sprintf(DurationCounter,"%s",value);
+
+    system("cat /tmp/reboot_counter | grep REBOOT_COUNTER | sed 's/REBOOT_COUNTER=//g' > /tmp/vn");
+    file_helper("/tmp/vn");
+    sprintf(NormalStartsCounter,"%s",value);
+
+    sprintf(WDogsResetsCounter,"0");
+
+    file_helper("/tmp/ext_backlight_fault");
+    sprintf(FBacklightFault,"%s",value);
+
+    file_helper("/tmp/ext_temp_fault");
+    sprintf(FTempFault,"%s",value);
+
+    file_helper("/tmp/tempLimitsDOWN");
+    temp_limit_low=atoi(value);
+
+    file_helper("/tmp/tempLimitsUP");
+    temp_limit_high=atoi(value);
+
+    system("cat /tmp/carrier_temp | grep INTERNAL_TEMPERATURE | sed 's/INTERNAL_TEMPERATURE=//g' > /tmp/vn");
+    file_helper("/tmp/vn");
+    carrier_temp=atoi(value);
+
+    if (( carrier_temp > temp_limit_high) || (carrier_temp < temp_limit_low ))
+        sprintf(FTempOr,"1");
+    else
+        sprintf(FTempOr,"0");
+
+    printf("temp_limit_high=%d , temp_limit_low=%d,carrier_temp=%d , FTempOr=%s\n",temp_limit_high,temp_limit_low,carrier_temp,FTempOr);
+
+    system("cat /tmp/ambientlight_value | grep AMBIENT_LIGHT | sed 's/AMBIENT_LIGHT=//g' > /tmp/vn");
+    file_helper("/tmp/vn");
+    sprintf(FAmbLightSensor,"%s",value);
+
+    sprintf(Text,"INFDISReport.CDurationCounter : %s -- INFDISReport.CBackOnCounter : %s -- INFDISReport.NormalStartsCounter : %s -- INFDISReport.WDogsResetsCounter : %s",
+            DurationCounter,BackOnCounter,NormalStartsCounter,WDogsResetsCounter);
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     rect.y += 36;
 
+    sprintf(Text,"INFDISReport.FBacklightFault : %s -- INFDISReport.FTempFault : %s -- INFDISReport.FTempOr : %s -- INFDISReport.FAmbLightSensor : %s",
+            FBacklightFault,FTempFault,FTempOr,FAmbLightSensor);
+    printf("%s\n",Text);
+    create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
+    rect.y += 36;
+
+    return ret_val;
+}
+
+int btloop_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val)
+{
+    if ( system_started != 1 )
+    {
+        print_error();
+        return 1;
+    }
+    while ( 1 )
+    {
+        fill_screen(screen,WIDTH,HEIGHT,255,0,0,0,0);
+        printf("red done\n");
+        sleep_and_check_counter = uLOOP_DELAY;
+        sleep_and_check();
+
+        fill_screen(screen,WIDTH,HEIGHT,0,255,0,0,0);
+        printf("green done\n");
+        sleep_and_check();
+
+        fill_screen(screen,WIDTH,HEIGHT,0,0,255,0,0);
+        printf("blue done\n");
+        sleep_and_check();
+
+        fill_screen(screen,WIDTH,HEIGHT,0,0,0,0,0);
+        printf("black done\n");
+        sleep_and_check();
+
+        fill_screen(screen,WIDTH,HEIGHT,255,255,255,0,0);
+        printf("white done\n");
+        sleep_and_check();
+
+        do_grayscale(11);
+        printf("grayscale done\n");
+        sleep_and_check();
+    }
+
+    return ret_val;
+}
+
+int image_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val)
+{
+SDL_Surface *image;
+    image = load_image("/tmp/www/page/bkg.png");
+    SDL_BlitSurface(image,NULL,screen,NULL);
+    SDL_Flip(screen);
     return ret_val;
 }

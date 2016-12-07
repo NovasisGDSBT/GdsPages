@@ -39,55 +39,17 @@ set_bit_level ()
 	echo $2 > /sys/class/gpio/gpio$1/value
 }
 
-get_addressOLD ()
-{       
-        get_bit_level $CFG_BIT0
-        SYS_ADDRESS=$BIT_LEVEL
-        get_bit_level $CFG_BIT1
-        let "BIT_LEVEL <<= 1"
-        let "SYS_ADDRESS|=$BIT_LEVEL"
-        get_bit_level $CFG_BIT2
-        let "BIT_LEVEL <<= 2"
-        let "SYS_ADDRESS|=$BIT_LEVEL"
-        get_bit_level $CFG_BIT3
-        let "BIT_LEVEL <<= 3"
-        let "SYS_ADDRESS|=$BIT_LEVEL"
-
-}
-
 get_address ()
-{       
-                get_bit_level $CFG_BIT0
-                if [ "${BIT_LEVEL}" == "0" ]; then
-                        BIT0="1"
-                else
-                        BIT0="0"
-                fi
-                get_bit_level $CFG_BIT1
-                if [ "${BIT_LEVEL}" == "0" ]; then
-                        BIT1="1"
-                else
-                        BIT1="0"
-                fi
-                get_bit_level $CFG_BIT2
-                if [ "${BIT_LEVEL}" == "0" ]; then
-                        BIT2="1"
-                else
-                        BIT2="0"
-                fi
-                get_bit_level $CFG_BIT3
-                if [ "${BIT_LEVEL}" == "0" ]; then
-                        BIT3="1"
-                else
-                        BIT3="0"
-                fi
-                SYS_ADDRESS=$BIT3
-                let "BIT2 <<= 1"
-                let "SYS_ADDRESS|=$BIT2"
-                let "BIT1 <<= 2"
-                let "SYS_ADDRESS|=$BIT1"
-                let "BIT0 <<= 3"
-                let "SYS_ADDRESS|=$BIT0"
+{ 
+        SYS_ADDRESS="0"
+        get_bit_level $CFG_BIT0
+        [ "${BIT_LEVEL}" == "0" ] &&  SYS_ADDRESS="1"
+        get_bit_level $CFG_BIT1
+        [ "${BIT_LEVEL}" == "0" ] &&  SYS_ADDRESS="2"
+        get_bit_level $CFG_BIT2
+        [ "${BIT_LEVEL}" == "0" ] &&  SYS_ADDRESS="3"
+        get_bit_level $CFG_BIT3
+        [ "${BIT_LEVEL}" == "0" ] &&  SYS_ADDRESS="4"
 }
 
 # VARIABLES
@@ -454,39 +416,7 @@ echo "      </table>"
 echo "       <table border=\"1\" style=\"width:${TABLE_WIDTH}\">"
 echo "        <tr>"
 echo "          <td width=\"${ROW_TITLE_WIDTH}\">Address number</td>"
-		#get_address
-        	get_bit_level $CFG_BIT0
-		if [ "${BIT_LEVEL}" == "0" ]; then
-			BIT0="1"
-		else
-			BIT0="0"
-		fi
-        	get_bit_level $CFG_BIT1
-		if [ "${BIT_LEVEL}" == "0" ]; then
-			BIT1="1"
-		else
-			BIT1="0"
-		fi
-        	get_bit_level $CFG_BIT2
-		if [ "${BIT_LEVEL}" == "0" ]; then
-			BIT2="1"
-		else
-			BIT2="0"
-		fi
-        	get_bit_level $CFG_BIT3
-		if [ "${BIT_LEVEL}" == "0" ]; then
-			BIT3="1"
-		else
-			BIT3="0"
-		fi
-	        SYS_ADDRESS=$BIT3
-	        let "BIT2 <<= 1"
-	        let "SYS_ADDRESS|=$BIT2"
-	        let "BIT1 <<= 2"
-        	let "SYS_ADDRESS|=$BIT1"
-        	let "BIT0 <<= 3"
-	        let "SYS_ADDRESS|=$BIT0"
-
+get_address
 echo "          <td width=\"${ROW_VALUE_WIDTH}\"><input type=\"text\" name=\"ADDRESS\" value=\"$SYS_ADDRESS\"></td>"
 echo "        </tr>"
 echo "      </table>"

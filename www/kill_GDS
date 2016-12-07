@@ -1,5 +1,6 @@
 #!/bin/sh
 # cleanup all the runnning processes if any
+kill -9 `pidof GDSBT_iptcom`  >/dev/null 2>&1
 kill -9 `pidof chrome_starter.sh`  >/dev/null 2>&1
 kill -9 `pidof backlight_counter.sh`  >/dev/null 2>&1
 kill -9 `pidof monitor_counter.sh`  >/dev/null 2>&1
