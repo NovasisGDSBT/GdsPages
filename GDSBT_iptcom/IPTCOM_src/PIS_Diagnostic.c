@@ -60,27 +60,21 @@ static void Diagnostic_Core(void)
         if(((ErrorDescription & IPMODWATCHDOG)!=0) || ((ErrorDescription & APPMODULEWATCHDOG)!=0) || ((ErrorDescription & APPMODULEFAULT)!=0) || ((ErrorDescription & LEDBKLFAULT)!=0)  )
         {
             curr_mode=ERROR;
-            ErrorType(ERRTYPE_1);
-        //    MON_PRINTF("----------ERROR TYPE 1---------\n");
+            //ErrorType(ERRTYPE_1);
         }
         else
         {
-            if(((ErrorDescription & IPMODCCUTIMEOUT)!=0) || ((ErrorDescription & TFTTEMPRANGEHIGHT)!=0) || ((ErrorDescription & TFTTEMPRANGELOW)!=0))
+            if(((ErrorDescription & IPMODCCUTIMEOUT)!=0) || ((ErrorDescription & TFTTEMPRANGEHIGH)!=0) || ((ErrorDescription & TFTTEMPRANGELOW)!=0))
             {
-                 curr_mode=ERROR;
-                 ErrorType(ERRTYPE_0);
-               //   MON_PRINTF("----------ERROR TYPE 0---------\n");
-
+                curr_mode=ERROR;
+                //ErrorType(ERRTYPE_0);
             }
             else if(((ErrorDescription & TEMPSENSFAULT)!=0) || ((ErrorDescription & AMBLIGHTFAULT)!=0 ) )
             {
                 curr_mode=DEGRADED;
-             //    MON_PRINTF("----------DEGRADADED---------\n");
-
             }
             else
             {
-             //    MON_PRINTF("----------IMPOSSIBILE---------\n");
             }
         }
     }
@@ -92,110 +86,26 @@ ABSTRACT:
 
 RETURNS:    -
 */
+/*
 static int ErrorType(unsigned char ErrorType)
 {
-    int retval=TRUE;
+int retval=TRUE;
 
     if(ErrorType==ERRTYPE_0)
     {
-
 
     }
     else if(ErrorType==ERRTYPE_1)
     {
 
     }
-    else{
+    else
+    {
 
     }
-
-return retval;
-
+    return retval;
 }
-
-
-static void check_InnerErrors()
-{
-    int OverTempLimit;
-    int UnderTempLimit;
-    int SensTemp_value=0;
-    int AmbLightSensor;
-
-
-    FBcklightFault=(unsigned char )get_value(BCKL_FAULT_PATH);
-
-
-    if(FBcklightFault==TRUE)
-    {
-         ErrorDescription=ErrorDescription|LEDBKLFAULT;
-         system("echo 0 > /sys/class/gpio/gpio165/value");
-
-    //     MON_PRINTF("FBcklightFault: ErrorDescription=%x\n",ErrorDescription);
-    }
-    else
-    {
-        //Error T1 Permanent
-         system("echo 1 > /sys/class/gpio/gpio165/value");
-    }
-
-    FTempSensor=(unsigned char )get_value(TEMPSENS_FAULT_PATH);
-    if(FTempSensor==TRUE)
-    {
-        ErrorDescription=ErrorDescription|TEMPSENSFAULT;
-     //    MON_PRINTF("TEMPSENSFAULT: ErrorDescription=%x\n",ErrorDescription);
-    }
-    else
-    {
-        ErrorDescription &= (~TEMPSENSFAULT);
-    }
-    system("cat /tmp/temperature_limits | sed -e '2d' | sed 's/INTERNAL_OVERTEMPERATURE=//g'  > /tmp/tempLimitsUP");
-    OverTempLimit=get_value("/tmp/tempLimitsUP");
-    system("cat /tmp/temperature_limits | sed -e '1d' | sed 's/INTERNAL_UNDERTEMPERATURE=//g' > /tmp/tempLimitsDOWN");
-    UnderTempLimit=get_value("/tmp/tempLimitsDOWN");
-
-    system("cat /tmp/carrier_temp | sed 's/INTERNAL_TEMPERATURE=//g' > /tmp/SensorTemperatureValue");
-    SensTemp_value=get_value(TEMPSENS_VALUE_PATH);
-
-    if (SensTemp_value>OverTempLimit)
-    {
-        FTempORHigh=1;
-        ErrorDescription=ErrorDescription|TFTTEMPRANGEHIGHT;
-        system("echo 0 > /sys/class/gpio/gpio163/value");
-        system("echo 1 > /sys/class/backlight/backlight_lvds0.28/bl_power");
-    }
-    else
-    {
-        FTempORHigh=0;
-        ErrorDescription &= (~TFTTEMPRANGEHIGHT);
-        system("echo 1 > /sys/class/gpio/gpio163/value");
-        system("echo 0 > /sys/class/backlight/backlight_lvds0.28/bl_power");
-    }
-
-    if (SensTemp_value<UnderTempLimit)
-    {
-        FTempORLow=1;
-        ErrorDescription=ErrorDescription|TFTTEMPRANGELOW;
-        system("echo 1 > /sys/class/backlight/backlight_lvds0.28/bl_power");
-    }
-    else
-    {
-        FTempORLow=0;
-        ErrorDescription &= (~TFTTEMPRANGELOW);
-        system("echo 0 > /sys/class/backlight/backlight_lvds0.28/bl_power");
-    }
-
-    system("cat /tmp/ambientlight_value | sed 's/AMBIENT_LIGHT=//g' > /tmp/AmbientLightValue");
-
-    AmbLightSensor=get_value("/tmp/AmbientLightValue");
-    ErrorDescription &= (~ AMBLIGHTFAULT);
-    if(AmbLightSensor < 50)
-    {
-        ErrorDescription |= AMBLIGHTFAULT;
-        FAmbLightSensor=1;
-    }
-    else
-        FAmbLightSensor=0;
-}
+*/
 
 static int get_value(const char *path)
 {
@@ -211,6 +121,70 @@ int retval=0;
         fclose(fp);
         retval=(int)atoi(p);
     }
-
     return retval;
+}
+
+static void check_InnerErrors()
+{
+int OverTempLimit;
+int UnderTempLimit;
+int SensTempValue=0;
+int AmbLightSensor;
+
+
+    system("cat /tmp/temperature_limits | grep INTERNAL_OVERTEMPERATURE | sed 's/INTERNAL_OVERTEMPERATURE=//g'  > /tmp/tempLimitsUP");
+    OverTempLimit=get_value("/tmp/tempLimitsUP");
+    system("cat /tmp/temperature_limits | grep INTERNAL_UNDERTEMPERATURE | sed 's/INTERNAL_UNDERTEMPERATURE=//g' > /tmp/tempLimitsDOWN");
+    UnderTempLimit=get_value("/tmp/tempLimitsDOWN");
+    system("cat /tmp/carrier_temp | sed 's/INTERNAL_TEMPERATURE=//g' > /tmp/SensorTemperatureValue");
+    SensTempValue=get_value("/tmp/SensorTemperatureValue");
+
+    ErrorDescription = 0;
+    if (SensTempValue > OverTempLimit)
+    {
+        ErrorDescription |= TFTTEMPRANGEHIGH;
+        system("echo 0 > /sys/class/gpio/gpio163/value");
+    }
+    else
+    {
+        system("echo 1 > /sys/class/gpio/gpio163/value");
+    }
+
+    if ( SensTempValue < UnderTempLimit )
+    {
+        ErrorDescription |= TFTTEMPRANGELOW;
+    }
+
+    if ( ErrorDescription != 0 )
+    {
+        system("echo 1 > /sys/class/backlight/backlight_lvds0.28/bl_power");
+    }
+    else
+    {
+        system("echo 0 > /sys/class/backlight/backlight_lvds0.28/bl_power");
+    }
+
+    FBcklightFault=(unsigned char )get_value(BCKL_FAULT_PATH);
+    if(FBcklightFault==TRUE)
+    {
+         ErrorDescription |= LEDBKLFAULT;
+         system("echo 0 > /sys/class/gpio/gpio165/value");
+    }
+
+    FTempSensor=(unsigned char )get_value(TEMPSENS_FAULT_PATH);
+    if(FTempSensor==TRUE)
+    {
+        ErrorDescription |= TEMPSENSFAULT;
+    }
+
+    system("cat /tmp/ambientlight_value | sed 's/AMBIENT_LIGHT=//g' > /tmp/AmbientLightValue");
+
+    AmbLightSensor=get_value("/tmp/AmbientLightValue");
+    if(AmbLightSensor < 50)
+    {
+        ErrorDescription |= AMBLIGHTFAULT;
+        FAmbLightSensor=1;
+    }
+    else
+        FAmbLightSensor=0;
 }

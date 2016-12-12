@@ -12,6 +12,9 @@ extern  char    chromium_server[256];
 
 unsigned short ISystemLifeSign=0;
 
+/* VAR DIAG DATA */
+int     test_webpage=0; /* If set do not update web page */
+
 unsigned char ccmodTimeoutFault=0;
 
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
@@ -60,26 +63,28 @@ static char               URL[256];
             ccmodTimeoutFault=0;
         }
     }
-
-    if ( strlen(pd_InData.LoadResource2.IURL) != 0)
+    if ( test_webpage == 0)
     {
-        sprintf(URL,"CHROMIUM_SERVER=%s",pd_InData.LoadResource2.IURL);
-        if ( strcmp(chromium_server,URL) != 0 )
+        if ( strlen(pd_InData.LoadResource2.IURL) != 0)
         {
-            printf("\n");
-            printf("URL             : %s!\n",URL);
-            printf("chromium_server : %s!\n",chromium_server);
-            sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
-            system(sys_URL);
-            system("rm -rf /tmp/chromium_var_mountpoint");
-            system("mkdir /tmp/chromium_var_mountpoint");
-            system("mount /dev/mmcblk0p3 /tmp/chromium_var_mountpoint");
-            system("cp /tmp/chromium_var /tmp/chromium_var_mountpoint/sysconfig/etc/sysconfig/chromium_var");
-            system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
-            system("umount /tmp/chromium_var_mountpoint");
-            sprintf(chromium_server,"%s",URL);
-            printf("chromium_server is now %s !!!\n",chromium_server);
-            system("touch /tmp/start_chrome");
+            sprintf(URL,"CHROMIUM_SERVER=%s",pd_InData.LoadResource2.IURL);
+            if ( strcmp(chromium_server,URL) != 0 )
+            {
+                printf("\n");
+                printf("URL             : %s!\n",URL);
+                printf("chromium_server : %s!\n",chromium_server);
+                sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
+                system(sys_URL);
+                system("rm -rf /tmp/chromium_var_mountpoint");
+                system("mkdir /tmp/chromium_var_mountpoint");
+                system("mount /dev/mmcblk0p3 /tmp/chromium_var_mountpoint");
+                system("cp /tmp/chromium_var /tmp/chromium_var_mountpoint/sysconfig/etc/sysconfig/chromium_var");
+                system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
+                system("umount /tmp/chromium_var_mountpoint");
+                sprintf(chromium_server,"%s",URL);
+                printf("chromium_server is now %s !!!\n",chromium_server);
+                system("touch /tmp/start_chrome");
+            }
         }
     }
     /*

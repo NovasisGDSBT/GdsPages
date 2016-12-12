@@ -10,27 +10,21 @@ mkdir /tmp/store_mountpoint
 mount /dev/mmcblk0p3 /tmp/store_mountpoint
 
 if [ -d /tmp/store_mountpoint/webparams ]; then
-	FILES=`ls /tmp/www/defaults`
-	for i in ${FILES}; do
-		if [ -f /tmp/store_mountpoint/webparams/$i ]; then
-			cp /tmp/store_mountpoint/webparams/$i /tmp/.
-		else
-			cp /tmp/www/defaults/$i /tmp/.
-			cp /tmp/www/defaults/$i /tmp/store_mountpoint/webparams/.
-		fi	
-	done
-	if [ -f /tmp/store_mountpoint/sysconfig/mac_addr ]; then
-        	cp /tmp/store_mountpoint/sysconfig/mac_addr /tmp/.
-	else
-		cat /sys/class/net/eth0/address > /tmp/store_mountpoint/sysconfig/mac_addr
-		cat /sys/class/net/eth0/address > /tmp/mac_addr
-	fi
-	cp /tmp/store_mountpoint/webparams/* /tmp/.
+	cp -r /tmp/store_mountpoint/webparams/* /tmp/.
 else
 	mkdir /tmp/store_mountpoint/webparams
 	cp /tmp/www/defaults/* /tmp/.
 	cp /tmp/www/defaults/* /tmp/store_mountpoint/webparams/.
 fi
+
+# Default page, downloadable
+if [ -d /tmp/store_mountpoint/default_page ]; then
+	cp /tmp/store_mountpoint/default_page/* /tmp/www/test_default_page.
+else
+	mkdir /tmp/store_mountpoint/default_page
+	cp -r /tmp/www/test_default_page/* /tmp/store_mountpoint/default_page/.
+fi
+
 echo "IMAGE_REV=${SWVERSION}" > /tmp/store_mountpoint/webparams/sw_version
 cp /tmp/store_mountpoint/webparams/sw_version /tmp
 # Default set for timezone
@@ -51,7 +45,7 @@ else
 	cp /tmp/store_mountpoint/reboot_counter /tmp/.
 fi
 umount /tmp/store_mountpoint
-echo "0" > /tmp/wdog_counter
+! [ -f /tmp/wdog_counter ] && echo "0" > /tmp/wdog_counter
 echo "0" > /tmp/api_mod
 echo "0" > /tmp/wdog_api_mod
 
@@ -163,7 +157,11 @@ then
 touch /tmp/backlight_on
 /tmp/www/apply_rgbmatrix &
 
-
+/tmp/www/chrome_keepalive.sh &
+###############       IptCom          #################
 cd /tmp/www
+sleep 1
 ./GDSBT_iptcom &
-
+############### Watch Dogs Management #################
+./watch_dog_IPTCOM.sh &
+./chrome_keepalive.sh &

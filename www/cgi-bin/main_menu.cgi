@@ -29,6 +29,8 @@ echo "     <center><a href=\"system_info.cgi\"><input type=\"button\" value=\"Sy
 echo "     <br>"
 echo "     <center><a href=\"updateall.cgi\"><input type=\"button\" value=\"Update System\"></center></a>"
 echo "     <br>"
+echo "     <center><a href=\"update_default_page.cgi\"><input type=\"button\" value=\"Update Default Web Page\"></center></a>"
+echo "     <br>"
 echo "     <center><a href=\"do_reboot.cgi\"><input type=\"button\" value=\"Reboot\"></center></a>"
 echo "     <br>"
 echo "     <center><a href=\"test_only.cgi\"><input type=\"button\" value=\"Change MAC ( for production only )\"></center></a>"

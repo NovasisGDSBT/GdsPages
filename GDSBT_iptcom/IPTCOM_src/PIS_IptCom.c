@@ -33,6 +33,8 @@ static UINT32 md_InComId_Maint[2] = {COMID_IINFDISCTRLMAINT,0};
 static CINFDISCtrlOp md_InDataOp;
 static CINFDISCtrlMaint md_InDataMaint;
 
+
+
 void IptComClean(void);
 
 int WrapIPTCom_handleEvent(void)

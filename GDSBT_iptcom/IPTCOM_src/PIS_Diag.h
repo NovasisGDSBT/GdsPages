@@ -15,15 +15,17 @@ reference:
 int Diagnostic(void);
 
 #define     NOERROR            (0x01FF)
-#define     IPMODWATCHDOG      ((unsigned int)1)
-#define     IPMODCCUTIMEOUT    ((unsigned int)2)
-#define     APPMODULEWATCHDOG  ((unsigned int)4)
-#define     APPMODULEFAULT     ((unsigned int)8)
-#define     LEDBKLFAULT        ((unsigned int)16)
-#define     TEMPSENSFAULT      ((unsigned int)32)
-#define     AMBLIGHTFAULT      ((unsigned int)64)
-#define     TFTTEMPRANGEHIGHT  ((unsigned int)128)
-#define     TFTTEMPRANGELOW    ((unsigned int)256)
+#define     IPMODWATCHDOG      ((unsigned int)0x001)
+#define     IPMODCCUTIMEOUT    ((unsigned int)0x002)
+#define     APPMODULEWATCHDOG  ((unsigned int)0x004)
+#define     APPMODULEFAULT     ((unsigned int)0x008)
+#define     LEDBKLFAULT        ((unsigned int)0x010)
+#define     TEMPSENSFAULT      ((unsigned int)0x020)
+#define     AMBLIGHTFAULT      ((unsigned int)0x040)
+#define     TFTTEMPRANGEHIGH   ((unsigned int)0x080)
+#define     TFTTEMPRANGELOW    ((unsigned int)0x100)
+
+
 
 
 #define ERRTYPE_0   ((unsigned char)0)

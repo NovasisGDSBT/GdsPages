@@ -12,5 +12,7 @@ cp www/AutoRun.sh FlasherScripts/AutoRun.sh_GDS
 cp FlasherScripts/gds_flasher www/.
 
 tar cf www.tar www
+tar cf default_page.tar default_page
 
 chmod 777 www.tar
+chmod 777 default_page.tar

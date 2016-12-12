@@ -23,6 +23,7 @@ modules.builtin
 *.depend
 *.layout
 www.tar
+default_page.tar
 
 /.svn/
 /IPT-COM-SRC-3.12.7.1/iptcom/export-iptcom/

@@ -20,6 +20,7 @@
 unsigned int CSystemMode,cmd_valid = 0;
 int CDurationCounter=0,CBackOnCounter=0,CNormalStartsCounter=0,CWdogResetsCounter=0;
 extern  unsigned char lvds_ptr[256];
+extern  int     test_webpage;
 
 /****************************************************************/
 /****             Graphic Tests Functions on Op                 */
@@ -35,7 +36,11 @@ void do_tests(int graphic_test)
        curr_mode=TEST;
     switch ( graphic_test )
     {
-        case NORMAL_OPERATION   : system("/tmp/www/GdsScreenTestWrite STOP;sleep 1;touch /tmp/start_chrome"); test_in_progress = 0; break;
+        case NORMAL_OPERATION   :
+                                    test_webpage = 0;
+                                    system("/tmp/www/GdsScreenTestWrite STOP;sleep 1;touch /tmp/start_chrome");
+                                    test_in_progress = 0;
+                                    break;
         case FILL_RED           : system("/tmp/www/GdsScreenTestWrite FILL_RED"); break;
         case FILL_GREEN         : system("/tmp/www/GdsScreenTestWrite FILL_GREEN"); break;
         case FILL_BLUE          : system("/tmp/www/GdsScreenTestWrite FILL_BLUE"); break;
@@ -47,7 +52,11 @@ void do_tests(int graphic_test)
         case SQUARE_LEFT        : system("/tmp/www/GdsScreenTestWrite FILL_SQUARELEFT"); break;
         case SQUARE_CENTER      : system("/tmp/www/GdsScreenTestWrite FILL_SQUARECENTER"); break;
         case SQUARE_RIGHT       : system("/tmp/www/GdsScreenTestWrite FILL_SQUARERIGHT"); break;
-        case IMAGE_TEST         : system("/tmp/www/GdsScreenTestWrite IMAGE_TEST"); break;
+        case IMAGE_TEST         :
+                                    test_webpage = 1;
+                                    system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+                                    system("/tmp/www/GdsScreenTestWrite STOP;sleep 1;touch /tmp/start_chrome");
+                                    break;
     }
 }
 
@@ -245,6 +254,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     if ( md_InDataMaint.INFDCounterCommands.CWdogResetsCounterReset == 1 )
     {
         CWdogResetsCounter = 0;
+        system ("echo 0 > /tmp/wdog_counter");
         MON_PRINTF("%s : Received Wdog Resets Counter Command\n",__FUNCTION__);
     }
 }
