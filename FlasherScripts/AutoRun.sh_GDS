@@ -137,7 +137,7 @@ done
 # Timeout management with ERROR TYPE 1
 #/tmp/www/cgi-bin/find_lvds
 if [ "$TIMEOUTTCMS" = "0" ]; then
-	/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
+	/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'` GREEN
 else
 	kill -HUP `pidof GDSBT_iptcom` >/dev/null 2>&1
 	kill -HUP `pidof auto_backlight_bkg` >/dev/null 2>&1
