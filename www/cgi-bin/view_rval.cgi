@@ -218,8 +218,27 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	#EVENTLIST
 	echo "$57" > /tmp/event_list
 	#SETUP BOOT
-	echo "$58" > /tmp/setup_boot
-	echo "$59" >> /tmp/setup_boot
+	
+	
+	MAX_TIME_SQUARE=30                                        
+        YELLOWTIME=$(echo $58 | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g')  
+        GREENTIME=$(echo $59 | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g')
+                                                             
+                                                                  
+        if [ "$YELLOWTIME" -le "$MAX_TIME_SQUARE" ]               
+        then                                                      
+          echo "$58" > /tmp/setup_boot                            
+        else                                                      
+          echo "YELLOW_SQUARE_TIME=$MAX_TIME_SQUARE" > /tmp/setup_boot
+        fi                                                        
+                                                                  
+        if [ "$GREENTIME" -le "$MAX_TIME_SQUARE" ]                
+        then                                                      
+          echo "$59" >> /tmp/setup_boot                           
+        else                                                      
+          echo "TCMS_GREEN_SQUARE_TIME=$MAX_TIME_SQUARE" >> /tmp/setup_boot
+        fi 
+        
 	echo "$60" >> /tmp/setup_boot
 	echo "$61" >> /tmp/setup_boot
 	echo "$62" >> /tmp/setup_boot

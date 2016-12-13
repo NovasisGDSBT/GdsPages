@@ -58,51 +58,6 @@ while [ "$COUNT" -ge "$LIMIT" ]; do
         let COUNT=$COUNT+1
 done
 
-# 120 secs max timeout communication at startup
-TIMEOUTTCMS=0
-WAITTIME=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
-while [ ! -f /tmp/my_ip ]; do
-        sleep 1
-	let COUNT=$COUNT+1
-	if [ "$COUNT" -ge "$WAITTIME" ]; then
-		TIMEOUTTCMS=1
-		break
-	fi
-done
-
-# Timeout management with ERROR TYPE 1
-/tmp/www/cgi-bin/find_lvds
-if [ "$TIMEOUTTCMS" = "0" ]; then
-	/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
-else
-	/tmp/www/GdsScreenTest &
-	sleep 1
-        /tmp/www/GdsScreenTestWrite START
-	sleep 1
-	/tmp/www/GdsScreenTestWrite DIAG
-	sleep 1
-	exit 0
-fi
-
-TIMEOUT=15
-if [ -f /usr/bin/startx ]; then
-        while ! [ -f /tmp/system_ready ]; do
-                sleep 1
-                let TIMEOUT=${TIMEOUT}-1
-                if [ "${TIMEOUT}" == "0" ]; then
-                        break
-                fi
-        done
-        kill -HUP `pidof X` >/dev/null 2>&1
-        kill -HUP `pidof x11vnc` >/dev/null 2>&1
-        export DISPLAY=":0.0"
-        /usr/bin/startx &
-        if [ -f /tmp/application_storage/bkgwm.png ]; then
-                sleep 1
-                fbsetbg -c /tmp/application_storage/bkgwm.png
-        fi
-fi
-
 
 RED_GAIN=255
 GREEN_GAIN=250
@@ -136,6 +91,8 @@ touch /tmp/backlight_sensor_value
 touch /tmp/ambientlight_value
 
 ###############       Daemons          #################
+
+/tmp/www/cgi-bin/find_lvds
 # start application
 # auto_backlight_bkg sets the brightness to MAX@MAXLIGHT
 /tmp/www/auto_backlight_bkg &
@@ -157,11 +114,66 @@ then
 touch /tmp/backlight_on
 /tmp/www/apply_rgbmatrix &
 
-/tmp/www/chrome_keepalive.sh &
+
 ###############       IptCom          #################
 cd /tmp/www
 sleep 1
 ./GDSBT_iptcom &
+
+
+
+# 120 secs max timeout communication at startup
+TIMEOUTTCMS=0
+WAITTIME=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
+while [ ! -f /tmp/www/POST_enable ]; do
+        sleep 1
+	let COUNT=$COUNT+1
+	if [ "$COUNT" -ge "$WAITTIME" ]; then
+		TIMEOUTTCMS=1
+		break
+	fi
+done
+
+# Timeout management with ERROR TYPE 1
+#/tmp/www/cgi-bin/find_lvds
+if [ "$TIMEOUTTCMS" = "0" ]; then
+	/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
+else
+	kill -HUP `pidof GDSBT_iptcom` >/dev/null 2>&1
+	kill -HUP `pidof auto_backlight_bkg` >/dev/null 2>&1
+	kill -HUP `pidof monitor_counter` >/dev/null 2>&1
+	kill -HUP `pidof backlight_counter` >/dev/null 2>&1
+	/tmp/www/GdsScreenTest &
+	sleep 1
+        /tmp/www/GdsScreenTestWrite START
+	sleep 1
+	/tmp/www/GdsScreenTestWrite DIAG
+	sleep 1
+	exit 0
+fi
+
+
+###############       X - Chrome          #################
+TIMEOUT=15
+if [ -f /usr/bin/startx ]; then
+        while ! [ -f /tmp/system_ready ]; do
+                sleep 1
+                let TIMEOUT=${TIMEOUT}-1
+                if [ "${TIMEOUT}" == "0" ]; then
+                        break
+                fi
+        done
+        kill -HUP `pidof X` >/dev/null 2>&1
+        kill -HUP `pidof x11vnc` >/dev/null 2>&1
+        export DISPLAY=":0.0"
+        /usr/bin/startx &
+        if [ -f /tmp/application_storage/bkgwm.png ]; then
+                sleep 1
+                fbsetbg -c /tmp/application_storage/bkgwm.png
+        fi
+fi
+
+
 ############### Watch Dogs Management #################
 ./watch_dog_IPTCOM.sh &
 ./chrome_keepalive.sh &

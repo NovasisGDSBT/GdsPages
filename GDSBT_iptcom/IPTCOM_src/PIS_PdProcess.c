@@ -20,11 +20,12 @@ unsigned char ccmodTimeoutFault=0;
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
 
-static unsigned char      flag=FALSE;
-static unsigned short int prev_lifecounter=0;
-static unsigned short int spacetime=0;
-static char               sys_URL[256];
-static char               URL[256];
+    static unsigned char      flag=FALSE;
+    static unsigned char      flagPostCalling=FALSE;
+    static unsigned short int prev_lifecounter=0;
+    static unsigned short int spacetime=0;
+    static char               sys_URL[256];
+    static char               URL[256];
 
     /* Placeholders */
     CDurationCounter++;
@@ -32,6 +33,7 @@ static char               URL[256];
     CNormalStartsCounter++;
     CWdogResetsCounter++;
     /* Placeholders ends */
+
 
     if(flag==FALSE)
     {
@@ -61,6 +63,15 @@ static char               URL[256];
             ErrorDescription &= (~IPMODCCUTIMEOUT);
             spacetime=0;
             ccmodTimeoutFault=0;
+
+            if(flagPostCalling==FALSE)
+            {
+                flagPostCalling=TRUE;
+                system("echo 1 > /tmp/www/POST_enable");
+            }
+
+
+
         }
     }
     if ( test_webpage == 0)
