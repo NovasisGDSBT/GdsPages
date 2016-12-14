@@ -213,6 +213,9 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	echo "0,0,0" >> /tmp/rgb_matrix
 	echo "2,2,2" >> /tmp/rgb_matrix
 	/tmp/www/NovaCSC f /tmp/rgb_matrix > /dev/null 2>&1
+	xml ed --inplace -u "/data-set/ColorTemp/RED_GAIN" -v $RED_GAIN /tmp/NovaConfig.xml
+	xml ed --inplace -u "/data-set/ColorTemp/GREEN_GAIN" -v $GREEN_GAIN /tmp/NovaConfig.xml
+	xml ed --inplace -u "/data-set/ColorTemp/BLUE_GAIN" -v $BLUE_GAIN /tmp/NovaConfig.xml
 
 	#Versions from $49 to $53
 	if [ "$54" == "BLON_TIME_RESET=1" ]; then
@@ -288,6 +291,7 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	cp /tmp/setup_boot /tmp/store_mountpoint/webparams/tmpfile7
 	cp /tmp/voltages_readout /tmp/store_mountpoint/webparams/tmpfile8
 	cp /tmp/rgb_matrix /tmp/store_mountpoint/webparams/tmpfile9
+	cp /tmp/NovaConfig.xml /tmp/store_mountpoint/webparams/tmpfile10
 	mv /tmp/store_mountpoint/webparams/tmpfile1 /tmp/store_mountpoint/webparams/backlight_limits
 	mv /tmp/store_mountpoint/webparams/tmpfile2 /tmp/store_mountpoint/webparams/temperature_limits
 	mv /tmp/store_mountpoint/webparams/tmpfile3 /tmp/store_mountpoint/webparams/rgb_settings
@@ -297,6 +301,7 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	mv /tmp/store_mountpoint/webparams/tmpfile7 /tmp/store_mountpoint/webparams/setup_boot
 	mv /tmp/store_mountpoint/webparams/tmpfile8 /tmp/store_mountpoint/webparams/voltages_readout
 	mv /tmp/store_mountpoint/webparams/tmpfile9 /tmp/store_mountpoint/webparams/rgb_matrix
+	mv /tmp/store_mountpoint/webparams/tmpfile10 /tmp/store_mountpoint/webparams/NovaConfig.xml
 	. /tmp/hw_version
 	. /tmp/sw_version
 

@@ -1,0 +1,9 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<data-set>
+	<!--RGB Color Temp-->
+	<ColorTemp>
+		<RED_GAIN>255</RED_GAIN>
+		<GREEN_GAIN>250</GREEN_GAIN>
+		<BLUE_GAIN>245</BLUE_GAIN>
+	</ColorTemp>
+</data-set>

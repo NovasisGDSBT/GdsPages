@@ -58,24 +58,6 @@ while [ "$COUNT" -ge "$LIMIT" ]; do
         let COUNT=$COUNT+1
 done
 
-RED_GAIN=255
-GREEN_GAIN=250
-BLUE_GAIN=245
-
-# This is for first start
-if ! [ -f /tmp/rgb_matrix ]; then
-        echo "$RED_GAIN,0,0" > /tmp/rgb_matrix
-        echo "0,$GREEN_GAIN,0" >> /tmp/rgb_matrix
-        echo "0,0,$BLUE_GAIN" >> /tmp/rgb_matrix
-        echo "0,0,0"   >> /tmp/rgb_matrix
-        echo "2,2,2"   >> /tmp/rgb_matrix
-        echo "RED_GAIN=$RED_GAIN" > /tmp/rgb_settings
-        echo "GREEN_GAIN=$GREEN_GAIN" >> /tmp/rgb_settings
-        echo "BLUE_GAIN=$BLUE_GAIN" >> /tmp/rgb_settings
-fi
-
-# Finished
-
 # setup web server
 cp /tmp/www/lighttpd.conf /etc/lighttpd/.
 cp /tmp/www/cgi.conf /etc/lighttpd/conf.d/.
