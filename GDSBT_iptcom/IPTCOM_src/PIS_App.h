@@ -27,6 +27,15 @@ int Application(void);
 #define READ 1
 #define WRITE 0
 
+/* Input */
+#define BACKLIGHT_FAULT     "/sys/class/gpio/gpio158/value"
+/* Output */
+#define SW_FAULT            "/sys/class/gpio/gpio159/value"
+#define URL_COM             "/sys/class/gpio/gpio162/value"
+#define OVERTEMP            "/sys/class/gpio/gpio163/value"
+#define PANEL_LIGHT_FAIL    "/sys/class/gpio/gpio165/value"
+#define BACKLIGHT_CMD       "/sys/class/backlight/backlight_lvds0.28/bl_power"
+
 extern unsigned char  curr_mode;
 extern IPT_SEM   semflag;
 extern unsigned char flag_mode;

@@ -148,6 +148,7 @@ int ret=IPT_ERROR;
 static UINT8 oldTopo = 0;
 UINT8 state;
 UINT8 topo;
+char    cmd[64];
 
     res = tdcGetIptState(&state, &topo);
     if ( res == TDC_OK)
@@ -183,8 +184,8 @@ UINT8 topo;
     res=PDComAPI_get(hpd_in, (BYTE*) &pd_InData, sizeof(CCCUC_INFDIS));
 
     pd_CCUProcess(pd_InData);
-    system("echo 0 > /sys/class/gpio/gpio162/value");
-
+    sprintf(cmd,"echo 0 > %s",URL_COM);
+    system(cmd);
     if(res!=IPT_OK)
         MON_PRINTF("%s : PDComAPI_get retcode %d , ILLEGAL!\n",__FUNCTION__,res);
 

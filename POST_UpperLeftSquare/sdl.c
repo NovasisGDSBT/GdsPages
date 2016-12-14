@@ -1,4 +1,4 @@
-#include "GreenSquare.h"
+#include "UpperLeftSquare.h"
 #include <signal.h>
 
 SDL_Rect 	screen_rect = {0,0,WIDTH,HEIGHT};

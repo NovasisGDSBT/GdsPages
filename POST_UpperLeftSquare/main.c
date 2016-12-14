@@ -1,4 +1,4 @@
-#include "GreenSquare.h"
+#include "UpperLeftSquare.h"
 SDL_Surface *screen;
 
 int main (int argc, char** argv)

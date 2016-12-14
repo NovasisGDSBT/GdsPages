@@ -25,15 +25,9 @@ int Diagnostic(void);
 #define     TFTTEMPRANGEHIGH   ((unsigned int)0x080)
 #define     TFTTEMPRANGELOW    ((unsigned int)0x100)
 
-
-
-
 #define ERRTYPE_0   ((unsigned char)0)
 #define ERRTYPE_1   ((unsigned char)1)
 
-
-//#define BCKL_FAULT_PATH "/sys/class/gpio/gpio165/value" //MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30
-#define BCKL_FAULT_PATH "/sys/class/gpio/gpio158/value" //MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30
 #define TEMPSENS_FAULT_PATH "/tmp/ext_temp_fault"
 #define TEMPSENS_VALUE_PATH "/tmp/SensorTemperatureValue"
 #define AMBLIGHT_FAULT_PATH "/tmp/ext_ambientlight_fault"

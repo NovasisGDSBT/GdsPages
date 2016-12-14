@@ -13,6 +13,7 @@ while [ "${TRUE}" == "1" ]; do
 	if [ $COUNT -le 3 ]; then
 		# First crash api_mod contains 0.
 		# Second crash contains 1, so update wdog_api_mod
+		echo 0 > /sys/class/gpio/gpio159/value
 		cp /tmp/api_mod /tmp/wdog_api_mod
 		kill -9 `pidof chrome`
 		sleep 1
@@ -21,6 +22,7 @@ while [ "${TRUE}" == "1" ]; do
 		DISPLAY=":0.0"  google-chrome --kiosk ${CHROMIUM_SERVER} &
 		echo 1 > /tmp/api_mod
 	        sleep 15
+		echo 1 > /sys/class/gpio/gpio159/value
         fi
 done
 

@@ -130,7 +130,7 @@ int OverTempLimit;
 int UnderTempLimit;
 int SensTempValue=0;
 int AmbLightSensor;
-
+char    cmd[64];
 
     system("cat /tmp/temperature_limits | grep INTERNAL_OVERTEMPERATURE | sed 's/INTERNAL_OVERTEMPERATURE=//g'  > /tmp/tempLimitsUP");
     OverTempLimit=get_value("/tmp/tempLimitsUP");
@@ -143,11 +143,15 @@ int AmbLightSensor;
     if (SensTempValue > OverTempLimit)
     {
         ErrorDescription |= TFTTEMPRANGEHIGH;
-        system("echo 0 > /sys/class/gpio/gpio163/value");
+        //system("echo 0 > /sys/class/gpio/gpio163/value");
+        sprintf(cmd,"echo 0 > %s",OVERTEMP);
+        system(cmd);
     }
     else
     {
-        system("echo 1 > /sys/class/gpio/gpio163/value");
+        //system("echo 1 > /sys/class/gpio/gpio163/value");
+        sprintf(cmd,"echo 1 > %s",OVERTEMP);
+        system(cmd);
     }
 
     if ( SensTempValue < UnderTempLimit )
@@ -157,18 +161,24 @@ int AmbLightSensor;
 
     if ( ErrorDescription != 0 )
     {
-        system("echo 1 > /sys/class/backlight/backlight_lvds0.28/bl_power");
+        sprintf(cmd,"echo 1 > %s",BACKLIGHT_CMD);
+        system(cmd);
+        //system("echo 1 > /sys/class/backlight/backlight_lvds0.28/bl_power");
     }
     else
     {
-        system("echo 0 > /sys/class/backlight/backlight_lvds0.28/bl_power");
+        sprintf(cmd,"echo 0 > %s",BACKLIGHT_CMD);
+        system(cmd);
+        //system("echo 0 > /sys/class/backlight/backlight_lvds0.28/bl_power");
     }
 
-    FBcklightFault=(unsigned char )get_value(BCKL_FAULT_PATH);
+    FBcklightFault=(unsigned char )get_value(BACKLIGHT_FAULT);
     if(FBcklightFault==TRUE)
     {
-         ErrorDescription |= LEDBKLFAULT;
-         system("echo 0 > /sys/class/gpio/gpio165/value");
+        ErrorDescription |= LEDBKLFAULT;
+        //system("echo 0 > /sys/class/gpio/gpio165/value");
+        sprintf(cmd,"echo 0 > %s",PANEL_LIGHT_FAIL);
+        system(cmd);
     }
 
     FTempSensor=(unsigned char )get_value(TEMPSENS_FAULT_PATH);

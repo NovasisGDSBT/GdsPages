@@ -49,7 +49,7 @@ umount /tmp/store_mountpoint
 echo "0" > /tmp/api_mod
 echo "0" > /tmp/wdog_api_mod
 
-# 30 seconds management for yellow square. Note : the kernel can't gurantee the minimu 3 secs required
+# 30 seconds management for yellow square. Note : the kernel can't gurantee the minimum 3 secs required
 export SDL_NOMOUSE=1
 COUNT=0
 LIMIT=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
@@ -57,7 +57,6 @@ while [ "$COUNT" -ge "$LIMIT" ]; do
 	sleep 1
         let COUNT=$COUNT+1
 done
-
 
 RED_GAIN=255
 GREEN_GAIN=250
@@ -114,17 +113,13 @@ then
 touch /tmp/backlight_on
 /tmp/www/apply_rgbmatrix &
 
-
-###############       IptCom          #################
 cd /tmp/www
-sleep 1
 ./GDSBT_iptcom &
-
-
 
 # 120 secs max timeout communication at startup
 TIMEOUTTCMS=0
 WAITTIME=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
+# The file /tmp/www/POST_enable is created by iptcom app when tcms is not reachable
 while [ ! -f /tmp/www/POST_enable ]; do
         sleep 1
 	let COUNT=$COUNT+1
@@ -135,23 +130,23 @@ while [ ! -f /tmp/www/POST_enable ]; do
 done
 
 # Timeout management with ERROR TYPE 1
-#/tmp/www/cgi-bin/find_lvds
 if [ "$TIMEOUTTCMS" = "0" ]; then
-	/tmp/www/POST_GreenSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'` GREEN
+	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'` GREEN
 else
-	kill -HUP `pidof GDSBT_iptcom` >/dev/null 2>&1
-	kill -HUP `pidof auto_backlight_bkg` >/dev/null 2>&1
-	kill -HUP `pidof monitor_counter` >/dev/null 2>&1
-	kill -HUP `pidof backlight_counter` >/dev/null 2>&1
-	/tmp/www/GdsScreenTest &
-	sleep 1
-        /tmp/www/GdsScreenTestWrite START
-	sleep 1
-	/tmp/www/GdsScreenTestWrite DIAG
-	sleep 1
+	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
+	echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+        /usr/bin/startx &
+	#/tmp/www/GdsScreenTest &
+	#sleep 1
+        #/tmp/www/GdsScreenTestWrite START
+	#sleep 1
+	#/tmp/www/GdsScreenTestWrite IMAGE_TEST
+	#sleep 1
+	kill -9 `pidof GDSBT_iptcom`
+	# Disconnects from the net, bypass relè off
+	echo 0 > /sys/class/gpio/gpio24/value
 	exit 0
 fi
-
 
 ###############       X - Chrome          #################
 TIMEOUT=15
@@ -172,7 +167,6 @@ if [ -f /usr/bin/startx ]; then
                 fbsetbg -c /tmp/application_storage/bkgwm.png
         fi
 fi
-
 
 ############### Watch Dogs Management #################
 ./watch_dog_IPTCOM.sh &

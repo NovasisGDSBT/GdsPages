@@ -117,10 +117,12 @@ FILE *fp;
 int res;
 UINT8 inAugState, topoCnt;
 struct sigaction sa;
+char    cmd[64];
 
 
     MON_PRINTF("START MAIN !\n\n");
-    system("echo 1 > /sys/class/gpio/gpio162/value");
+    sprintf(cmd,"echo 1 > %s",URL_COM);
+    system(cmd);
 
     bzero(chromium_server,sizeof(chromium_server));
     /* /etc/sysconfig/chromium_var contents are : CHROMIUM_SERVER=10.0.1.6 */

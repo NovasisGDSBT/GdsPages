@@ -19,13 +19,12 @@ unsigned char ccmodTimeoutFault=0;
 
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
-
-    static unsigned char      flag=FALSE;
-    static unsigned char      flagPostCalling=FALSE;
-    static unsigned short int prev_lifecounter=0;
-    static unsigned short int spacetime=0;
-    static char               sys_URL[256];
-    static char               URL[256];
+static unsigned char      flag=FALSE;
+static unsigned char      flagPostCalling=FALSE;
+static unsigned short int prev_lifecounter=0;
+static unsigned short int spacetime=0;
+static char               sys_URL[256];
+static char               URL[256];
 
     /* Placeholders */
     CDurationCounter++;
@@ -33,7 +32,6 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
     CNormalStartsCounter++;
     CWdogResetsCounter++;
     /* Placeholders ends */
-
 
     if(flag==FALSE)
     {
@@ -44,14 +42,13 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 
         if((prev_lifecounter==pd_InData.Lifesign.ICCUCLifeSign) || ((pd_InData.Lifesign.ICCUCLifeSign==0)&&(prev_lifecounter!= sizeof(unsigned short int))))
         {
-          //ERRORE
-          spacetime++;
+            //ERRORE
+            spacetime++;
 
             if(spacetime>=TIMEOUT)
             {
                 ErrorDescription=ErrorDescription|IPMODCCUTIMEOUT;
                 ccmodTimeoutFault=1;
-
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
@@ -69,11 +66,9 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
                 flagPostCalling=TRUE;
                 system("echo 1 > /tmp/www/POST_enable");
             }
-
-
-
         }
     }
+
     if ( test_webpage == 0)
     {
         if ( strlen(pd_InData.LoadResource2.IURL) != 0)
