@@ -18,7 +18,8 @@ static int get_value(const char *path);
 static void check_InnerErrors(void);
 
 extern int test_in_progress ;
-
+extern unsigned char FApiMod;
+extern unsigned char FWatchdogApiMod;
 
 int Diagnostic(void)
 {
@@ -71,7 +72,14 @@ static void Diagnostic_Core(void)
             }
             else if(((ErrorDescription & TEMPSENSFAULT)!=0) || ((ErrorDescription & AMBLIGHTFAULT)!=0 ) )
             {
-                curr_mode=DEGRADED;
+                if (test_in_progress == 1)
+                {
+                    curr_mode=TEST;
+                }
+                else
+                {
+                    curr_mode=DEGRADED;
+                }
             }
             else
             {
@@ -139,7 +147,7 @@ char    cmd[64];
     system("cat /tmp/carrier_temp | sed 's/INTERNAL_TEMPERATURE=//g' > /tmp/SensorTemperatureValue");
     SensTempValue=get_value("/tmp/SensorTemperatureValue");
 
-    ErrorDescription = 0;
+
     if (SensTempValue > OverTempLimit)
     {
         ErrorDescription |= TFTTEMPRANGEHIGH;
@@ -150,6 +158,7 @@ char    cmd[64];
     else
     {
         //system("echo 1 > /sys/class/gpio/gpio163/value");
+        ErrorDescription &= (~TFTTEMPRANGEHIGH);
         sprintf(cmd,"echo 1 > %s",OVERTEMP);
         system(cmd);
     }
@@ -158,8 +167,12 @@ char    cmd[64];
     {
         ErrorDescription |= TFTTEMPRANGELOW;
     }
+    else
+    {
+         ErrorDescription &= (~TFTTEMPRANGELOW);
+    }
 
-    if ( ErrorDescription != 0 )
+    if (((ErrorDescription & TFTTEMPRANGELOW)!=0) || ((ErrorDescription & TFTTEMPRANGEHIGH)!=0) )
     {
         sprintf(cmd,"echo 1 > %s",BACKLIGHT_CMD);
         system(cmd);
@@ -180,11 +193,18 @@ char    cmd[64];
         sprintf(cmd,"echo 0 > %s",PANEL_LIGHT_FAIL);
         system(cmd);
     }
+    //NO ELSE --> ERRORTYPE_1
+
+
 
     FTempSensor=(unsigned char )get_value(TEMPSENS_FAULT_PATH);
     if(FTempSensor==TRUE)
     {
         ErrorDescription |= TEMPSENSFAULT;
+    }
+    else
+    {
+         ErrorDescription &= (~TEMPSENSFAULT);
     }
 
     system("cat /tmp/ambientlight_value | sed 's/AMBIENT_LIGHT=//g' > /tmp/AmbientLightValue");
@@ -196,5 +216,25 @@ char    cmd[64];
         FAmbLightSensor=1;
     }
     else
-        FAmbLightSensor=0;
+    {
+         ErrorDescription &= (~AMBLIGHTFAULT);
+         FAmbLightSensor=0;
+    }
+
+
+    if(FApiMod==1)
+    {
+        ErrorDescription |= APPMODULEFAULT;
+    }
+    // ERR TYPE 1
+
+
+
+    if(FWatchdogApiMod==1)
+    {
+        ErrorDescription |= APPMODULEWATCHDOG;
+    }
+    // ERR TYPE 1
+
+
 }

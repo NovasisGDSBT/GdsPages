@@ -16,6 +16,8 @@ unsigned short ISystemLifeSign=0;
 int     test_webpage=0; /* If set do not update web page */
 
 unsigned char ccmodTimeoutFault=0;
+unsigned char FApiMod=0;
+unsigned char FWatchdogApiMod=0;
 
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
@@ -113,6 +115,9 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
 {
     unsigned char BacklightStatus=0;
 
+
+
+
     CINFDISReport *pd_OutData = (CINFDISReport *)byte_pd_OutData;
 
     pd_OutData->StatusData.ISystemLifeSign=ISystemLifeSign++;
@@ -146,9 +151,11 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
     pd_OutData->DiagData.TFTFaults.FTempORLow=FTempORLow;
     pd_OutData->DiagData.TFTFaults.FAmbLightSensor=FAmbLightSensor;
     system("cat /tmp/api_mod > /tmp/ta");
-    pd_OutData->DiagData.ApplicationModule.FApiMod=pd_get_value();
+    FApiMod=pd_get_value();
+    pd_OutData->DiagData.ApplicationModule.FApiMod=FApiMod;
     system("cat /tmp/wdog_api_mod > /tmp/ta");
-    pd_OutData->DiagData.ApplicationModule.FWatchdogApiMod=pd_get_value();
+    FWatchdogApiMod=pd_get_value();
+    pd_OutData->DiagData.ApplicationModule.FWatchdogApiMod =FWatchdogApiMod;
 }
 
 

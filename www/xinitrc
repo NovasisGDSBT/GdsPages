@@ -2,4 +2,5 @@
 [ ! -f /etc/sysconfig/chromium_var ] &&  CHROMIUM_SERVER="www.google.com" 
 exec google-chrome --disk-cache-dir=/dev/null --disable-low-res-tiling --kiosk ${CHROMIUM_SERVER} &
 exec /tmp/www/NovaCSC f /tmp/rgb_matrix &
+exec /tmp/www/chrome_keepalive.sh &
 exec fluxbox

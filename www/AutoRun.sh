@@ -148,7 +148,7 @@ if [ -f /usr/bin/startx ]; then
 fi
 ############### Watch Dogs Management #################
 ./watch_dog_IPTCOM.sh &
-./chrome_keepalive.sh &
+#./chrome_keepalive.sh &
 
 #/tmp/www/apply_rgbmatrix &
 

@@ -283,11 +283,12 @@ int fill_grayscale11(SDL_Surface *surface,char *command, char *parameter1, char 
     return ret_val;
 }
 
-void check_fifo_msgs_loop(int pipe_fd)
+char *check_fifo_msgs_loop(int pipe_fd)
 {
-ssize_t        length = 0;
-char          *command_ptr;
-char           command[2048];
+    ssize_t length = 0;
+    char    *command_ptr;
+    char    command[2048];
+    char    *return_ptr=NULL; //no receive any Commands
 
     command_ptr = command;
     length += read (pipe_fd, command_ptr, sizeof(command));
@@ -301,8 +302,15 @@ char           command[2048];
                 unlink("/tmp/SdlSplash_fifo");
                 exit(0);
             }
+            else
+            {
+                return_ptr=command_ptr;
+                printf("altro comando ricevuto %s\n",return_ptr);
+            }
         }
     }
+
+    return return_ptr;
 }
 
 #define LOOP_DELAY      3000000
@@ -311,14 +319,29 @@ extern  int         fifo_fd;
 
 int sleep_and_check_counter;
 
-void sleep_and_check(void)
+
+char *sleep_and_check(void)
 {
+    char *retval=NULL; // no commands received
+    char cmd_string[255];
+    char *strRec=NULL;
+
+    memset(cmd_string,0,sizeof(cmd_string));
+
     sleep_and_check_counter = 150;
     while ( sleep_and_check_counter-- > 0 )
     {
-        check_fifo_msgs_loop(fifo_fd);
+        strRec=check_fifo_msgs_loop(fifo_fd);
+
+        if(strRec != NULL)
+        {
+            retval=strRec;
+            break;
+        }
         usleep(uLOOP_DELAY);
     }
+
+    return retval;
 }
 
 int loop_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val)
@@ -509,6 +532,9 @@ int  temp_limit_low, temp_limit_high,carrier_temp;
 
 int btloop_test(SDL_Surface *surface,char *command, char *parameter1, char *parameter2, char *parameter3,int ret_val)
 {
+    char    *innerCommand=NULL;
+    ssize_t length = 0;
+
     if ( system_started != 1 )
     {
         print_error();
@@ -519,27 +545,51 @@ int btloop_test(SDL_Surface *surface,char *command, char *parameter1, char *para
         fill_screen(screen,WIDTH,HEIGHT,255,0,0,0,0);
         printf("red done\n");
         sleep_and_check_counter = uLOOP_DELAY;
-        sleep_and_check();
+        if((innerCommand=sleep_and_check())!=NULL)
+        {
+            break;
+        }
 
         fill_screen(screen,WIDTH,HEIGHT,0,255,0,0,0);
         printf("green done\n");
-        sleep_and_check();
+        if((innerCommand=sleep_and_check())!=NULL)
+        {
+            break;
+        }
 
         fill_screen(screen,WIDTH,HEIGHT,0,0,255,0,0);
         printf("blue done\n");
-        sleep_and_check();
+        if((innerCommand=sleep_and_check())!=NULL)
+        {
+            break;
+        }
 
         fill_screen(screen,WIDTH,HEIGHT,0,0,0,0,0);
         printf("black done\n");
-        sleep_and_check();
+        if((innerCommand=sleep_and_check())!=NULL)
+        {
+            break;
+        }
 
         fill_screen(screen,WIDTH,HEIGHT,255,255,255,0,0);
         printf("white done\n");
-        sleep_and_check();
+        if((innerCommand=sleep_and_check())!=NULL)
+        {
+            break;
+        }
 
         do_grayscale(11);
         printf("grayscale done\n");
-        sleep_and_check();
+         if((innerCommand=sleep_and_check())!=NULL)
+        {
+            break;
+        }
+    }
+
+    if(innerCommand  != NULL)
+    {
+        length=strlen(innerCommand);
+        decodecmds(screen,innerCommand,length);
     }
 
     return ret_val;
