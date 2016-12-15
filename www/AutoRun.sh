@@ -3,6 +3,7 @@ SWVERSION="1.0.0.0rc0"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
+cp /tmp/application_storage/xinitrc /root/.xinitrc
 
 # Retrieve all parameters
 rm -rf /tmp/store_mountpoint
@@ -93,7 +94,6 @@ then
  fi
 # Finishing up
 touch /tmp/backlight_on
-/tmp/www/apply_rgbmatrix &
 
 cd /tmp/www
 ./GDSBT_iptcom &
@@ -140,16 +140,15 @@ if [ -f /usr/bin/startx ]; then
                         break
                 fi
         done
+	/tmp/www/apply_rgbmatrix
         kill -HUP `pidof X` >/dev/null 2>&1
         kill -HUP `pidof x11vnc` >/dev/null 2>&1
         export DISPLAY=":0.0"
         /usr/bin/startx &
-        if [ -f /tmp/application_storage/bkgwm.png ]; then
-                sleep 1
-                fbsetbg -c /tmp/application_storage/bkgwm.png
-        fi
 fi
-
 ############### Watch Dogs Management #################
 ./watch_dog_IPTCOM.sh &
 ./chrome_keepalive.sh &
+
+#/tmp/www/apply_rgbmatrix &
+

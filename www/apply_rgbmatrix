@@ -4,13 +4,12 @@ RED_GAIN=255
 GREEN_GAIN=250
 BLUE_GAIN=245
 
-if ! [ -f /tmp/NovaConfig.xml ]; then
+if [ -f /tmp/NovaConfig.xml ]; then
         echo "RED_GAIN=`xml sel -t -v \"/data-set/ColorTemp/RED_GAIN\"  /tmp/NovaConfig.xml`"      >  /tmp/rgb_settings
         echo "GREEN_GAIN=`xml sel -t -v \"/data-set/ColorTemp/GREEN_GAIN\"  /tmp/NovaConfig.xml`" >>  /tmp/rgb_settings
         echo "BLUE_GAIN=`xml sel -t -v \"/data-set/ColorTemp/BLUE_GAIN\"  /tmp/NovaConfig.xml`"   >>  /tmp/rgb_settings
         . /tmp/rgb_settings
 fi
-
 echo "$RED_GAIN,0,0" > /tmp/rgb_matrix
 echo "0,$GREEN_GAIN,0" >> /tmp/rgb_matrix
 echo "0,0,$BLUE_GAIN" >> /tmp/rgb_matrix
@@ -19,4 +18,5 @@ echo "2,2,2"   >> /tmp/rgb_matrix
 echo "RED_GAIN=$RED_GAIN" > /tmp/rgb_settings
 echo "GREEN_GAIN=$GREEN_GAIN" >> /tmp/rgb_settings
 echo "BLUE_GAIN=$BLUE_GAIN" >> /tmp/rgb_settings
-/tmp/www/NovaCSC f /tmp/rgb_matrix
+#sleep 5
+#/tmp/www/NovaCSC f /tmp/rgb_matrix
