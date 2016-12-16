@@ -9,6 +9,7 @@ cp GDSBT_iptcom/xml/TFT1.car1.lCst_20160812.xml www/.
 cp GdsFlashImage/bin/Debug/GdsFlashImage www/.
 #cp POST_GreenSquare/bin/Debug/POST_GreenSquare www/.
 cp POST_UpperLeftSquare/bin/Debug/POST_UpperLeftSquare www/.
+cp GDS_WdtFuncs/bin/Debug/GDS_WdtFuncs www/.
 cp www/AutoRun.sh FlasherScripts/AutoRun.sh_GDS
 cp FlasherScripts/gds_flasher www/.
 

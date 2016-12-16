@@ -9,7 +9,7 @@ if [ -f /tmp/backlight_on_counter ]; then
 	COUNTER=$BACKLIGHT_ON_COUNTER
 else
 	echo "BACKLIGHT_ON_COUNTER=0" > /tmp/backlight_on_counter
-	echo "Setting BACKLIGHT_ON_COUNTER to 0" >> /tmp/gds_log
+	/tmp/www/logwrite.sh "$0" "Setting BACKLIGHT_ON_COUNTER to 0"
 fi
 
 while [ "$TRUE" == "1" ]; do
@@ -26,10 +26,11 @@ while [ "$TRUE" == "1" ]; do
 		fi
 	fi
 	
+	DATE=`date -u`
 	if [ -f /tmp/backlight_on_reset ]; then
 		rm /tmp/backlight_on_reset
 		echo "BACKLIGHT_ON_COUNTER=0" > /tmp/backlight_on_counter
-		echo "Reetting BACKLIGHT_ON_COUNTER to 0, user command" >> /tmp/gds_log
+		/tmp/www/logwrite.slogwrite.sh "$0"  "Resetting BACKLIGHT_ON_COUNTER to 0, user command"
 		COUNTER=0
 	fi
 	let SAVECOUNTER=$SAVECOUNTER+1
@@ -46,14 +47,13 @@ while [ "$TRUE" == "1" ]; do
 		  umount /tmp/store_mountpoint
 		  sync
 		  e2fsck /dev/mmcblk0p3
-		  echo "$0 save" >> /tmp/gds_log
+		  echo "$0" "Save"
 
 		else
 
-		  echo "partition /dev/mmcblk0p3 busy" >> /tmp/gds_log
+		  echo "$0" "Partition /dev/mmcblk0p3 busy"
 
 		fi
-
 	fi
 done
 

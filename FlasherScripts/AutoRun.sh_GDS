@@ -35,17 +35,24 @@ else
         echo "Europe/Rome" > /etc/timezone
 fi
 # Initialize REBOOT_COUNTER
+#if [ -f /tmp/store_mountpoint/reboot_counter ]; then
+#	cp /tmp/store_mountpoint/reboot_counter /tmp/.
+#	. /tmp/reboot_counter
+#	let REBOOT_COUNTER=$REBOOT_COUNTER+1
+#	echo "REBOOT_COUNTER=$REBOOT_COUNTER" > /tmp/reboot_counter
+#	cp /tmp/reboot_counter /tmp/store_mountpoint/reboot_counter
+#else
+#	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/reboot_counter
+#	cp /tmp/store_mountpoint/reboot_counter /tmp/.
+#fi
 if [ -f /tmp/store_mountpoint/reboot_counter ]; then
 	cp /tmp/store_mountpoint/reboot_counter /tmp/.
-	. /tmp/reboot_counter
-	let REBOOT_COUNTER=$REBOOT_COUNTER+1
-	echo "REBOOT_COUNTER=$REBOOT_COUNTER" > /tmp/reboot_counter
-	cp /tmp/reboot_counter /tmp/store_mountpoint/reboot_counter
 else
 	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/reboot_counter
 	cp /tmp/store_mountpoint/reboot_counter /tmp/.
 fi
 umount /tmp/store_mountpoint
+
 ! [ -f /tmp/wdog_counter ] && echo "0" > /tmp/wdog_counter
 echo "0" > /tmp/api_mod
 echo "0" > /tmp/wdog_api_mod
@@ -118,12 +125,6 @@ else
 	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
 	echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
         /usr/bin/startx &
-	#/tmp/www/GdsScreenTest &
-	#sleep 1
-        #/tmp/www/GdsScreenTestWrite START
-	#sleep 1
-	#/tmp/www/GdsScreenTestWrite IMAGE_TEST
-	#sleep 1
 	kill -9 `pidof GDSBT_iptcom`
 	# Disconnects from the net, bypass relè off
 	echo 0 > /sys/class/gpio/gpio24/value
@@ -147,8 +148,9 @@ if [ -f /usr/bin/startx ]; then
         /usr/bin/startx &
 fi
 ############### Watch Dogs Management #################
-./watch_dog_IPTCOM.sh &
-#./chrome_keepalive.sh &
+./GDS_WdtFuncs &
 
+#./watch_dog_IPTCOM.sh &
+#./chrome_keepalive.sh &
 #/tmp/www/apply_rgbmatrix &
 

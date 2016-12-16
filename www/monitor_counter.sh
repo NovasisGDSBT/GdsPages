@@ -9,17 +9,17 @@ TIMETOSAVE=300
 if [ -f /tmp/monitor_on_counter ]; then
         . /tmp/monitor_on_counter
         COUNTER=$MONITOR_ON_COUNTER
-        echo "Setting MONITOR_ON_COUNTER to 0" >> /tmp/gds_log
-
+        /tmp/www/logwrite.sh "$0" "Setting MONITOR_ON_COUNTER to 0"
 fi
 
 
 while [ "$TRUE" == "1" ]; do
 	sleep 1
+
         if [ -f /tmp/monitor_on_reset ]; then
                 rm /tmp/monitor_on_reset		
 		echo "MONITOR_ON_COUNTER=0" > /tmp/monitor_on_counter
-                echo "Reetting BACKLIGHT_ON_COUNTER to 0, user command" >> /tmp/gds_log
+        	/tmp/www/logwrite.sh "$0" "Resetting BACKLIGHT_ON_COUNTER to 0, user command"
                 COUNTER=0
 	else
 		let COUNTER=$COUNTER+1
@@ -37,11 +37,11 @@ while [ "$TRUE" == "1" ]; do
 			  cp /tmp/monitor_on_counter /tmp/store_mountpoint/webparams/tmpfile
 			  mv /tmp/store_mountpoint/webparams/tmpfile /tmp/store_mountpoint/webparams/monitor_on_counter
 			  umount /tmp/store_mountpoint
-			  echo "$0 save" >> /tmp/gds_log
+        		  /tmp/www/logwrite.sh "$0" "Save"
 			  sync
 			  e2fsck /dev/mmcblk0p3
 			else
-			  echo "partition /dev/mmcblk0p3 busy" >> /tmp/gds_log
+        		  /tmp/www/logwrite.sh "$0" "Partition /dev/mmcblk0p3 busy"
 			fi
         	fi
         fi

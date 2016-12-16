@@ -92,6 +92,7 @@ static char               URL[256];
                 sprintf(chromium_server,"%s",URL);
                 printf("chromium_server is now %s !!!\n",chromium_server);
                 system("touch /tmp/start_chrome");
+                LOG_SYS(0, "MESSAGE", (char *)__FUNCTION__, "URL CHANGED");
             }
         }
     }

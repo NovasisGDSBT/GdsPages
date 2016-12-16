@@ -1,0 +1,8 @@
+#!/bin/sh
+rm -rf /tmp/wdog_store_mountpoint
+mkdir /tmp/wdog_store_mountpoint
+mount /dev/mmcblk0p3 /tmp/wdog_store_mountpoint
+cp /tmp/reboot_counter /tmp/wdog_store_mountpoint/.
+umount /tmp/wdog_store_mountpoint
+
+

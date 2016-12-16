@@ -46,6 +46,31 @@ Global variables
 char    chromium_server[256];
 unsigned char lvds_ptr[256];
 
+/*******************************************************************************
+NAME:       LOG_SYS
+ABSTRACT:
+RETURNS:
+*/
+int LOG_SYS(int level, char * type, char * funcname, char *message )
+{
+    int retval=0;
+    char cmd[255];
+
+    memset(cmd,0,sizeof(cmd));
+
+    if((type!=NULL) && (funcname!=NULL) && (message!=NULL) )
+    {
+        sprintf(cmd,"/tmp/www/logwrite.sh %s %s %s",type,funcname,message);
+        system(cmd);
+    }
+    else
+    {
+        retval=1;
+    }
+
+   return(retval);
+}
+
 
 /*******************************************************************************
 NAME:       IPTVosGetCh
