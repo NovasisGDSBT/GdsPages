@@ -9,7 +9,7 @@ if [ -f /tmp/backlight_on_counter ]; then
 	COUNTER=$BACKLIGHT_ON_COUNTER
 else
 	echo "BACKLIGHT_ON_COUNTER=0" > /tmp/backlight_on_counter
-	/tmp/www/logwrite.sh "$0" "Setting BACKLIGHT_ON_COUNTER to 0"
+	/tmp/www/logwrite.sh "INFO" "$0" "Setting BACKLIGHT_ON_COUNTER to 0"
 fi
 
 while [ "$TRUE" == "1" ]; do
@@ -30,7 +30,7 @@ while [ "$TRUE" == "1" ]; do
 	if [ -f /tmp/backlight_on_reset ]; then
 		rm /tmp/backlight_on_reset
 		echo "BACKLIGHT_ON_COUNTER=0" > /tmp/backlight_on_counter
-		/tmp/www/logwrite.slogwrite.sh "$0"  "Resetting BACKLIGHT_ON_COUNTER to 0, user command"
+		/tmp/www/logwrite.sh "ERROR" "$0"  "Resetting BACKLIGHT_ON_COUNTER to 0, user command"
 		COUNTER=0
 	fi
 	let SAVECOUNTER=$SAVECOUNTER+1

@@ -196,7 +196,7 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	# RTC
 	# $38  and $39
 	DATE=`echo $38 | sed 's/TIME_SET=//g' | sed 's/%3A/:/g'`
-        date -s $1 > /dev/null 2>&1
+        date -s $DATE > /dev/null 2>&1
 
 
 	#Voltages

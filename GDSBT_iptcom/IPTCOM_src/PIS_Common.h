@@ -43,6 +43,6 @@ reference:
 
 #define STACK  10000                        /* PD send task stack size */
 
-int LOG_SYS(int level, char * type, char * funcname, char *message );
+int LOG_SYS(char * type, char * funcname, char *message );
 //#define TIME_MEASURE
 #endif

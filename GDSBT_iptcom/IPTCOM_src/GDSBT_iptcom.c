@@ -51,7 +51,7 @@ NAME:       LOG_SYS
 ABSTRACT:
 RETURNS:
 */
-int LOG_SYS(int level, char * type, char * funcname, char *message )
+int LOG_SYS(char * type, char * funcname, char *message )
 {
     int retval=0;
     char cmd[255];
@@ -60,7 +60,7 @@ int LOG_SYS(int level, char * type, char * funcname, char *message )
 
     if((type!=NULL) && (funcname!=NULL) && (message!=NULL) )
     {
-        sprintf(cmd,"/tmp/www/logwrite.sh %s %s %s",type,funcname,message);
+        snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s",type,funcname,message);
         system(cmd);
     }
     else

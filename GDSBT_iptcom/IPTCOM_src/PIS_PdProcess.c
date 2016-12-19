@@ -51,6 +51,7 @@ static char               URL[256];
             {
                 ErrorDescription=ErrorDescription|IPMODCCUTIMEOUT;
                 ccmodTimeoutFault=1;
+                LOG_SYS("ERROR", (char *)__FUNCTION__,"CCUTIMEOUT");
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
@@ -92,7 +93,7 @@ static char               URL[256];
                 sprintf(chromium_server,"%s",URL);
                 printf("chromium_server is now %s !!!\n",chromium_server);
                 system("touch /tmp/start_chrome");
-                LOG_SYS(0, "MESSAGE", (char *)__FUNCTION__, "URL CHANGED");
+                LOG_SYS("INFO", (char *)__FUNCTION__, "URL CHANGED");
             }
         }
     }
