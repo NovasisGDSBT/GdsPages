@@ -93,6 +93,9 @@ touch /tmp/ambientlight_value
 # start chrome_starter
 /tmp/www/chrome_starter.sh &
 
+# start configuration HW and SW
+/tmp/www/loadHwSwVersion.sh &
+
 # set gamma default value
 if [ -f /etc/sysconfig/GammaDefaultValue ]
 then

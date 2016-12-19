@@ -1,0 +1,34 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<data-set>
+	<unit>
+		  <BOARD_manufacturer>GDS</BOARD_manufacturer>
+		  <BOARD_REV>1.1.1.1</BOARD_REV>
+		  <MONITOR_SN>2.0.1.2</MONITOR_SN>
+		  <MONITOR_manufacturer>Novasis</MONITOR_manufacturer>
+		  <PRODUCTION_DATE>"15/06/2015"</PRODUCTION_DATE>
+	</unit>
+	<system>
+		<image_rev>1.0.0.0rc0</image_rev>
+		<component>
+		  <type>BOOT</type>
+		  <name>UBOOT</name>
+		  <version>0</version>
+		</component>
+		<component>
+		  <type>KERNEL</type>
+		  <name>KERNEL LINUX</name>
+		  <version>0</version>
+		</component>
+		<component>
+		  <type>FILESYSTEM</type>
+		  <name>CHROME</name>
+		  <version>0</version>
+		</component>
+		<component>
+		  <type>APPLICATION</type>
+		  <name>www.tar</name>
+		  <version>0</version>
+		</component>
+	
+	</system>
+</data-set>

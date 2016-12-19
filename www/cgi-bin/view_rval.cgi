@@ -296,6 +296,7 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	cp /tmp/voltages_readout /tmp/store_mountpoint/webparams/tmpfile8
 	cp /tmp/rgb_matrix /tmp/store_mountpoint/webparams/tmpfile9
 	cp /tmp/NovaConfig.xml /tmp/store_mountpoint/webparams/tmpfile10
+	
 	mv /tmp/store_mountpoint/webparams/tmpfile1 /tmp/store_mountpoint/webparams/backlight_limits
 	mv /tmp/store_mountpoint/webparams/tmpfile2 /tmp/store_mountpoint/webparams/temperature_limits
 	mv /tmp/store_mountpoint/webparams/tmpfile3 /tmp/store_mountpoint/webparams/rgb_settings
@@ -306,6 +307,7 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	mv /tmp/store_mountpoint/webparams/tmpfile8 /tmp/store_mountpoint/webparams/voltages_readout
 	mv /tmp/store_mountpoint/webparams/tmpfile9 /tmp/store_mountpoint/webparams/rgb_matrix
 	mv /tmp/store_mountpoint/webparams/tmpfile10 /tmp/store_mountpoint/webparams/NovaConfig.xml
+	
 	. /tmp/hw_version
 	. /tmp/sw_version
 
