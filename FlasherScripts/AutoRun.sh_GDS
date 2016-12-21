@@ -18,6 +18,20 @@ else
 	cp /tmp/www/defaults/* /tmp/store_mountpoint/webparams/.
 fi
 
+
+#retrieve log file
+mkdir -p /tmp/log_mountpoint
+mount /dev/mmcblk0p2 /tmp/log_mountpoint
+
+ if [ $? -eq 0 ]  # test mount OK
+ then
+    if [ -f /tmp/log_mountpoint/gds_log.xml ]; then
+	    cp /tmp/log_mountpoint/gds_log.xml /tmp/www/
+    fi
+    umount /tmp/log_mountpoint
+    sync
+ fi
+
 # Default page, downloadable
 if [ -d /tmp/store_mountpoint/default_page ]; then
 	cp /tmp/store_mountpoint/default_page/* /tmp/www/test_default_page.
@@ -35,16 +49,6 @@ else
         echo "Europe/Rome" > /etc/timezone
 fi
 # Initialize REBOOT_COUNTER
-#if [ -f /tmp/store_mountpoint/reboot_counter ]; then
-#	cp /tmp/store_mountpoint/reboot_counter /tmp/.
-#	. /tmp/reboot_counter
-#	let REBOOT_COUNTER=$REBOOT_COUNTER+1
-#	echo "REBOOT_COUNTER=$REBOOT_COUNTER" > /tmp/reboot_counter
-#	cp /tmp/reboot_counter /tmp/store_mountpoint/reboot_counter
-#else
-#	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/reboot_counter
-#	cp /tmp/store_mountpoint/reboot_counter /tmp/.
-#fi
 if [ -f /tmp/store_mountpoint/reboot_counter ]; then
 	cp /tmp/store_mountpoint/reboot_counter /tmp/.
 else
@@ -57,18 +61,11 @@ umount /tmp/store_mountpoint
 echo "0" > /tmp/api_mod
 echo "0" > /tmp/wdog_api_mod
 
-# 30 seconds management for yellow square. Note : the kernel can't gurantee the minimum 3 secs required
-export SDL_NOMOUSE=1
-COUNT=0
-LIMIT=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
-while [ "$COUNT" -ge "$LIMIT" ]; do
-	sleep 1
-        let COUNT=$COUNT+1
-done
 
 # setup web server
 cp /tmp/www/lighttpd.conf /etc/lighttpd/.
-cp /tmp/www/cgi.conf /etc/lighttpd/conf.d/.
+cp /tmp/www/lighttpd.modules.conf /etc/lighttpd/modules.conf
+cp -r /tmp/www/lighttpd.conf.d /etc/lighttpd/conf.d
 /etc/init.d/S50lighttpd restart
 sleep 1
 touch /tmp/voltage24_value /tmp/voltage12_value
@@ -104,8 +101,14 @@ then
  fi
 # Finishing up
 touch /tmp/backlight_on
-
 cd /tmp/www
+
+
+############### Watch Dogs Management #################
+./GDS_WdtFuncs &
+
+############### GDS APP IPTCOM #################
+
 ./GDSBT_iptcom &
 
 # 120 secs max timeout communication at startup
@@ -121,6 +124,9 @@ while [ ! -f /tmp/www/POST_enable ]; do
 	fi
 done
 
+# 30 seconds management for yellow square. Note : the kernel can't gurantee the minimum 3 secs required
+export SDL_NOMOUSE=1
+/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'` YELLOW
 # Timeout management with ERROR TYPE 1
 if [ "$TIMEOUTTCMS" = "0" ]; then
 	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'` GREEN
@@ -150,8 +156,9 @@ if [ -f /usr/bin/startx ]; then
         export DISPLAY=":0.0"
         /usr/bin/startx &
 fi
-############### Watch Dogs Management #################
-./GDS_WdtFuncs &
+
+###############  rolling log file Management #######
+/tmp/www/check_xml_fileSize.sh &
 
 #./watch_dog_IPTCOM.sh &
 #./chrome_keepalive.sh &

@@ -96,17 +96,20 @@ char    cmd_string[128];
 
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 2 )
     {
+        LOG_SYS("INFO","MD_TASK","CBacklightCmd 1 Received");
         sprintf(cmd_string,"echo 1 > %s/bl_power",lvds_ptr);
         system(cmd_string);
     }
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CBacklightCmd 2 Received");
         sprintf(cmd_string,"echo 0 > %s/bl_power",lvds_ptr);
         system(cmd_string);
     }
 
     if ( md_InDataOp.CtrlCommands.CShutdownCmd == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CShutdownCmd Received");
         MON_PRINTF("%s : Poweroff\n",__FUNCTION__);
         system("kill -9 `pidof fluxbox`");
         system("echo 1 > /sys/class/graphics/fb0/blank");
@@ -116,41 +119,51 @@ char    cmd_string[128];
     CSystemMode = md_InDataOp.CtrlCommands.CSystemMode;
     switch (CSystemMode)
     {
+
         case   NORMAL_OPERATION :
             MON_PRINTF("%s : CSystemMode is %d , NORMAL_OPERATION\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode NORMAL_OPERATION");
             curr_mode=NORMAL;
             cmd_valid = 1;
             break;
         case   FILL_RED :
             MON_PRINTF("%s : CSystemMode is %d , FILL_RED\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_RED");
             cmd_valid = 1;
             break;
         case   FILL_GREEN :
             MON_PRINTF("%s : CSystemMode is %d , FILL_GREEN\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_GREEN");
             cmd_valid = 1;
             break;
         case   FILL_BLUE :
             MON_PRINTF("%s : CSystemMode is %d , FILL_BLUE\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_BLUE");
             cmd_valid = 1;
             break;
         case   FILL_BLACK :
             MON_PRINTF("%s : CSystemMode is %d , FILL_BLACK\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_BLACK");
             cmd_valid = 1;
             break;
         case   FILL_WHITE :
             MON_PRINTF("%s : CSystemMode is %d , FILL_WHITE\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_WHITE");
             cmd_valid = 1;
             break;
         case   FILL_GRAYSCALE11 :
             MON_PRINTF("%s : CSystemMode is %d , FILL_GRAYSCALE11\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_GRAYSCALE11");
             cmd_valid = 1;
             break;
         case   LOOP_TEST :
             MON_PRINTF("%s : CSystemMode is %d , LOOP_TEST\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode LOOP_TEST");
             cmd_valid = 1;
             break;
         case   DIAG_PAGE :
             MON_PRINTF("%s : CSystemMode is %d , DIAG_PAGE\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode DIAG_PAGE");
             cmd_valid = 1;
             break;
 #define SQUARE_LEFT         19
@@ -159,18 +172,22 @@ char    cmd_string[128];
 #define SQUARE_RIGHT        22
         case   SQUARE_LEFT :
             MON_PRINTF("%s : CSystemMode is %d , SQUARE_LEFT\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_LEFT");
             cmd_valid = 1;
             break;
         case   SQUARE_CENTER :
             MON_PRINTF("%s : CSystemMode is %d , SQUARE_CENTER\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_CENTER");
             cmd_valid = 1;
             break;
         case   IMAGE_TEST :
             MON_PRINTF("%s : CSystemMode is %d , IMAGE_TEST\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode IMAGE_TEST");
             cmd_valid = 1;
             break;
         case   SQUARE_RIGHT :
             MON_PRINTF("%s : CSystemMode is %d , SQUARE_RIGHT\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_RIGHT");
             cmd_valid = 1;
             break;
         default :
@@ -205,6 +222,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     */
     if ( md_InDataMaint.Commands.CReset == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CReset Received");
         MON_PRINTF("%s : Received RESET Command\n",__FUNCTION__);
         system("kill -9 `pidof chrome_starter.sh`  >/dev/null 2>&1");
         system("kill -9 `pidof backlight_counter.sh`  >/dev/null 2>&1");
@@ -217,29 +235,38 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         system("cp /tmp/chromium_var /tmp/store_mountpoint/sysconfig/etc/sysconfig/chromium_var");
         system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
         system("umount /tmp/store_mountpoint");
+        system("mkdir -p /tmp/log_mountpoint");
+        system("mount /dev/mmcblk0p2 /tmp/log_mountpoint");
+        system("cp /tmp/www/gds_log.xml /tmp/log_mountpoint/");
+        system("umount /tmp/log_mountpoint");
+        system("sync");
         system("sleep 2; reboot");
     }
 
     if ( md_InDataMaint.INFDCounterCommands.CDurationCounterReset == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CDurationCounterReset Received");
         CDurationCounter = 0;
         system ("touch /tmp/monitor_on_reset");
         MON_PRINTF("%s : Received Duration Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CBackOnCounterReset == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CBackOnCounterReset Received");
         CBackOnCounter = 0;
         system ("touch /tmp/backlight_on_reset");
         MON_PRINTF("%s : Received Back On Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CNormalStartsCounterReset == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CNormalStartsCounterReset Received");
         CNormalStartsCounter = 0;
         MON_PRINTF("%s : Received Normal Starts Counter Reset Command\n",__FUNCTION__);
         system ("echo 0 > /tmp/reboot_counter");
     }
     if ( md_InDataMaint.INFDCounterCommands.CResetAllCounters == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CResetAllCounters Received");
         CDurationCounter = 0;
         CBackOnCounter = 0;
         CNormalStartsCounter = 0;
@@ -253,6 +280,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     }
     if ( md_InDataMaint.INFDCounterCommands.CWdogResetsCounterReset == 1 )
     {
+        LOG_SYS("INFO","MD_TASK","CWdogResetsCounterReset Received");
         CWdogResetsCounter = 0;
         system ("echo 0 > /tmp/wdog_counter");
         MON_PRINTF("%s : Received Wdog Resets Counter Command\n",__FUNCTION__);

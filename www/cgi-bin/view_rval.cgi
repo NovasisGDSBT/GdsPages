@@ -195,8 +195,16 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	
 	# RTC
 	# $38  and $39
-	DATE=`echo $38 | sed 's/TIME_SET=//g' | sed 's/%3A/:/g'`
-        date -s $DATE > /dev/null 2>&1
+	echo $39 | grep TIME_READ=SET > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+
+	  DATE=`echo $38 | sed 's/TIME_SET=//g' | sed 's/%3A/:/g'`
+	  date -s $DATE > /dev/null 2>&1
+	  /tmp/www/logwrite.sh "MAINTENANCE" "TIME_SET" &
+	else
+	  /tmp/www/logwrite.sh "MAINTENANCE" "$2-$3-$4-$5-$6-$7-$8-$9-$10-$11-$12-$13-$14-$15-$16-$17-$18-$19" &
+	fi
+	
 
 
 	#Voltages
@@ -576,8 +584,8 @@ echo "          <td width=\"${ROW_TITLE_WIDTH}\">Time set</td>"
 echo "          <td width=\"${ROW_VALUE_WIDTH}\"><input type=\"text\" name=\"TIME_SET\" value=\"`date +%f`\"></td>"
 echo "        </tr>"
 echo "        <tr>"
-echo "          <td width=\"${ROW_TITLE_WIDTH}\">Time read</td>"
-echo "          <td width=\"${ROW_VALUE_WIDTH}\"><input type=\"text\" name=\"TIME_READ\" value=\"`date +%f`\"></td>"
+echo "          <td width=\"${ROW_TITLE_WIDTH}\">Enable Command DATE (SET/UNSET)</td>"
+echo "          <td width=\"${ROW_VALUE_WIDTH}\"><input type=\"text\" name=\"TIME_READ\" value=\"UNSET\"></td>"
 echo "        </tr>"
 echo "      </table>"
 echo "       <table style=\"width:${TABLE_WIDTH}\">"

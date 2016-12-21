@@ -17,6 +17,10 @@ int timeout;
      {
        fill_screen(screen,13, 13,255,0,0,0,0);
      }
+     else if( strcmp(argv[2],(YELLOW)) == 0 )
+     {
+       fill_screen(screen,13, 13,255,255,0,0,0);
+     }
      else
      {
         fill_screen(screen,13, 13,0,0,0,0,0);

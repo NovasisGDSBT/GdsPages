@@ -51,7 +51,6 @@ static char               URL[256];
             {
                 ErrorDescription=ErrorDescription|IPMODCCUTIMEOUT;
                 ccmodTimeoutFault=1;
-                LOG_SYS("ERROR", (char *)__FUNCTION__,"CCUTIMEOUT");
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);

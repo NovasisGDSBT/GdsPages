@@ -13,15 +13,6 @@
 ## if you add a variable here. Add the corresponding variable in the
 ## chroot example aswell.
 ##
-
-#server.modules = (
-#	"mod_access",
-#	"mod_alias",
-#	"mod_compress",
-#	"mod_redirect",
-#	"mod_auth",
-#)
-
 var.log_root    = "/var/log"
 var.server_root = "/tmp/www"
 var.state_dir   = "/var/run"
@@ -84,7 +75,7 @@ var.socket_dir  = home_dir + "/sockets"
 #######################################################################
 ##
 ## Load the modules.
-#include "modules.conf"
+include "modules.conf"
 
 ##
 #######################################################################
@@ -467,14 +458,3 @@ server.upload-dirs = ( "/var/tmp" )
 #include_shell "cat /etc/lighttpd/vhosts.d/*.conf"
 ##
 #######################################################################
-#auth.backend = "htdigest"
-#auth.backend.htdigest.userfile = "/tmp/www/.htpasswd/lighttpd-htdigest.user"
-#auth.require = ( "/tmp/www" =>
-#	(
-#		"method" => "digest",
-#		"realm" => "myrealm",
-#		"require" => "valid-user"
-#	),
-#)
-
-

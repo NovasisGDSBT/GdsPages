@@ -16,6 +16,7 @@ static void Diagnostic_Core(void);
 static int ErrorType(unsigned char ErrorType);
 static int get_value(const char *path);
 static void check_InnerErrors(void);
+static void setLog_Diagnostic(void);
 
 extern int test_in_progress ;
 extern unsigned char FApiMod;
@@ -86,6 +87,9 @@ static void Diagnostic_Core(void)
             }
         }
     }
+
+
+    setLog_Diagnostic();
 }
 
  /*******************************************************************************
@@ -238,3 +242,100 @@ char    cmd[64];
 
 
 }
+
+
+static void setLog_Diagnostic()
+{
+
+    static unsigned int  prev_ErrorDescription=0;
+
+    static unsigned  char prev_curr_mode=0;
+
+    if(prev_ErrorDescription != ErrorDescription)
+    {
+        if((ErrorDescription & IPMODWATCHDOG)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","WATCHDOG");
+        }
+
+        if((ErrorDescription & APPMODULEWATCHDOG)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","APPMODULEWATCHDOG");
+        }
+
+        if((ErrorDescription & LEDBKLFAULT)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","LEDBKLFAULT");
+        }
+
+
+        if((ErrorDescription & APPMODULEFAULT)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","APPMODULEFAULT");
+        }
+
+        if((ErrorDescription & IPMODCCUTIMEOUT)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","CCUTIMEOUT");
+        }
+        if((ErrorDescription & TFTTEMPRANGEHIGH)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","TEMPRANGEHIGH");
+        }
+
+        if((ErrorDescription & TFTTEMPRANGELOW)!=0)
+        {
+            LOG_SYS("ERROR","DIAG_TASK","TEMPRANGELOW");
+        }
+
+        if((ErrorDescription & TEMPSENSFAULT)!=0)
+        {
+             LOG_SYS("ERROR","DIAG_TASK","TEMPSENSFAULT");
+        }
+
+        if((ErrorDescription & AMBLIGHTFAULT)!=0 )
+        {
+             LOG_SYS("ERROR","DIAG_TASK","AMBLIGHTFAULT");
+        }
+
+
+        prev_ErrorDescription=ErrorDescription;
+    }
+
+
+
+   if(prev_curr_mode != curr_mode)
+    {
+        if(curr_mode == NORMAL )
+        {
+            LOG_SYS("ERROR","DIAG_TASK","NORMAL MODE");
+        }
+        if(curr_mode == ERROR )
+        {
+            LOG_SYS("INFO","DIAG_TASK","ERROR MODE");
+        }
+        if(curr_mode == DEGRADED )
+        {
+            LOG_SYS("INFO","DIAG_TASK","DEGRADED MODE");
+        }
+        if(curr_mode == TEST )
+        {
+            LOG_SYS("INFO","DIAG_TASK","TEST MODE");
+        }
+        if(curr_mode == PROGRAMMING )
+        {
+            LOG_SYS("INFO","DIAG_TASK","PROGRAMMING MODE");
+        }
+
+
+        prev_curr_mode=curr_mode;
+    }
+
+
+
+
+}
+
+
+
+

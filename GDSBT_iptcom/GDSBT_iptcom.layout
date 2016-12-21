@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="IPTCOM_src/PIS_PdProcess.c" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="IPTCOM_src/GDSBT_iptcom.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3017" topLine="107" />
+			<Cursor1 position="1463" topLine="41" />
 		</Cursor>
 	</File>
-	<File name="IPTCOM_src/PIS_Application.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="IPTCOM_src/PIS_Diagnostic.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="155" topLine="0" />
+			<Cursor1 position="7560" topLine="255" />
+		</Cursor>
+	</File>
+	<File name="IPTCOM_src/PIS_IptCom.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="12422" topLine="427" />
 		</Cursor>
 	</File>
 	<File name="IPTCOM_src/serp_icd.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -16,44 +21,44 @@
 			<Cursor1 position="23030" topLine="575" />
 		</Cursor>
 	</File>
-	<File name="IPTCOM_src/GDSBT_iptcom.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="IPTCOM_src/PIS_Common.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3062" topLine="120" />
+			<Cursor1 position="888" topLine="31" />
 		</Cursor>
 	</File>
 	<File name="IPTCOM_src/infd_icd.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4617" topLine="137" />
+			<Cursor1 position="4078" topLine="112" />
 		</Cursor>
 	</File>
-	<File name="xml/TFT1.car1.lCst_20160812.xml" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="IPTCOM_src/PIS_PdProcess.c" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="7123" topLine="76" />
-		</Cursor>
-	</File>
-	<File name="IPTCOM_src/PIS_IptCom.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5091" topLine="188" />
+			<Cursor1 position="605" topLine="17" />
 		</Cursor>
 	</File>
 	<File name="IPTCOM_src/PIS_Diag.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="768" topLine="18" />
+			<Cursor1 position="345" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="IPTCOM_src/PIS_Application.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="829" topLine="45" />
+		</Cursor>
+	</File>
+	<File name="xml/TFT1.car1.lCst_20160812.xml" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="280" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="IPTCOM_src/PIS_MdProcess.c" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8886" topLine="206" />
 		</Cursor>
 	</File>
 	<File name="IPTCOM_src/PIS_App.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="784" topLine="26" />
-		</Cursor>
-	</File>
-	<File name="IPTCOM_src/PIS_Diagnostic.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1157" topLine="59" />
-		</Cursor>
-	</File>
-	<File name="IPTCOM_src/PIS_MdProcess.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4328" topLine="91" />
+			<Cursor1 position="588" topLine="13" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

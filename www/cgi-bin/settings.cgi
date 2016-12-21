@@ -186,7 +186,7 @@ echo "      	    <td>NETWORK STATS</td><td><pre><left>"
 cat /tmp/net_stats
 echo "              </left></pre></td></tr>"
 
-echo "      <tr><td>&nbsp</td><td><button type=\"submit\" value=\"OK\">OK</button></td></tr>" 
+echo "      <tr><td>&nbsp</td><td><button type=\"submit\" value=\"OK\">OK</button>&nbsp<a href=\"main_menu.cgi\"><input type=\"button\" value=\"Back\"></a></td></tr>" 
 echo "      </table>"
 echo "      </form>"
 echo "<br>"

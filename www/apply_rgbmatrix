@@ -18,5 +18,3 @@ echo "2,2,2"   >> /tmp/rgb_matrix
 echo "RED_GAIN=$RED_GAIN" > /tmp/rgb_settings
 echo "GREEN_GAIN=$GREEN_GAIN" >> /tmp/rgb_settings
 echo "BLUE_GAIN=$BLUE_GAIN" >> /tmp/rgb_settings
-#sleep 5
-#/tmp/www/NovaCSC f /tmp/rgb_matrix

@@ -188,9 +188,6 @@ char    cmd[64];
     system(cmd);
     if(res!=IPT_OK)
         MON_PRINTF("%s : PDComAPI_get retcode %d , ILLEGAL!\n",__FUNCTION__,res);
-
-
-
 }
 
 /*******************************************************************************
@@ -354,6 +351,7 @@ MSG_INFO mdgetMsgInfo;
       }
    }
    while(res == MD_QUEUE_NOT_EMPTY);
+
 }
 
 /*******************************************************************************

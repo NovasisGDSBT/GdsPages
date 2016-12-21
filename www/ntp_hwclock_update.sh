@@ -2,7 +2,7 @@
 TRUE="1"
                             
 while [ "$TRUE" == "1" ]; do
-        sleep 5             
+        sleep 30             
 	/sbin/hwclock -w
 done
 

@@ -41,6 +41,7 @@
 #define     VISIBLE_HEIGHT  380
 #define     GREEN "GREEN"
 #define     RED   "RED"
+#define     YELLOW   "YELLOW"
 
 extern  SDL_Surface *screen;
 
