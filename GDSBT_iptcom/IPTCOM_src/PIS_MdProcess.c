@@ -21,6 +21,7 @@ unsigned int CSystemMode,cmd_valid = 0;
 int CDurationCounter=0,CBackOnCounter=0,CNormalStartsCounter=0,CWdogResetsCounter=0;
 extern  unsigned char lvds_ptr[256];
 extern  int     test_webpage;
+int             backlight_state=1;  /* init as on */
 
 /****************************************************************/
 /****             Graphic Tests Functions on Op                 */
@@ -96,15 +97,17 @@ char    cmd_string[128];
 
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 2 )
     {
-        LOG_SYS("INFO","MD_TASK","CBacklightCmd 1 Received");
-        sprintf(cmd_string,"echo 1 > %s/bl_power",lvds_ptr);
+        LOG_SYS("INFO","MD_TASK","CBacklightCmd 2 Received");
+        sprintf(cmd_string,"echo 1 > %s",BACKLIGHT_CMD);
         system(cmd_string);
+        backlight_state = 0;    /* The backlight is off */
     }
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CBacklightCmd 2 Received");
-        sprintf(cmd_string,"echo 0 > %s/bl_power",lvds_ptr);
+        LOG_SYS("INFO","MD_TASK","CBacklightCmd 1 Received");
+        sprintf(cmd_string,"echo 0 > %s",BACKLIGHT_CMD);
         system(cmd_string);
+        backlight_state = 1;    /* The backlight is on */
     }
 
     if ( md_InDataOp.CtrlCommands.CShutdownCmd == 1 )
@@ -207,6 +210,7 @@ char    cmd_string[128];
 /****                   Maint MD commands                       */
 /****************************************************************/
 
+
 void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
 {
     MON_PRINTF("%s : comId=%d ip=%d.%d.%d.%d\n",__FUNCTION__, comId,
@@ -262,7 +266,8 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         LOG_SYS("INFO","MD_TASK","CNormalStartsCounterReset Received");
         CNormalStartsCounter = 0;
         MON_PRINTF("%s : Received Normal Starts Counter Reset Command\n",__FUNCTION__);
-        system ("echo 0 > /tmp/reboot_counter");
+        system("/tmp/www/store_all_counters");
+        system ("echo REBOOT_COUNTER=0 > /tmp/reboot_counter");
     }
     if ( md_InDataMaint.INFDCounterCommands.CResetAllCounters == 1 )
     {
@@ -273,9 +278,10 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         CWdogResetsCounter = 0;
         system ("touch /tmp/monitor_on_reset");
         system ("touch /tmp/backlight_on_reset");
-        system ("echo 0 > /tmp/reboot_counter");
+        system ("echo REBOOT_COUNTER=0 > /tmp/reboot_counter");
         system ("echo 0 > /tmp/wdog_counter");
         system ("echo 0 > /tmp/wdog_api_counter");
+        system("/tmp/www/store_all_counters");
         MON_PRINTF("%s : Received Reset All Counters Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CWdogResetsCounterReset == 1 )
@@ -283,6 +289,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         LOG_SYS("INFO","MD_TASK","CWdogResetsCounterReset Received");
         CWdogResetsCounter = 0;
         system ("echo 0 > /tmp/wdog_counter");
+        system("/tmp/www/store_all_counters");
         MON_PRINTF("%s : Received Wdog Resets Counter Command\n",__FUNCTION__);
     }
 }

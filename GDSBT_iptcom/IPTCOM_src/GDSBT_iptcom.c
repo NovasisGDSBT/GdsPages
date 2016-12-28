@@ -172,8 +172,6 @@ char    cmd[64];
 
     *********/
 
-
-
     res = IPTCom_prepareInit(0, "TFT1.car1.lCst_20160812.xml");
     MON_PRINTF("iptcom_startUp load res=%d\n",res);
 
@@ -197,6 +195,8 @@ char    cmd[64];
     }
     MON_PRINTF("\nApplication init OK\n\n");
 
+    sprintf(cmd,"echo 0 > %s",URL_COM);
+    system(cmd);
     while (1)
     {
         MON_PRINTF("MONITOR THREAD\n");
@@ -205,5 +205,6 @@ char    cmd[64];
         IPTVosGetCh();
         printf("\n");
     }
+
     return EXIT_SUCCESS;
 }

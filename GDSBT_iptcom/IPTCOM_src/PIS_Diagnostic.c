@@ -11,7 +11,6 @@ unsigned char FTempORHigh=0;
 unsigned char FTempORLow=0;
 unsigned char FAmbLightSensor=0;
 
-
 static void Diagnostic_Core(void);
 static int ErrorType(unsigned char ErrorType);
 static int get_value(const char *path);
@@ -21,6 +20,9 @@ static void setLog_Diagnostic(void);
 extern int test_in_progress ;
 extern unsigned char FApiMod;
 extern unsigned char FWatchdogApiMod;
+
+extern  int  backlight_state;
+
 
 int Diagnostic(void)
 {
@@ -155,13 +157,11 @@ char    cmd[64];
     if (SensTempValue > OverTempLimit)
     {
         ErrorDescription |= TFTTEMPRANGEHIGH;
-        //system("echo 0 > /sys/class/gpio/gpio163/value");
         sprintf(cmd,"echo 0 > %s",OVERTEMP);
         system(cmd);
     }
     else
     {
-        //system("echo 1 > /sys/class/gpio/gpio163/value");
         ErrorDescription &= (~TFTTEMPRANGEHIGH);
         sprintf(cmd,"echo 1 > %s",OVERTEMP);
         system(cmd);
@@ -180,13 +180,14 @@ char    cmd[64];
     {
         sprintf(cmd,"echo 1 > %s",BACKLIGHT_CMD);
         system(cmd);
-        //system("echo 1 > /sys/class/backlight/backlight_lvds0.28/bl_power");
     }
     else
     {
-        sprintf(cmd,"echo 0 > %s",BACKLIGHT_CMD);
-        system(cmd);
-        //system("echo 0 > /sys/class/backlight/backlight_lvds0.28/bl_power");
+        if ( backlight_state == 1)  /* Power on the backlight only if the backlight was on */
+        {
+            sprintf(cmd,"echo 0 > %s",BACKLIGHT_CMD);
+            system(cmd);
+        }
     }
 
     FBcklightFault=(unsigned char )get_value(BACKLIGHT_FAULT);

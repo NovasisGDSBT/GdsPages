@@ -27,6 +27,7 @@ static unsigned short int prev_lifecounter=0;
 static unsigned short int spacetime=0;
 static char               sys_URL[256];
 static char               URL[256];
+char                      cmd[64];
 
     /* Placeholders */
     CDurationCounter++;
@@ -35,6 +36,8 @@ static char               URL[256];
     CWdogResetsCounter++;
     /* Placeholders ends */
 
+    sprintf(cmd,"echo 0 > %s",URL_COM);
+    system(cmd);
     if(flag==FALSE)
     {
         prev_lifecounter=pd_InData.Lifesign.ICCUCLifeSign;
@@ -51,6 +54,8 @@ static char               URL[256];
             {
                 ErrorDescription=ErrorDescription|IPMODCCUTIMEOUT;
                 ccmodTimeoutFault=1;
+                sprintf(cmd,"echo 1 > %s",URL_COM);
+                system(cmd);
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);

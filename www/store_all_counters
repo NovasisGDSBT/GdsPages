@@ -1,0 +1,13 @@
+#!/bin/sh
+rm -rf /tmp/wdog_store_mountpoint
+mkdir /tmp/wdog_store_mountpoint
+mount /dev/mmcblk0p3 /tmp/wdog_store_mountpoint
+if [ -d /tmp/wdog_store_mountpoint/webparams ]; then
+        cp /tmp/wdog_counter /tmp/wdog_store_mountpoint/webparams/.
+        cp /tmp/reboot_counter /tmp/wdog_store_mountpoint/webparams/.
+        cp /tmp/monitor_on_counter /tmp/wdog_store_mountpoint/webparams/.
+        cp /tmp/backlight_on_counter /tmp/wdog_store_mountpoint/webparams/.
+fi
+umount /tmp/wdog_store_mountpoint
+
+

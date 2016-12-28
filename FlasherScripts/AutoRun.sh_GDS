@@ -3,7 +3,7 @@ SWVERSION="1.0.0.0rc0"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
-cp /tmp/application_storage/xinitrc /root/.xinitrc
+cp /tmp/www/xinitrc /root/.xinitrc
 
 # Retrieve all parameters
 rm -rf /tmp/store_mountpoint
@@ -49,11 +49,11 @@ else
         echo "Europe/Rome" > /etc/timezone
 fi
 # Initialize REBOOT_COUNTER
-if [ -f /tmp/store_mountpoint/reboot_counter ]; then
-	cp /tmp/store_mountpoint/reboot_counter /tmp/.
+if [ -f /tmp/store_mountpoint/webparams/reboot_counter ]; then
+	cp /tmp/store_mountpoint/webparams/reboot_counter /tmp/.
 else
-	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/reboot_counter
-	cp /tmp/store_mountpoint/reboot_counter /tmp/.
+	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/webparams/reboot_counter
+	cp /tmp/store_mountpoint/webparams/reboot_counter /tmp/.
 fi
 umount /tmp/store_mountpoint
 
@@ -103,17 +103,42 @@ then
 touch /tmp/backlight_on
 cd /tmp/www
 
+# Wait for dhcp as MTE seems not so fast as it should
+COUNT=0
+WAITIP=45
+while [ ! -f /tmp/my_ip ]; do
+        sleep 1
+	let COUNT=$COUNT+1
+	#echo -n "$COUNT "
+	if [ "$COUNT" -ge "$WAITIP" ]; then
+		#echo " dhcp done"
+		break
+	fi
+done
+
+# Test if page exists
+. /etc/sysconfig/chromium_var
+wget -s $CHROMIUM_SERVER
+if [ "$?" = "0" ]; then
+	echo "PAGE_EXISTS=1" > /tmp/page_exists
+else
+	echo "PAGE_EXISTS=0" > /tmp/page_exists
+        echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+fi
 
 ############### Watch Dogs Management #################
 ./GDS_WdtFuncs &
 
 ############### GDS APP IPTCOM #################
-
 ./GDSBT_iptcom &
 
 # 120 secs max timeout communication at startup
 TIMEOUTTCMS=0
+COUNT=0
 WAITTIME=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
+if [ "$WAITTIME" -ge "60" ]; then
+	let WAITTIME=$WAITTIME-60
+fi
 # The file /tmp/www/POST_enable is created by iptcom app when tcms is not reachable
 while [ ! -f /tmp/www/POST_enable ]; do
         sleep 1
@@ -124,19 +149,25 @@ while [ ! -f /tmp/www/POST_enable ]; do
 	fi
 done
 
-# 30 seconds management for yellow square. Note : the kernel can't gurantee the minimum 3 secs required
 export SDL_NOMOUSE=1
-/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'` YELLOW
+#/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'` YELLOW
 # Timeout management with ERROR TYPE 1
 if [ "$TIMEOUTTCMS" = "0" ]; then
 	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'` GREEN
+	. /tmp/page_exists
+	if [ "$PAGE_EXISTS" = "0" ]; then
+		/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
+		echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+	fi
 else
-	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
+	#/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
 	echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
         /usr/bin/startx &
 	kill -9 `pidof GDSBT_iptcom`
 	# Disconnects from the net, bypass relè off
+	# ECCESSO DI ZELO
 	echo 0 > /sys/class/gpio/gpio24/value
+	# ECCESSO DI ZELO END
 	exit 0
 fi
 
@@ -159,8 +190,4 @@ fi
 
 ###############  rolling log file Management #######
 /tmp/www/check_xml_fileSize.sh &
-
-#./watch_dog_IPTCOM.sh &
-#./chrome_keepalive.sh &
-#/tmp/www/apply_rgbmatrix &
 

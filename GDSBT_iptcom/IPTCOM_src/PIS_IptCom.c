@@ -184,8 +184,7 @@ char    cmd[64];
     res=PDComAPI_get(hpd_in, (BYTE*) &pd_InData, sizeof(CCCUC_INFDIS));
 
     pd_CCUProcess(pd_InData);
-    sprintf(cmd,"echo 0 > %s",URL_COM);
-    system(cmd);
+
     if(res!=IPT_OK)
         MON_PRINTF("%s : PDComAPI_get retcode %d , ILLEGAL!\n",__FUNCTION__,res);
 }

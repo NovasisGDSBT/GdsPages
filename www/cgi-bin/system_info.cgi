@@ -9,7 +9,7 @@ echo " </head>"
 echo " <body>"
 echo " <h3>Memory Usage</h3>"
 free -m | tr "\n" "W" | sed 's/W/<br>/g'
-echo " <h3>RAM Memory Usage</h3>"
+echo " <h3>Processor Load</h3>"
 top -n 1 | grep CPU | tr "\n" "W" | sed 's/W/<br>/g'
 echo " <h3>FLASH Memory Usage</h3>"
 mount /dev/mmcblk0p1 /mnt
