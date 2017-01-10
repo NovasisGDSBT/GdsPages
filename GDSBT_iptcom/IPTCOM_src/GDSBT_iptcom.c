@@ -220,9 +220,11 @@ char    cmd[64];
     if (res != IPT_OK)
     {
         MON_PRINTF("\nApplication init failed\n\n");
+        LOG_SYS("ERROR","INIT","FAILED");
         return(-1);
     }
     MON_PRINTF("\nApplication init OK\n\n");
+    LOG_SYS("INFO","INIT","BOOT");
     draw_green();
     IPTVosTaskDelay(green_square_time*1000);
     if ( page_exists == 0 )
