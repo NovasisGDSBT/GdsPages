@@ -157,12 +157,14 @@ char    cmd[64];
     if (SensTempValue > OverTempLimit)
     {
         ErrorDescription |= TFTTEMPRANGEHIGH;
+        FTempORHigh=1;
         sprintf(cmd,"echo 0 > %s",OVERTEMP);
         system(cmd);
     }
     else
     {
         ErrorDescription &= (~TFTTEMPRANGEHIGH);
+        FTempORHigh=0;
         sprintf(cmd,"echo 1 > %s",OVERTEMP);
         system(cmd);
     }
@@ -170,10 +172,12 @@ char    cmd[64];
     if ( SensTempValue < UnderTempLimit )
     {
         ErrorDescription |= TFTTEMPRANGELOW;
+        FTempORLow=1;
     }
     else
     {
          ErrorDescription &= (~TFTTEMPRANGELOW);
+         FTempORLow=0;
     }
 
     if (((ErrorDescription & TFTTEMPRANGELOW)!=0) || ((ErrorDescription & TFTTEMPRANGEHIGH)!=0) )
@@ -248,60 +252,124 @@ char    cmd[64];
 static void setLog_Diagnostic()
 {
 
-    static unsigned int  prev_ErrorDescription=0;
+    static unsigned int  LOG_IPMODWATCHDOG=0,LOG_APPMODULEWATCHDOG=0,LOG_LEDBKLFAULT=0,LOG_APPMODULEFAULT=0,LOG_IPMODCCUTIMEOUT=0;
+    static unsigned int LOG_TFTTEMPRANGEHIGH=0,LOG_TFTTEMPRANGELOW=0,LOG_TEMPSENSFAULT=0,LOG_AMBLIGHTFAULT=0;
 
     static unsigned  char prev_curr_mode=0;
 
-    if(prev_ErrorDescription != ErrorDescription)
+
+    if((ErrorDescription & IPMODWATCHDOG)!=0)
     {
-        if((ErrorDescription & IPMODWATCHDOG)!=0)
+        if(LOG_IPMODWATCHDOG ==0)
         {
+            LOG_IPMODWATCHDOG=1;
             LOG_SYS("ERROR","DIAG_TASK","WATCHDOG");
         }
+    }
+    else
+       LOG_IPMODWATCHDOG=0;
 
-        if((ErrorDescription & APPMODULEWATCHDOG)!=0)
+    if((ErrorDescription & APPMODULEWATCHDOG)!=0)
+    {
+        if(LOG_APPMODULEWATCHDOG ==0)
         {
-            LOG_SYS("ERROR","DIAG_TASK","APPMODULEWATCHDOG");
+            LOG_APPMODULEWATCHDOG=1;
+           LOG_SYS("ERROR","DIAG_TASK","APPMODULEWATCHDOG");
         }
 
-        if((ErrorDescription & LEDBKLFAULT)!=0)
+    }
+    else
+      LOG_APPMODULEWATCHDOG=0;
+
+    if((ErrorDescription & LEDBKLFAULT)!=0)
+    {
+
+        if(LOG_LEDBKLFAULT==0)
         {
+            LOG_LEDBKLFAULT=1;
             LOG_SYS("ERROR","DIAG_TASK","LEDBKLFAULT");
         }
+    }
+    else
+        LOG_LEDBKLFAULT=0;
 
 
-        if((ErrorDescription & APPMODULEFAULT)!=0)
+    if((ErrorDescription & APPMODULEFAULT)!=0)
+    {
+
+        if(LOG_APPMODULEFAULT==0)
         {
+            LOG_APPMODULEFAULT=1;
             LOG_SYS("ERROR","DIAG_TASK","APPMODULEFAULT");
         }
+    }
+    else
+        LOG_APPMODULEFAULT=0;
 
-        if((ErrorDescription & IPMODCCUTIMEOUT)!=0)
+    if((ErrorDescription & IPMODCCUTIMEOUT)!=0)
+    {
+
+    if(LOG_IPMODCCUTIMEOUT==0)
         {
+            LOG_IPMODCCUTIMEOUT=1;
             LOG_SYS("ERROR","DIAG_TASK","CCUTIMEOUT");
         }
-        if((ErrorDescription & TFTTEMPRANGEHIGH)!=0)
+    }
+    else
+        LOG_IPMODCCUTIMEOUT=0;
+
+
+    if((ErrorDescription & TFTTEMPRANGEHIGH)!=0)
+    {
+
+        if(LOG_TFTTEMPRANGEHIGH==0)
         {
+            LOG_TFTTEMPRANGEHIGH=1;
             LOG_SYS("ERROR","DIAG_TASK","TEMPRANGEHIGH");
         }
+    }
+    else
+        LOG_TFTTEMPRANGEHIGH=0;
 
-        if((ErrorDescription & TFTTEMPRANGELOW)!=0)
+
+    if((ErrorDescription & TFTTEMPRANGELOW)!=0)
+    {
+
+     if(LOG_TFTTEMPRANGELOW==0)
         {
+            LOG_TFTTEMPRANGELOW=1;
             LOG_SYS("ERROR","DIAG_TASK","TEMPRANGELOW");
         }
-
-        if((ErrorDescription & TEMPSENSFAULT)!=0)
-        {
-             LOG_SYS("ERROR","DIAG_TASK","TEMPSENSFAULT");
-        }
-
-        if((ErrorDescription & AMBLIGHTFAULT)!=0 )
-        {
-             LOG_SYS("ERROR","DIAG_TASK","AMBLIGHTFAULT");
-        }
-
-
-        prev_ErrorDescription=ErrorDescription;
     }
+    else
+        LOG_TFTTEMPRANGELOW=0;
+
+    if((ErrorDescription & TEMPSENSFAULT)!=0)
+    {
+
+      if(LOG_TEMPSENSFAULT==0)
+        {
+            LOG_TEMPSENSFAULT=1;
+            LOG_SYS("ERROR","DIAG_TASK","TEMPSENSFAULT");
+        }
+    }
+    else
+        LOG_TEMPSENSFAULT=0;
+
+
+    if((ErrorDescription & AMBLIGHTFAULT)!=0 )
+    {
+
+        if(LOG_AMBLIGHTFAULT==0)
+        {
+            LOG_AMBLIGHTFAULT=1;
+            LOG_SYS("ERROR","DIAG_TASK","AMBLIGHTFAULT");
+        }
+    }
+    else
+        LOG_AMBLIGHTFAULT=0;
+
+
 
 
 

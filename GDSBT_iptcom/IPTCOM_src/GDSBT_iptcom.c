@@ -39,12 +39,18 @@
 #include "PIS_App.h"
 #include "PIS_Diag.h"
 #include "PIS_IptCom.h"
+#include <SDL/SDL.h>
+#include <SDL/SDL_gfxPrimitives.h>
 
 /*******************************************************************************
 Global variables
 */
 char    chromium_server[256];
 unsigned char lvds_ptr[256];
+int iptcom_connected = 0;
+
+int yellow_square_time=3, green_square_time=3 ,red_square_time=3, iptcom_timeout=10;
+int page_exists=0;
 
 /*******************************************************************************
 NAME:       LOG_SYS
@@ -143,14 +149,27 @@ int res;
 UINT8 inAugState, topoCnt;
 struct sigaction sa;
 char    cmd[64];
-
+    printf("argc = %d\n", argc);
+    if ( argc == 6)
+    {
+        yellow_square_time = atoi(argv[1]);
+        green_square_time  = atoi(argv[2]);
+        red_square_time    = atoi(argv[3]);
+        iptcom_timeout     = atoi(argv[4]);
+        page_exists        = atoi(argv[5]);
+    }
+    printf("yellow_square_time = %d\n",yellow_square_time);
+    printf("green_square_time  = %d\n",green_square_time);
+    printf("red_square_time    = %d\n",red_square_time);
+    printf("iptcom_timeout     = %d\n",iptcom_timeout);
+    printf("page_exists        = %d\n",page_exists);
 
     MON_PRINTF("START MAIN !\n\n");
     sprintf(cmd,"echo 1 > %s",URL_COM);
     system(cmd);
 
     bzero(chromium_server,sizeof(chromium_server));
-    /* /etc/sysconfig/chromium_var contents are : CHROMIUM_SERVER=10.0.1.6 */
+
     fp=fopen("/etc/sysconfig/chromium_var","r");
     if ( fp !=NULL)
     {
@@ -179,10 +198,20 @@ char    cmd[64];
     sa.sa_handler = &terminationHandler;
     sigaction(SIGINT, &sa,NULL);
 
+    do_sdl();
+
     do {
         MON_PRINTF("Wait for TDC to complete\n");
         IPTVosTaskDelay(1000);
         tdcGetIptState(&inAugState, &topoCnt);
+        yellow_square_time--;
+        iptcom_timeout--;
+        if ( iptcom_timeout < 0)
+        {
+            system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+            break;
+        }
+
     } while (0 == topoCnt);
 
     MON_PRINTF("\nStart Demo\n\n");
@@ -194,9 +223,21 @@ char    cmd[64];
         return(-1);
     }
     MON_PRINTF("\nApplication init OK\n\n");
+    draw_green();
+    IPTVosTaskDelay(green_square_time*1000);
+    if ( page_exists == 0 )
+    {
+        draw_red();
+        IPTVosTaskDelay(red_square_time*1000);
+        SDL_Quit();
+        system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+    }
 
     sprintf(cmd,"echo 0 > %s",URL_COM);
     system(cmd);
+    SDL_Quit();
+    IPTVosTaskDelay(200);
+    system("startx &");
     while (1)
     {
         MON_PRINTF("MONITOR THREAD\n");
@@ -204,7 +245,7 @@ char    cmd[64];
        // getCmdString(cmdStr, LINELEN);
         IPTVosGetCh();
         printf("\n");
+        iptcom_connected = 1;
     }
-
     return EXIT_SUCCESS;
 }

@@ -94,47 +94,100 @@ touch /tmp/ambientlight_value
 /tmp/www/loadHwSwVersion.sh &
 
 # set gamma default value
-if [ -f /etc/sysconfig/GammaDefaultValue ]; then
-	GAMMAVALUE=$(cat /etc/sysconfig/GammaDefaultValue)
-	/tmp/www/GdsGamma $(echo $GAMMAVALUE)
-fi
-
-# finishing up
+if [ -f /etc/sysconfig/GammaDefaultValue ]
+then
+ GAMMAVALUE=$(cat /etc/sysconfig/GammaDefaultValue)
+ /tmp/www/GdsGamma $(echo $GAMMAVALUE)
+ fi
+# Finishing up
 touch /tmp/backlight_on
 cd /tmp/www
 
-# wd management
-./GDS_WdtFuncs &
-
-# wait for dhcp as MTE seems not so fast as it should and we need to have an IP to check the page presence
+# Wait for dhcp as MTE seems not so fast as it should
 COUNT=0
 WAITIP=45
 while [ ! -f /tmp/my_ip ]; do
         sleep 1
 	let COUNT=$COUNT+1
+	#echo -n "$COUNT "
 	if [ "$COUNT" -ge "$WAITIP" ]; then
+		#echo " dhcp done"
 		break
 	fi
 done
 
-# test if page exists
+# Test if page exists
 . /etc/sysconfig/chromium_var
 wget -s $CHROMIUM_SERVER
 if [ "$?" = "0" ]; then
-	PAGE_EXISTS=1
+	echo "PAGE_EXISTS=1" > /tmp/page_exists
 else
-	PAGE_EXISTS=0
+	echo "PAGE_EXISTS=0" > /tmp/page_exists
         echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
 fi
 
-############### GDS APP IPTCOM #################
-# will start X 
-#
-export SDL_NOMOUSE=1
-TIMEOUTTCMS=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
-YELLOW_TIME=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
-GREEN_TIME=`cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
-RED_TIME=`cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'`
-./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $PAGE_EXISTS &
+############### Watch Dogs Management #################
+./GDS_WdtFuncs &
 
+############### GDS APP IPTCOM #################
+./GDSBT_iptcom &
+
+# 120 secs max timeout communication at startup
+TIMEOUTTCMS=0
+COUNT=0
+WAITTIME=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
+if [ "$WAITTIME" -ge "60" ]; then
+	let WAITTIME=$WAITTIME-60
+fi
+# The file /tmp/www/POST_enable is created by iptcom app when tcms is not reachable
+while [ ! -f /tmp/www/POST_enable ]; do
+        sleep 1
+	let COUNT=$COUNT+1
+	if [ "$COUNT" -ge "$WAITTIME" ]; then
+		TIMEOUTTCMS=1
+		break
+	fi
+done
+
+export SDL_NOMOUSE=1
+#/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'` YELLOW
+# Timeout management with ERROR TYPE 1
+if [ "$TIMEOUTTCMS" = "0" ]; then
+	/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'` GREEN
+	. /tmp/page_exists
+	if [ "$PAGE_EXISTS" = "0" ]; then
+		/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
+		echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+	fi
+else
+	#/tmp/www/POST_UpperLeftSquare `cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'` RED
+	echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+        /usr/bin/startx &
+	kill -9 `pidof GDSBT_iptcom`
+	# Disconnects from the net, bypass relè off
+	# ECCESSO DI ZELO
+	echo 0 > /sys/class/gpio/gpio24/value
+	# ECCESSO DI ZELO END
+	exit 0
+fi
+
+###############       X - Chrome          #################
+TIMEOUT=15
+if [ -f /usr/bin/startx ]; then
+        while ! [ -f /tmp/system_ready ]; do
+                sleep 1
+                let TIMEOUT=${TIMEOUT}-1
+                if [ "${TIMEOUT}" == "0" ]; then
+                        break
+                fi
+        done
+	/tmp/www/apply_rgbmatrix
+        kill -HUP `pidof X` >/dev/null 2>&1
+        kill -HUP `pidof x11vnc` >/dev/null 2>&1
+        export DISPLAY=":0.0"
+        /usr/bin/startx &
+fi
+
+###############  rolling log file Management #######
 /tmp/www/check_xml_fileSize.sh &
+

@@ -202,7 +202,7 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	  date -s $DATE > /dev/null 2>&1
 	  /tmp/www/logwrite.sh "MAINTENANCE" "TIME_SET" &
 	else
-	  /tmp/www/logwrite.sh "MAINTENANCE" "$2-$3-$4-$5-$6-$7-$8-$9-$10-$11-$12-$13-$14-$15-$16-$17-$18-$19" &
+	  /tmp/www/logwrite.sh "MAINTENANCE" "DIAGNOSTIC VALUE CHANGED" &
 	fi
 	
 

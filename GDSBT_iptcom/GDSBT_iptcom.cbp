@@ -34,11 +34,14 @@
 			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/api" />
 			<Add directory="../IPT-COM-SRC-3.12.7.1/iptcom/sourcecode/prv" />
 			<Add directory="../IPT-COM-SRC-3.12.7.1/tdc/sourcecode/api" />
+			<Add directory="/Devel/NOVAsom6_SDK/FileSystem/ChromeFs/output/staging/usr/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-lpthread" />
+			<Add option="-lpthread -lSDL" />
 			<Add library="libs/libiptcom.a" />
 			<Add library="libs/libtdcd.a" />
+			<Add library="/Devel/NOVAsom6_SDK/FileSystem/ChromeFs/output/staging/usr/lib/libts.so" />
+			<Add directory="/Devel/NOVAsom6_SDK/FileSystem/ChromeFs/output/staging/usr/lib" />
 		</Linker>
 		<Unit filename="IPTCOM_src/GDSBT_iptcom.c">
 			<Option compilerVar="CC" />
@@ -64,6 +67,10 @@
 		</Unit>
 		<Unit filename="IPTCOM_src/infd_icd.h" />
 		<Unit filename="IPTCOM_src/mcg_eds_icd.h" />
+		<Unit filename="IPTCOM_src/sdl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IPTCOM_src/sdl.h" />
 		<Unit filename="IPTCOM_src/serp_icd.h" />
 		<Unit filename="libs/libiptcom.a">
 			<Option target="Release" />
