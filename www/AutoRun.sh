@@ -123,6 +123,7 @@ while [ ! -f /tmp/my_ip ]; do
 done
 
 # test if page exists
+sleep 5
 . /etc/sysconfig/chromium_var
 wget -s $CHROMIUM_SERVER
 if [ "$?" = "0" ]; then
@@ -131,6 +132,7 @@ else
 	PAGE_EXISTS=0
         echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
 fi
+cat /etc/sysconfig/chromium_var
 
 ############### GDS APP IPTCOM #################
 # will start X 

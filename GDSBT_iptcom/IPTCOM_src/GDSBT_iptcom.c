@@ -208,9 +208,6 @@ char    cmd[64];
         iptcom_timeout--;
         if ( iptcom_timeout < 0)
         {
-            system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
-            SDL_Quit();
-            system("sleep 1 ; touch /tmp/start_chrome");
             LOG_SYS("ERROR","TCMS","TIMEOUT");
             break;
         }
