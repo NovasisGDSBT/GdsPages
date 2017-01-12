@@ -1,0 +1,5 @@
+#!/bin/sh
+DEVICE=`basename /sys/class/backlight/backlight_lvds0*`
+LVDS_CLASS_POINTER="/sys/class/backlight/${DEVICE}"
+echo "${LVDS_CLASS_POINTER}" > /tmp/www/cgi-bin/lvds_device 
+

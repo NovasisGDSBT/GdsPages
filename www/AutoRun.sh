@@ -1,5 +1,5 @@
 #/bin/sh
-SWVERSION="1.0.0.0rc0"
+SWVERSION="1.0.0.0rc1"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
@@ -113,6 +113,11 @@ while [ ! -f /tmp/my_ip ]; do
         sleep 1
 	let COUNT=$COUNT+1
 	if [ "$COUNT" -ge "$WAITIP" ]; then
+		# Assign a fake address so X can start
+		ifconfig eth0 10.0.0.199 up
+		echo "10.0.0.199" > /tmp/my_ip
+		kill -9 `pidof udhcpc`
+		echo"No dhcp server found, default to 10.0.0.199"
 		break
 	fi
 done

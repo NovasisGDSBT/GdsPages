@@ -8,7 +8,7 @@
 		  <PRODUCTION_DATE>"15/06/2015"</PRODUCTION_DATE>
 	</unit>
 	<system>
-		<image_rev>1.0.0.0rc0</image_rev>
+		<image_rev>1.0.0.0rc1</image_rev>
 		<component>
 		  <type>BOOT</type>
 		  <name>UBOOT</name>

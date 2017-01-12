@@ -209,17 +209,23 @@ char    cmd[64];
         if ( iptcom_timeout < 0)
         {
             system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+            SDL_Quit();
+            system("sleep 1 ; touch /tmp/start_chrome");
+            LOG_SYS("ERROR","TCMS","TIMEOUT");
             break;
         }
 
     } while (0 == topoCnt);
 
-    MON_PRINTF("\nStart Demo\n\n");
+    //MON_PRINTF("\nStart Demo\n\n");
 
     res = applInit();
     if (res != IPT_OK)
     {
         MON_PRINTF("\nApplication init failed\n\n");
+        system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+        SDL_Quit();
+        system("sleep 1 ; touch /tmp/start_chrome");
         LOG_SYS("ERROR","INIT","FAILED");
         return(-1);
     }

@@ -11,20 +11,12 @@ cp POST_UpperLeftSquare/bin/Debug/POST_UpperLeftSquare www/.
 cp GDS_WdtFuncs/bin/Debug/GDS_WdtFuncs www/.
 cp www/AutoRun.sh FlasherScripts/AutoRun.sh_GDS
 cp FlasherScripts/gds_flasher www/.
-
-rm -rf www/cgi-bin
-
-if [ "$1" = "FULL"  ]; then
-	cp WebPages/full_index.html www/index.html
-	cp -r WebPages/cgi-bin www/.
-else
-	cp WebPages/index.html www/.
-	mkdir www/cgi-bin
-	cp WebPages/find_lvds www/cgi-bin
-fi
+cp -r WebPages/cgi-bin www/.
+cp WebPages/index.html www/.
 
 tar cf www.tar www
 tar cf default_page.tar default_page
+rm -rf WebPages/cgi-bin
 
 chmod 777 www.tar
 chmod 777 default_page.tar
