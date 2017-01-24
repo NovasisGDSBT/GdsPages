@@ -29,14 +29,14 @@ unsigned int    reason,counter;
         wfd=fopen("/tmp/wdog_counter","r");
         if ( wfd !=NULL)
         {
-            fscanf(wfd,"%d",&counter);
+            fscanf(wfd,"WATCHDOG_COUNTER=%d",&counter);
             printf("read : counter = %d\n",counter);
             fclose(wfd);
             counter++;
             wfd=fopen("/tmp/wdog_counter","w");
             if ( wfd !=NULL)
             {
-                fprintf(wfd,"%d",counter);
+                fprintf(wfd,"WATCHDOG_COUNTER=%d",counter);
                 printf("write : counter = %d\n",counter);
                 fclose(wfd);
                 system("/tmp/www/store_wdog_counter");

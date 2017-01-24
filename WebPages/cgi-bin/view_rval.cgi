@@ -240,42 +240,55 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	#SETUP BOOT
 	
 	MAX_TIME_SQUARE=30
-	MAX_WAIT_TIME_FOR_COMMUNICATIONS=110
+	MAX_WAIT_TIME_FOR_COMMUNICATIONS=120
 	MAX_RETRY_TIME_COMMUNICATIONS=15
 	YELLOWTIME=$(echo $58 | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g')  
 	GREENTIME=$(echo $59 | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g')
 	WAIT_TIME_FOR_COMMUNICATIONS=$(echo $60 | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g')
 	RETRY_TIME_COMMUNICATIONS=$(echo $61 | grep RETRY_TIME_COMMUNICATIONS | sed 's/RETRY_TIME_COMMUNICATIONS=//g')
 	REDTIME=$(echo $62 | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g')
+	MIN_TIME_COMMUNICATIONS=3
 
-	if [ "$YELLOWTIME" -le "$MAX_TIME_SQUARE" ]; then                                                      
-		echo "$58" > /tmp/setup_boot                            
-	else                                                      
+
+	if [ "$YELLOWTIME" -gt "$MAX_TIME_SQUARE" ]; then                                                      
 		echo "YELLOW_SQUARE_TIME=$MAX_TIME_SQUARE" > /tmp/setup_boot
-	fi                                                        
+	elif [ "$YELLOWTIME" -lt "$MIN_TIME_COMMUNICATIONS" ]; then
+		echo "YELLOW_SQUARE_TIME=$MIN_TIME_COMMUNICATIONS" > /tmp/setup_boot
+	else
+		echo "$58" > /tmp/setup_boot                            
+	fi
+
                                                                   
-	if [ "$GREENTIME" -le "$MAX_TIME_SQUARE" ]; then
-		echo "$59" >> /tmp/setup_boot
-	else
+	if [ "$GREENTIME" -gt "$MAX_TIME_SQUARE" ]; then
 		echo "TCMS_GREEN_SQUARE_TIME=$MAX_TIME_SQUARE" >> /tmp/setup_boot
+	elif [ "$GREENTIME" -lt "$MIN_TIME_COMMUNICATIONS" ]; then
+		echo "TCMS_GREEN_SQUARE_TIME=$MIN_TIME_COMMUNICATIONS" >> /tmp/setup_boot
+	else
+		echo "$59" >> /tmp/setup_boot
 	fi
 
-	if [ "$WAIT_TIME_FOR_COMMUNICATIONS" -le "$MAX_WAIT_TIME_FOR_COMMUNICATIONS" ]; then
+
+#	if [ "$WAIT_TIME_FOR_COMMUNICATIONS" -le "$MAX_WAIT_TIME_FOR_COMMUNICATIONS" ]; then
 		echo "$60" >> /tmp/setup_boot
-	else
-		echo "WAIT_TIME_FOR_COMMUNICATIONS=$MAX_WAIT_TIME_FOR_COMMUNICATIONS" >> /tmp/setup_boot
-	fi
+#	if [ "$WAIT_TIME_FOR_COMMUNICATIONS" -ge "$MIN_TIME_COMMUNICATIONS" ]; then
+#		echo "$60" >> /tmp/setup_boot
+#	else
+#		echo "WAIT_TIME_FOR_COMMUNICATIONS=$MAX_WAIT_TIME_FOR_COMMUNICATIONS" >> /tmp/setup_boot
+#	fi
 
-	if [ "$RETRY_TIME_COMMUNICATIONS" -le "$MAX_RETRY_TIME_COMMUNICATIONS" ]; then
+
+#	if [ "$RETRY_TIME_COMMUNICATIONS" -le "$MAX_RETRY_TIME_COMMUNICATIONS" ]; then
 		echo "$61" >> /tmp/setup_boot
-	else
-		echo "RETRY_TIME_COMMUNICATIONS=$MAX_RETRY_TIME_COMMUNICATIONS" >> /tmp/setup_boot
-	fi
+#	else
+#		echo "RETRY_TIME_COMMUNICATIONS=$MAX_RETRY_TIME_COMMUNICATIONS" >> /tmp/setup_boot
+#	fi
 
-	if [ "$REDTIME" -le "$MAX_TIME_SQUARE" ]; then
-		echo "$62" >> /tmp/setup_boot
-	else
+	if [ "$REDTIME" -gt "$MAX_TIME_SQUARE" ]; then
 		echo "TIME_END_SQUARE=$MAX_TIME_SQUARE" >> /tmp/setup_boot
+	elif [ "$REDTIME" -lt "$MIN_TIME_COMMUNICATIONS" ]; then
+		echo "TIME_END_SQUARE=$MIN_TIME_COMMUNICATIONS" >> /tmp/setup_boot
+	else
+		echo "$62" >> /tmp/setup_boot
 	fi
         
 	mkdir -p /tmp/store_mountpoint

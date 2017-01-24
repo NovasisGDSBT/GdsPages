@@ -27,7 +27,10 @@ static unsigned short int prev_lifecounter=0;
 static unsigned short int spacetime=0;
 static char               sys_URL[256];
 static char               URL[256];
-char                      cmd[64];
+static char               txtURL[256];
+char                      cmd[256];
+FILE                      *fp;
+int                       defaultPageTimeOut = 15;
 
     /* Placeholders */
     CDurationCounter++;
@@ -57,6 +60,15 @@ char                      cmd[64];
                 sprintf(cmd,"echo 1 > %s",URL_COM);
                 system(cmd);
             }
+            if(spacetime >= defaultPageTimeOut)
+            {
+                system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+                system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/chromium_var");
+                sprintf(chromium_server,"CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html");
+                system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
+                MON_PRINTF("%s : defaultPageTimeOut=%d\n",__FUNCTION__,defaultPageTimeOut);
+
+            }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
         }
@@ -67,7 +79,6 @@ char                      cmd[64];
             ErrorDescription &= (~IPMODCCUTIMEOUT);
             spacetime=0;
             ccmodTimeoutFault=0;
-
             if(flagPostCalling==FALSE)
             {
                 flagPostCalling=TRUE;
@@ -81,23 +92,39 @@ char                      cmd[64];
         if ( strlen(pd_InData.LoadResource2.IURL) != 0)
         {
             sprintf(URL,"CHROMIUM_SERVER=%s",pd_InData.LoadResource2.IURL);
+            sprintf(txtURL,"%s",pd_InData.LoadResource2.IURL);
             if ( strcmp(chromium_server,URL) != 0 )
             {
                 printf("\n");
-                printf("URL             : %s!\n",URL);
-                printf("chromium_server : %s!\n",chromium_server);
-                sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
-                system(sys_URL);
-                system("rm -rf /tmp/chromium_var_mountpoint");
-                system("mkdir /tmp/chromium_var_mountpoint");
-                system("mount /dev/mmcblk0p3 /tmp/chromium_var_mountpoint");
-                system("cp /tmp/chromium_var /tmp/chromium_var_mountpoint/sysconfig/etc/sysconfig/chromium_var");
-                system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
-                system("umount /tmp/chromium_var_mountpoint");
-                sprintf(chromium_server,"%s",URL);
-                printf("chromium_server is now %s !!!\n",chromium_server);
-                system("touch /tmp/start_chrome");
-                LOG_SYS("INFO", (char *)__FUNCTION__, "URL CHANGED");
+                printf("URL             : %s!\n",txtURL);
+                sprintf(cmd,"/tmp/www/CheckIfPageExists %s &",txtURL);
+                system(cmd);
+                IPTVosTaskDelay(4000);
+
+                fp=fopen("/tmp/chromium_server_exists","r");
+                if ( fp == NULL)
+                {
+                    sprintf(chromium_server,"%s",URL);
+                    printf("URL %s NOT FOUND !!!\n",txtURL);
+                    LOG_SYS("INFO", (char *)__FUNCTION__, "URL NOT FOUND");
+                }
+                else
+                {
+                    close(fp);
+                    sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
+                    system(sys_URL);
+                    system("rm -rf /tmp/chromium_var_mountpoint");
+                    system("mkdir /tmp/chromium_var_mountpoint");
+                    system("mount /dev/mmcblk0p3 /tmp/chromium_var_mountpoint");
+                    system("cp /tmp/chromium_var /tmp/chromium_var_mountpoint/sysconfig/etc/sysconfig/chromium_var");
+                    system("cp /tmp/chromium_var /etc/sysconfig/chromium_var");
+                    system("umount /tmp/chromium_var_mountpoint");
+                    sprintf(chromium_server,"%s",URL);
+                    printf("chromium_server is now %s !!!\n",txtURL);
+                    sprintf(cmd,"echo %s > /tmp/www/url.txt",txtURL);
+                    system(cmd);
+                    LOG_SYS("INFO", (char *)__FUNCTION__, "URL CHANGED");
+                }
             }
         }
     }
@@ -147,7 +174,7 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
 
     pd_OutData->StatusData.ISystemMode = curr_mode;
     pd_OutData->StatusData.ITestMode = CSystemMode;
-    system("cat /tmp/wdog_counter > /tmp/ta");
+    system("cat /tmp/wdog_counter | sed 's/WATCHDOG_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTWatchdog  = pd_get_value();
 
     pd_OutData->DiagData.COMModule.FTimeoutComMod=ccmodTimeoutFault;

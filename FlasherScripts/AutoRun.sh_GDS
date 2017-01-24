@@ -1,5 +1,5 @@
 #/bin/sh
-SWVERSION="1.0.0.0rc1"
+SWVERSION="1.0.0.0rc2"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
@@ -48,22 +48,35 @@ if [ -f /tmp/timezone ]; then
 else
         echo "Europe/Rome" > /etc/timezone
 fi
+TIMEZONE=`cat /etc/timezone`
+HERE=`pwd`
+cd /etc
+rm localtime
+ln -s ../usr/share/zoneinfo/$TIMEZONE localtime
+cd $HERE
 # Initialize REBOOT_COUNTER
-if [ -f /tmp/store_mountpoint/webparams/reboot_counter ]; then
-	cp /tmp/store_mountpoint/webparams/reboot_counter /tmp/.
+if [ -f /tmp/store_mountpoint/reboot_counter ]; then
+	cp /tmp/store_mountpoint/reboot_counter /tmp/.
 else
-	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/webparams/reboot_counter
-	cp /tmp/store_mountpoint/webparams/reboot_counter /tmp/.
+	echo "REBOOT_COUNTER=1" > /tmp/store_mountpoint/reboot_counter
+	cp /tmp/store_mountpoint/reboot_counter /tmp/.
 fi
+if [ -f /tmp/store_mountpoint/wdog_counter ]; then
+	cp /tmp/store_mountpoint/wdog_counter /tmp/.
+else
+	echo "WATCHDOG_COUNTER=0" > /tmp/store_mountpoint/store_wdog_counter
+	cp /tmp/store_mountpoint/wdog_counter /tmp/.
+fi
+
 umount /tmp/store_mountpoint
 
-! [ -f /tmp/wdog_counter ] && echo "0" > /tmp/wdog_counter
 echo "0" > /tmp/api_mod
 echo "0" > /tmp/wdog_api_mod
 
 
 # setup web server
 cp /tmp/www/lighttpd.conf /etc/lighttpd/.
+cp /tmp/www/etcX11xinitrc /etc/X11/xinit/xinitrc
 cp /tmp/www/lighttpd.modules.conf /etc/lighttpd/modules.conf
 cp -r /tmp/www/lighttpd.conf.d /etc/lighttpd/conf.d
 /etc/init.d/S50lighttpd restart
@@ -116,8 +129,8 @@ while [ ! -f /tmp/my_ip ]; do
 		# Assign a fake address so X can start
 		ifconfig eth0 10.0.0.199 up
 		echo "10.0.0.199" > /tmp/my_ip
-		kill -9 `pidof udhcpc`
-		echo"No dhcp server found, default to 10.0.0.199"
+		#kill -9 `pidof udhcpc`
+		echo "No dhcp server found, default to 10.0.0.199"
 		break
 	fi
 done
@@ -125,12 +138,14 @@ done
 # test if page exists
 sleep 5
 . /etc/sysconfig/chromium_var
-wget -s $CHROMIUM_SERVER
+wget -s -T 10 $CHROMIUM_SERVER
 if [ "$?" = "0" ]; then
 	PAGE_EXISTS=1
+	cat /etc/sysconfig/chromium_var | sed 's/CHROMIUM_SERVER=//g' > /tmp/www/url.txt
 else
 	PAGE_EXISTS=0
         echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+        echo "http://127.0.0.1:8080/test_default_page/default_page.html" > /tmp/www/url.txt
 fi
 cat /etc/sysconfig/chromium_var
 

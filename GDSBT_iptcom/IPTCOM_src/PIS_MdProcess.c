@@ -56,6 +56,7 @@ void do_tests(int graphic_test)
         case IMAGE_TEST         :
                                     test_webpage = 1;
                                     system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+                                    system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
                                     system("/tmp/www/GdsScreenTestWrite STOP;sleep 1;touch /tmp/start_chrome");
                                     break;
     }
@@ -279,7 +280,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         system ("touch /tmp/monitor_on_reset");
         system ("touch /tmp/backlight_on_reset");
         system ("echo REBOOT_COUNTER=0 > /tmp/reboot_counter");
-        system ("echo 0 > /tmp/wdog_counter");
+        system ("echo WATCHDOG_COUNTER=0 > /tmp/wdog_counter");
         system ("echo 0 > /tmp/wdog_api_counter");
         system("/tmp/www/store_all_counters");
         MON_PRINTF("%s : Received Reset All Counters Command\n",__FUNCTION__);

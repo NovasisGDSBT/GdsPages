@@ -199,19 +199,22 @@ char    cmd[64];
     sigaction(SIGINT, &sa,NULL);
 
     do_sdl();
+    do {
+        yellow_square_time--;
+        IPTVosTaskDelay(1000);
+    } while (yellow_square_time > 0);
 
     do {
         MON_PRINTF("Wait for TDC to complete\n");
         IPTVosTaskDelay(1000);
         tdcGetIptState(&inAugState, &topoCnt);
-        yellow_square_time--;
+        //yellow_square_time--;
         iptcom_timeout--;
         if ( iptcom_timeout < 0)
         {
             LOG_SYS("ERROR","TCMS","TIMEOUT");
             break;
         }
-
     } while (0 == topoCnt);
 
     //MON_PRINTF("\nStart Demo\n\n");
@@ -221,6 +224,7 @@ char    cmd[64];
     {
         MON_PRINTF("\nApplication init failed\n\n");
         system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+        system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
         SDL_Quit();
         system("sleep 1 ; touch /tmp/start_chrome");
         LOG_SYS("ERROR","INIT","FAILED");
@@ -236,6 +240,7 @@ char    cmd[64];
         IPTVosTaskDelay(red_square_time*1000);
         SDL_Quit();
         system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
+        system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
     }
 
     sprintf(cmd,"echo 0 > %s",URL_COM);

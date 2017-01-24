@@ -26,7 +26,11 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	TIMEZONE=`echo "$1" | sed 's/%2F/\//g' | sed 's/timezone=//g'`
 	echo "Time Zone set to $TIMEZONE<br>"
 	echo $TIMEZONE > /etc/timezone
-	
+	HERE=`pwd`
+	cd /etc
+	rm localtime
+	ln -s ../usr/share/zoneinfo/$TIMEZONE localtime
+	cd $HERE
 	
 	mkdir  -p /tmp/store_mountpoint
 	mount /dev/mmcblk0p3 /tmp/store_mountpoint
