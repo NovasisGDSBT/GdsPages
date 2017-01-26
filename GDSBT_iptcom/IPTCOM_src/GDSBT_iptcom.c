@@ -242,9 +242,11 @@ char    cmd[64];
         system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
         system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
     }
-
-    sprintf(cmd,"echo 0 > %s",URL_COM);
-    system(cmd);
+    else
+    {
+        sprintf(cmd,"echo 0 > %s",URL_COM);
+        system(cmd);
+    }
     SDL_Quit();
     IPTVosTaskDelay(200);
     system("startx &");

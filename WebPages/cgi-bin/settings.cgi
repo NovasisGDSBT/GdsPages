@@ -86,6 +86,8 @@ if [ "$REQUEST_METHOD" == "POST" ];then
         echo "restrict -6 default kod nomodify notrap nopeer noquery" >> /tmp/ntp.conf
         echo "restrict 127.0.0.1" >> /tmp/ntp.conf
         echo "restrict -6 ::1" >> /tmp/ntp.conf
+        echo "minpoll 3" >> /tmp/ntp.conf
+        echo "maxpoll 3" >> /tmp/ntp.conf
 
 	echo "REFERENCE_SERVER=$NEWREFERENCE_SERVER" > /tmp/system_vars
 
@@ -100,6 +102,8 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	    sync
 	    cp /tmp/network /tmp/store_mountpoint/sysconfig/etc/sysconfig/.
 	    cp /tmp/ntp.conf /tmp/store_mountpoint/sysconfig/etc/sysconfig/.
+	    cp /tmp/ntp.conf /tmp/store_mountpoint/etc/ntp.conf
+	    cp /tmp/ntp.conf /etc/.
 	    cp /tmp/system_vars /tmp/store_mountpoint/sysconfig/etc/sysconfig/.
 	    cp /tmp/chromium_var /tmp/store_mountpoint/sysconfig/etc/sysconfig/.
 	    cp /tmp/store_mountpoint/sysconfig/etc/sysconfig/network /etc/sysconfig/.

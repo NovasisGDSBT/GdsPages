@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-FILE *wfd;
+FILE *wfd,*fd1;
 int fd,ret;
 unsigned int    reason,counter;
 
@@ -22,7 +22,7 @@ unsigned int    reason,counter;
 		return -1;
 	}
     ret = ioctl(fd, WDIOC_GETBOOTSTATUS, &reason);
-    printf("WDIOC_GETBOOTSTATUS reason = 0x%08x , ret = %d\n",reason,ret);
+    //printf("WDIOC_GETBOOTSTATUS reason = 0x%08x , ret = %d\n",reason,ret);
 
     if ( reason != 0 )
     {
@@ -30,14 +30,13 @@ unsigned int    reason,counter;
         if ( wfd !=NULL)
         {
             fscanf(wfd,"WATCHDOG_COUNTER=%d",&counter);
-            printf("read : counter = %d\n",counter);
+            printf("Watchdog startup (0x%08x) number %d\n",reason,counter);
             fclose(wfd);
             counter++;
             wfd=fopen("/tmp/wdog_counter","w");
             if ( wfd !=NULL)
             {
                 fprintf(wfd,"WATCHDOG_COUNTER=%d",counter);
-                printf("write : counter = %d\n",counter);
                 fclose(wfd);
                 system("/tmp/www/store_wdog_counter");
             }
@@ -50,14 +49,13 @@ unsigned int    reason,counter;
         if ( wfd !=NULL)
         {
             fscanf(wfd,"REBOOT_COUNTER=%d",&counter);
-            printf("read : counter = %d\n",counter);
+            printf("Normal startup (0x%08x) number %d\n",reason,counter);
             fclose(wfd);
             counter++;
             wfd=fopen("/tmp/reboot_counter","w");
             if ( wfd !=NULL)
             {
                 fprintf(wfd,"REBOOT_COUNTER=%d",counter);
-                printf("write : counter = %d\n",counter);
                 fclose(wfd);
                 system("/tmp/www/store_reboot_counter");
             }
@@ -68,6 +66,13 @@ unsigned int    reason,counter;
     {
         ret = ioctl(fd, WDIOC_KEEPALIVE, NULL);
         sleep(1);
+        fd1=fopen("/tmp/system_has_been_shutted_down","r");
+        if ( fd1 != NULL)
+        {
+            printf("Watch Dog Disabled\n");
+            close(fd);
+            return 0;
+        }
     }
     return 0;
 }

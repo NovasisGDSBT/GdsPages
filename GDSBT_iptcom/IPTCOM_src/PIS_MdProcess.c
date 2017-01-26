@@ -14,14 +14,15 @@
 #define DIAG_PAGE           18
 #define SQUARE_LEFT         19
 #define SQUARE_CENTER       20
-#define IMAGE_TEST          21
-#define SQUARE_RIGHT        22
+#define DEFAULT_PAGE_TEST   21
+#define PROJECT_SPECIFIC_PAGE        22
 
 unsigned int CSystemMode,cmd_valid = 0;
 int CDurationCounter=0,CBackOnCounter=0,CNormalStartsCounter=0,CWdogResetsCounter=0;
 extern  unsigned char lvds_ptr[256];
 extern  int     test_webpage;
 int             backlight_state=1;  /* init as on */
+extern  int     ShutDownReceived;
 
 /****************************************************************/
 /****             Graphic Tests Functions on Op                 */
@@ -52,8 +53,8 @@ void do_tests(int graphic_test)
         case DIAG_PAGE          : system("/tmp/www/GdsScreenTestWrite DIAG_PAGE"); break;
         case SQUARE_LEFT        : system("/tmp/www/GdsScreenTestWrite FILL_SQUARELEFT"); break;
         case SQUARE_CENTER      : system("/tmp/www/GdsScreenTestWrite FILL_SQUARECENTER"); break;
-        case SQUARE_RIGHT       : system("/tmp/www/GdsScreenTestWrite FILL_SQUARERIGHT"); break;
-        case IMAGE_TEST         :
+        case PROJECT_SPECIFIC_PAGE       : system("/tmp/www/GdsScreenTestWrite IMAGE_TEST"); break;
+        case DEFAULT_PAGE_TEST         :
                                     test_webpage = 1;
                                     system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
                                     system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
@@ -113,10 +114,12 @@ char    cmd_string[128];
 
     if ( md_InDataOp.CtrlCommands.CShutdownCmd == 1 )
     {
+        system("touch /tmp/system_has_been_shutted_down");
         LOG_SYS("INFO","MD_TASK","CShutdownCmd Received");
         MON_PRINTF("%s : Poweroff\n",__FUNCTION__);
-        system("kill -9 `pidof fluxbox`");
+        ShutDownReceived = 1;
         system("echo 1 > /sys/class/graphics/fb0/blank");
+        system("kill -9 `pidof fluxbox` ; sleep 5");
         system("poweroff");
     }
 
@@ -172,8 +175,8 @@ char    cmd_string[128];
             break;
 #define SQUARE_LEFT         19
 #define SQUARE_CENTER       20
-#define IMAGE_TEST          21
-#define SQUARE_RIGHT        22
+#define DEFAULT_PAGE_TEST          21
+#define PROJECT_SPECIFIC_PAGE        22
         case   SQUARE_LEFT :
             MON_PRINTF("%s : CSystemMode is %d , SQUARE_LEFT\n",__FUNCTION__,CSystemMode);
             LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_LEFT");
@@ -184,14 +187,14 @@ char    cmd_string[128];
             LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_CENTER");
             cmd_valid = 1;
             break;
-        case   IMAGE_TEST :
-            MON_PRINTF("%s : CSystemMode is %d , IMAGE_TEST\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode IMAGE_TEST");
+        case   DEFAULT_PAGE_TEST :
+            MON_PRINTF("%s : CSystemMode is %d , DEFAULT_PAGE_TEST\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode DEFAULT_PAGE_TEST");
             cmd_valid = 1;
             break;
-        case   SQUARE_RIGHT :
-            MON_PRINTF("%s : CSystemMode is %d , SQUARE_RIGHT\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_RIGHT");
+        case   PROJECT_SPECIFIC_PAGE :
+            MON_PRINTF("%s : CSystemMode is %d , PROJECT_SPECIFIC_PAGE\n",__FUNCTION__,CSystemMode);
+            LOG_SYS("INFO","MD_TASK","CSystemMode PROJECT_SPECIFIC_PAGE");
             cmd_valid = 1;
             break;
         default :

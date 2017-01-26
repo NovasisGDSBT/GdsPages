@@ -462,8 +462,10 @@ int  temp_limit_low, temp_limit_high,carrier_temp;
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     rect.y += 36;
     /* */
-    sprintf(Text,"INFDISReport.ISystemMode : 1 -- INFDISReport.ITestMode : 18 -- INFDISReport.FBacklightStatus : ok");
+    sprintf(Text,"INFDISReport.ISystemMode : 5 -- INFDISReport.ITestMode : 18 -- INFDISReport.FBacklightStatus : ok");
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
+    rect.y += 36;
+
     system("cat /tmp/hw_version | grep MONITOR_SN| sed 's/MONITOR_SN=//g' > /tmp/vn");
     file_helper("/tmp/vn");
     sprintf(Text,"INFDISReport.IUniqueSerialNo : %s -- INFDISReport.ISupplierName : GDS -- INFDISReport.IDevType : PIS",value);
@@ -487,7 +489,9 @@ int  temp_limit_low, temp_limit_high,carrier_temp;
     file_helper("/tmp/vn");
     sprintf(NormalStartsCounter,"%s",value);
 
-    sprintf(WDogsResetsCounter,"0");
+    system("cat /tmp/wdog_counter | grep WATCHDOG_COUNTER | sed 's/WATCHDOG_COUNTER=//g' > /tmp/vn");
+    file_helper("/tmp/vn");
+    sprintf(WDogsResetsCounter,"%s",value);
 
     file_helper("/tmp/ext_backlight_fault");
     sprintf(FBacklightFault,"%s",value);
@@ -516,7 +520,7 @@ int  temp_limit_low, temp_limit_high,carrier_temp;
     file_helper("/tmp/vn");
     sprintf(FAmbLightSensor,"%s",value);
 
-    sprintf(Text,"INFDISReport.CDurationCounter : %s -- INFDISReport.CBackOnCounter : %s -- INFDISReport.NormalStartsCounter : %s -- INFDISReport.WDogsResetsCounter : %s",
+    sprintf(Text,"INFDISReport.IDurationCounter : %s -- INFDISReport.IBackOnCounter : %s -- INFDISReport.INormalStartsCounter : %s -- INFDISReport.IWDogResetsCounter : %s",
             DurationCounter,BackOnCounter,NormalStartsCounter,WDogsResetsCounter);
     create_blit(surface,Text, STRINGFontColor, STRINGFontBgColor,rect);
     rect.y += 36;

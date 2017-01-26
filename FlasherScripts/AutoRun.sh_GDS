@@ -1,5 +1,5 @@
 #/bin/sh
-SWVERSION="1.0.0.0rc2"
+SWVERSION="1.0.0.0rc3"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
@@ -17,7 +17,7 @@ else
 	cp /tmp/www/defaults/* /tmp/.
 	cp /tmp/www/defaults/* /tmp/store_mountpoint/webparams/.
 fi
-
+cp /tmp/store_mountpoint/sysconfig/etc/sysconfig/ntp.conf /etc/ntp.conf
 
 #retrieve log file
 mkdir -p /tmp/log_mountpoint
@@ -34,7 +34,7 @@ mount /dev/mmcblk0p2 /tmp/log_mountpoint
 
 # Default page, downloadable
 if [ -d /tmp/store_mountpoint/default_page ]; then
-	cp /tmp/store_mountpoint/default_page/* /tmp/www/test_default_page.
+	cp /tmp/store_mountpoint/default_page/* /tmp/www/test_default_page/.
 else
 	mkdir /tmp/store_mountpoint/default_page
 	cp -r /tmp/www/test_default_page/* /tmp/store_mountpoint/default_page/.
@@ -117,7 +117,7 @@ touch /tmp/backlight_on
 cd /tmp/www
 
 # wd management
-./GDS_WdtFuncs &
+./GDS_WdtFuncs & >> /tmp/messages
 
 # wait for dhcp as MTE seems not so fast as it should and we need to have an IP to check the page presence
 COUNT=0
@@ -138,7 +138,8 @@ done
 # test if page exists
 sleep 5
 . /etc/sysconfig/chromium_var
-wget -s -T 10 $CHROMIUM_SERVER
+. /tmp/setup_boot
+wget -s -T $RETRY_TIME_COMMUNICATIONS $CHROMIUM_SERVER
 if [ "$?" = "0" ]; then
 	PAGE_EXISTS=1
 	cat /etc/sysconfig/chromium_var | sed 's/CHROMIUM_SERVER=//g' > /tmp/www/url.txt

@@ -19,6 +19,8 @@ unsigned char ccmodTimeoutFault=0;
 unsigned char FApiMod=0;
 unsigned char FWatchdogApiMod=0;
 
+int     ShutDownReceived = 0;
+
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
 static unsigned char      flag=FALSE;
@@ -38,9 +40,10 @@ int                       defaultPageTimeOut = 15;
     CNormalStartsCounter++;
     CWdogResetsCounter++;
     /* Placeholders ends */
-
+/*
     sprintf(cmd,"echo 0 > %s",URL_COM);
     system(cmd);
+    */
     if(flag==FALSE)
     {
         prev_lifecounter=pd_InData.Lifesign.ICCUCLifeSign;
@@ -57,17 +60,16 @@ int                       defaultPageTimeOut = 15;
             {
                 ErrorDescription=ErrorDescription|IPMODCCUTIMEOUT;
                 ccmodTimeoutFault=1;
-                sprintf(cmd,"echo 1 > %s",URL_COM);
-                system(cmd);
             }
             if(spacetime >= defaultPageTimeOut)
             {
+                system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
                 system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
                 system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/chromium_var");
                 sprintf(chromium_server,"CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html");
-                system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
+                sprintf(cmd,"echo 1 > %s",URL_COM);
+                system(cmd);
                 MON_PRINTF("%s : defaultPageTimeOut=%d\n",__FUNCTION__,defaultPageTimeOut);
-
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
@@ -106,11 +108,15 @@ int                       defaultPageTimeOut = 15;
                 {
                     sprintf(chromium_server,"%s",URL);
                     printf("URL %s NOT FOUND !!!\n",txtURL);
+                    sprintf(cmd,"echo 1 > %s",URL_COM);
+                    system(cmd);
                     LOG_SYS("INFO", (char *)__FUNCTION__, "URL NOT FOUND");
                 }
                 else
                 {
                     close(fp);
+                    sprintf(cmd,"echo 0 > %s",URL_COM);
+                    system(cmd);
                     sprintf(sys_URL,"echo %s > /tmp/chromium_var",URL);
                     system(sys_URL);
                     system("rm -rf /tmp/chromium_var_mountpoint");
@@ -172,7 +178,12 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
     BacklightStatus=BacklightStatus*20;
     pd_OutData->StatusData.IBacklightStatus = BacklightStatus;
 
-    pd_OutData->StatusData.ISystemMode = curr_mode;
+
+    if ( ShutDownReceived == 0)
+        pd_OutData->StatusData.ISystemMode = curr_mode;
+    else
+        pd_OutData->StatusData.ISystemMode = 4;
+
     pd_OutData->StatusData.ITestMode = CSystemMode;
     system("cat /tmp/wdog_counter | sed 's/WATCHDOG_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTWatchdog  = pd_get_value();
