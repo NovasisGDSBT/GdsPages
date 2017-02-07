@@ -1,5 +1,4 @@
 #/bin/sh
-SWVERSION="1.0.0.0rc3"
 cd /tmp
 cp application_storage/www.tar .
 tar xf www.tar
@@ -12,12 +11,23 @@ mount /dev/mmcblk0p3 /tmp/store_mountpoint
 
 if [ -d /tmp/store_mountpoint/webparams ]; then
 	cp -r /tmp/store_mountpoint/webparams/* /tmp/.
+	cat /tmp/NovaConfig.xml | grep InfotainmentTimeOut
+	if [ "$?" == "1" ]; then
+		cp /tmp/www/NovaConfig.xml /tmp/NovaConfig.xml
+		cp /tmp/www/NovaConfig.xml /tmp/store_mountpoint/webparams/.
+	fi
 else
 	mkdir /tmp/store_mountpoint/webparams
 	cp /tmp/www/defaults/* /tmp/.
 	cp /tmp/www/defaults/* /tmp/store_mountpoint/webparams/.
 fi
+TIMEOUT_INFOTAINMENT=`cat /tmp/NovaConfig.xml | grep InfotainmentTimeOut | sed 's/<InfotainmentTimeOut>//g' | sed 's/<\/InfotainmentTimeOut>//g' | sed 's/\t//g'`
 cp /tmp/store_mountpoint/sysconfig/etc/sysconfig/ntp.conf /etc/ntp.conf
+
+CURRENT_DATE=`date -u +"%Y"`
+if [ "${CURRENT_DATE}" -le "1970" ]; then
+	date -s `cat /tmp/last_known_time` 
+fi
 
 #retrieve log file
 mkdir -p /tmp/log_mountpoint
@@ -40,7 +50,8 @@ else
 	cp -r /tmp/www/test_default_page/* /tmp/store_mountpoint/default_page/.
 fi
 
-echo "IMAGE_REV=${SWVERSION}" > /tmp/store_mountpoint/webparams/sw_version
+IMAGE_REV=`cat /tmp/www/HwSw.xml | grep image_rev | awk '{print $1}' | sed 's/<image_rev>//g' | sed 's/<\/image_rev>//g'`
+echo "IMAGE_REV=${IMAGE_REV}" > /tmp/store_mountpoint/webparams/sw_version
 cp /tmp/store_mountpoint/webparams/sw_version /tmp
 # Default set for timezone
 if [ -f /tmp/timezone ]; then
@@ -64,7 +75,7 @@ fi
 if [ -f /tmp/store_mountpoint/wdog_counter ]; then
 	cp /tmp/store_mountpoint/wdog_counter /tmp/.
 else
-	echo "WATCHDOG_COUNTER=0" > /tmp/store_mountpoint/store_wdog_counter
+	echo "WATCHDOG_COUNTER=0" > /tmp/store_mountpoint/wdog_counter
 	cp /tmp/store_mountpoint/wdog_counter /tmp/.
 fi
 
@@ -158,6 +169,7 @@ TIMEOUTTCMS=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WA
 YELLOW_TIME=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
 GREEN_TIME=`cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
 RED_TIME=`cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'`
-./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $PAGE_EXISTS &
+echo "./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $TIMEOUT_INFOTAINMENT $PAGE_EXISTS "
+./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $TIMEOUT_INFOTAINMENT $PAGE_EXISTS &
 
 /tmp/www/check_xml_fileSize.sh &

@@ -20,6 +20,7 @@ unsigned char FApiMod=0;
 unsigned char FWatchdogApiMod=0;
 
 int     ShutDownReceived = 0;
+extern  int infotainment_timeout;
 
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
@@ -32,7 +33,7 @@ static char               URL[256];
 static char               txtURL[256];
 char                      cmd[256];
 FILE                      *fp;
-int                       defaultPageTimeOut = 15;
+int                       defaultPageTimeOut = infotainment_timeout;
 
     /* Placeholders */
     CDurationCounter++;

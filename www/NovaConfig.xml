@@ -6,4 +6,7 @@
 		<GREEN_GAIN>250</GREEN_GAIN>
 		<BLUE_GAIN>245</BLUE_GAIN>
 	</ColorTemp>
+	<InfoT_TimeOut>
+		<InfotainmentTimeOut>15</InfotainmentTimeOut>
+	</InfoT_TimeOut>
 </data-set>

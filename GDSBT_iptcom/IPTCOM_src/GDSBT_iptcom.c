@@ -49,7 +49,7 @@ char    chromium_server[256];
 unsigned char lvds_ptr[256];
 int iptcom_connected = 0;
 
-int yellow_square_time=3, green_square_time=3 ,red_square_time=3, iptcom_timeout=10;
+int yellow_square_time=3, green_square_time=3 ,red_square_time=3, iptcom_timeout=10, infotainment_timeout = 15;
 int page_exists=0;
 
 /*******************************************************************************
@@ -149,26 +149,40 @@ int res;
 UINT8 inAugState, topoCnt;
 struct sigaction sa;
 char    cmd[64];
+int     do_square_diag = 1;
+int     i;
+
     printf("argc = %d\n", argc);
+    for(i=1;i<=argc;i++)
+        printf("%s : at %d argv is %s\n",__func__,i,argv[i]);
     if ( argc == 6)
     {
         yellow_square_time = atoi(argv[1]);
         green_square_time  = atoi(argv[2]);
         red_square_time    = atoi(argv[3]);
         iptcom_timeout     = atoi(argv[4]);
-        page_exists        = atoi(argv[5]);
+        infotainment_timeout= atoi(argv[5]);
+        page_exists        = atoi(argv[6]);
     }
-    printf("yellow_square_time = %d\n",yellow_square_time);
-    printf("green_square_time  = %d\n",green_square_time);
-    printf("red_square_time    = %d\n",red_square_time);
-    printf("iptcom_timeout     = %d\n",iptcom_timeout);
-    printf("page_exists        = %d\n",page_exists);
+    printf("yellow_square_time      = %d\n",yellow_square_time);
+    printf("green_square_time       = %d\n",green_square_time);
+    printf("red_square_time         = %d\n",red_square_time);
+    printf("iptcom_timeout          = %d\n",iptcom_timeout);
+    printf("infotainment_timeout    = %d\n",infotainment_timeout);
+    printf("page_exists             = %d\n",page_exists);
 
     MON_PRINTF("START MAIN !\n\n");
     sprintf(cmd,"echo 1 > %s",URL_COM);
     system(cmd);
 
     bzero(chromium_server,sizeof(chromium_server));
+    fp=fopen("/tmp/warm_boot","r");
+    if ( fp != NULL)
+    {
+        do_square_diag = 0;
+        fclose(fp);
+    }
+    system("touch /tmp/warm_boot");
 
     fp=fopen("/etc/sysconfig/chromium_var","r");
     if ( fp !=NULL)
@@ -198,11 +212,14 @@ char    cmd[64];
     sa.sa_handler = &terminationHandler;
     sigaction(SIGINT, &sa,NULL);
 
-    do_sdl();
-    do {
-        yellow_square_time--;
-        IPTVosTaskDelay(1000);
-    } while (yellow_square_time > 0);
+    if ( do_square_diag == 1 )
+    {
+        do_sdl();
+        do {
+            yellow_square_time--;
+            IPTVosTaskDelay(1000);
+        } while (yellow_square_time > 0);
+    }
 
     do {
         MON_PRINTF("Wait for TDC to complete\n");
@@ -225,20 +242,24 @@ char    cmd[64];
         MON_PRINTF("\nApplication init failed\n\n");
         system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
         system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
-        SDL_Quit();
+        if ( do_square_diag == 1 )
+            SDL_Quit();
         system("sleep 1 ; touch /tmp/start_chrome");
         LOG_SYS("ERROR","INIT","FAILED");
         return(-1);
     }
     MON_PRINTF("\nApplication init OK\n\n");
     LOG_SYS("INFO","INIT","BOOT");
-    draw_green();
+    if ( do_square_diag == 1 )
+        draw_green();
     IPTVosTaskDelay(green_square_time*1000);
     if ( page_exists == 0 )
     {
-        draw_red();
+        if ( do_square_diag == 1 )
+            draw_red();
         IPTVosTaskDelay(red_square_time*1000);
-        SDL_Quit();
+        if ( do_square_diag == 1 )
+            SDL_Quit();
         system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
         system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
     }
@@ -247,7 +268,8 @@ char    cmd[64];
         sprintf(cmd,"echo 0 > %s",URL_COM);
         system(cmd);
     }
-    SDL_Quit();
+    if ( do_square_diag == 1 )
+        SDL_Quit();
     IPTVosTaskDelay(200);
     system("startx &");
     while (1)
