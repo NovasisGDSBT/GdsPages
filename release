@@ -1,0 +1,57 @@
+#!/bin/sh
+DEPLOYDIR="/Devel/NOVAsom6_SDK/Deploy"
+KERNELDIR="/Devel/NOVAsom6_SDK/Kernel/linux-3.10.17_1.0.2_ga-NOVAsom6"
+FSDIR="/Devel/NOVAsom6_SDK/FileSystem/ChromeFs/output/images"
+DTBFILE="${KERNELDIR}/arch/arm/boot/dts/imx6q-GDS-novasom.dtb"
+KERNELFILE="${KERNELDIR}/arch/arm/boot/uImage"
+PARAMSFILE="/Devel/NOVAsom6_SDK/Bootloader/u-boot-2014.10-NOVAsom6/NOVAsom6_Q_GDS.params"
+FSFILE="${FSDIR}/uInitrd"
+UBOOTFILE="/Devel/NOVAsom6_SDK/Bootloader/u-boot-2014.10-NOVAsom6/u-boot.imx"
+
+
+rm -rf Release
+mkdir Release
+cp ${DTBFILE} Release/imx6q-novasom.dtb
+cp ${KERNELFILE} Release/NOVAsom6Kernel
+cp ${PARAMSFILE} Release/NOVAsom6.params
+cp ${UBOOTFILE} Release/u-boot.imx
+cp ${FSFILE} Release/NOVAsom6Initrd
+
+./create_tar FULL
+
+cp www/AutoRun.sh Release/.
+cp www.tar Release/.
+RC=`cat www/HwSw.xml | grep image_rev | awk '{print $1}' | sed 's/<image_rev>//g' | sed 's/<\/image_rev>//g'`
+ARCHIVE_NAME="Gds_`date +%Y%b%d`_$RC.tar.bz2"
+echo -n "Creating folder Release ..."
+echo "*** Gds_`date +%Y%b%d`_$RC ***" > Release/README.txt
+echo "Archive Name : ${ARCHIVE_NAME}" >> Release/README.txt
+echo "Generic instructions :" >> Release/README.txt
+echo "" >> Release/README.txt
+cd Release
+FILES=`ls`
+COUNT=1
+cd ..
+echo "Files in $RC :" >> Release/README.txt
+for i in ${FILES}; do
+	echo "$COUNT : $i" >> Release/README.txt
+	let COUNT=$COUNT+1
+done
+echo "" >> Release/README.txt
+echo "Generic instructions :" >> Release/README.txt
+echo "1 - Copy all the files in this release in your <document root> directory" >> Release/README.txt
+echo "2 - From the terminal command line issue <update_kernel>" >> Release/README.txt
+echo "3 - From the terminal command line issue <update_fs>" >> Release/README.txt
+echo "4 - From the terminal command line issue <update_GDS_code>" >> Release/README.txt
+echo "5 - From the terminal command line issue <reboot>" >> Release/README.txt
+echo "" >> Release/README.txt
+echo "Note : The command <update_GDS_code> extracts the <AutoRun.sh> in the <application_storage> directory of the mass storage device" >> Release/README.txt
+echo "       This file is explicitly in the archive for documentation purposes only" >> Release/README.txt
+echo "" >> Release/README.txt
+echo "Done"
+echo -n "Compressing folder Release to Gds_`date +%Y%b%d`_$RC.tar.bz2 ..."
+tar jcf Gds_`date +%Y%b%d`_$RC.tar.bz2 Release
+echo "Done"
+cat Release/README.txt
+
+

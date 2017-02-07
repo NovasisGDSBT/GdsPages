@@ -1,0 +1,21 @@
+#!/bin/sh
+cd /tmp/www
+. /etc/sysconfig/chromium_var
+sleep 2
+wget -s -T 10 $CHROMIUM_SERVER
+if [ "$?" = "0" ]; then
+        PAGE_EXISTS=1
+        cat /etc/sysconfig/chromium_var | sed 's/CHROMIUM_SERVER=//g' > /tmp/www/url.txt
+else
+        PAGE_EXISTS=0
+        echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+        echo "http://127.0.0.1:8080/test_default_page/default_page.html" > /tmp/www/url.txt
+fi
+export SDL_NOMOUSE=1
+
+TIMEOUTTCMS=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
+YELLOW_TIME=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
+GREEN_TIME=`cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
+RED_TIME=`cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'`
+./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $PAGE_EXISTS &
+

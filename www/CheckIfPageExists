@@ -1,0 +1,19 @@
+#/bin/sh
+rm -f /tmp/chromium_server_exists
+if [ `echo $1 | grep "http://"` ];  then
+	. /tmp/setup_boot
+	wget -s -T $RETRY_TIME_COMMUNICATIONS $1
+	if [ "$?" = "0" ]; then
+        	echo "CHROMIUM_SERVER=$1" > /etc/sysconfig/chromium_var
+	        echo "$1" > /tmp/www/url.txt
+		touch /tmp/chromium_server_exists
+	else
+        	echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+	        echo "http://127.0.0.1:8080/test_default_page/default_page.html" > /tmp/www/url.txt
+		rm -f /tmp/chromium_server_exists
+	fi
+else
+	echo "CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\"" > /etc/sysconfig/chromium_var
+	echo "http://127.0.0.1:8080/test_default_page/default_page.html" > /tmp/www/url.txt
+	rm -f /tmp/chromium_server_exists
+fi
