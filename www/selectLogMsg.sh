@@ -19,7 +19,10 @@ xml sel -t -m "logging/LOG[@timestamp>=$1 and @timestamp<=$TIMESTAMP_END]" -v . 
 
 else
 
-  echo "not defined"
+  echo "$0" "[S or D or A]" "TIMESTAMP_START TIMESPAN"
+  echo "S: SystemDiagnosticLog"
+  echo "D: DataRecording" 
+  echo "A: AppActivityLog" 
 
 fi
 
