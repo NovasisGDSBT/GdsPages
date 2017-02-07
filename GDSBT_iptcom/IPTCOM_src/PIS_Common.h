@@ -43,6 +43,17 @@ reference:
 
 #define STACK  10000                        /* PD send task stack size */
 
-int LOG_SYS(char * type, char * funcname, char *message );
+int LOG_SYS(char *logtype,char * type, char * funcname, char *message );
+
+//type log file
+#define SYSDIAG "DIAG"
+#define DATAREC "DREC"
+#define APPACTI "APPA"
+
+//type log message
+#define ERR "ERROR"
+#define INFO "INFO"
+
+
 //#define TIME_MEASURE
 #endif

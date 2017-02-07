@@ -200,9 +200,9 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 
 	  DATE=`echo $38 | sed 's/TIME_SET=//g' | sed 's/%3A/:/g'`
 	  date -s $DATE > /dev/null 2>&1
-	  /tmp/www/logwrite.sh "MAINTENANCE" "TIME_SET" &
+	  /tmp/www/logwrite.sh "DREC" "MAINTENANCE" "TIME_SET" &
 	else
-	  /tmp/www/logwrite.sh "MAINTENANCE" "DIAGNOSTIC VALUE CHANGED" &
+	  /tmp/www/logwrite.sh "DREC" "MAINTENANCE" "DIAGNOSTIC VALUE CHANGED" &
 	fi
 	
 

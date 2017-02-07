@@ -89,7 +89,10 @@ void apply_tests(int graphic_test)
 
 void md_Op(CINFDISCtrlOp md_InDataOp,int comId , int srcIpAddr)
 {
-char    cmd_string[128];
+    char    cmd_string[128];
+    char    stringlog[128];
+
+    memset(stringlog,0,sizeof(stringlog));
 
     MON_PRINTF("%s : comId=%d ip=%d.%d.%d.%d\n",__FUNCTION__, comId,
         (srcIpAddr >> 24) & 0xff,  (srcIpAddr >> 16) & 0xff,
@@ -99,14 +102,15 @@ char    cmd_string[128];
 
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 2 )
     {
-        LOG_SYS("INFO","MD_TASK","CBacklightCmd 2 Received");
+
+        LOG_SYS(DATAREC,INFO, "MD_TASK","CBacklightCmd_2_Received");
         sprintf(cmd_string,"echo 1 > %s",BACKLIGHT_CMD);
         system(cmd_string);
         backlight_state = 0;    /* The backlight is off */
     }
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CBacklightCmd 1 Received");
+        LOG_SYS(DATAREC,INFO, "MD_TASK","CBacklightCmd_1_Received");
         sprintf(cmd_string,"echo 0 > %s",BACKLIGHT_CMD);
         system(cmd_string);
         backlight_state = 1;    /* The backlight is on */
@@ -115,7 +119,7 @@ char    cmd_string[128];
     if ( md_InDataOp.CtrlCommands.CShutdownCmd == 1 )
     {
         system("touch /tmp/system_has_been_shutted_down");
-        LOG_SYS("INFO","MD_TASK","CShutdownCmd Received");
+        LOG_SYS(DATAREC,INFO, "MD_TASK","CShutdownCmd_Received");
         MON_PRINTF("%s : Poweroff\n",__FUNCTION__);
         ShutDownReceived = 1;
         system("echo 1 > /sys/class/graphics/fb0/blank");
@@ -124,53 +128,47 @@ char    cmd_string[128];
     }
 
     CSystemMode = md_InDataOp.CtrlCommands.CSystemMode;
+
+    snprintf(stringlog,sizeof(stringlog)-1,"Received_CSystemMode:%d",CSystemMode);
+    LOG_SYS(DATAREC,INFO, "MD_TASK",stringlog);
     switch (CSystemMode)
     {
 
         case   NORMAL_OPERATION :
             MON_PRINTF("%s : CSystemMode is %d , NORMAL_OPERATION\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode NORMAL_OPERATION");
             curr_mode=NORMAL;
             cmd_valid = 1;
             break;
         case   FILL_RED :
             MON_PRINTF("%s : CSystemMode is %d , FILL_RED\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_RED");
             cmd_valid = 1;
             break;
         case   FILL_GREEN :
             MON_PRINTF("%s : CSystemMode is %d , FILL_GREEN\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_GREEN");
             cmd_valid = 1;
             break;
         case   FILL_BLUE :
             MON_PRINTF("%s : CSystemMode is %d , FILL_BLUE\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_BLUE");
             cmd_valid = 1;
             break;
         case   FILL_BLACK :
             MON_PRINTF("%s : CSystemMode is %d , FILL_BLACK\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_BLACK");
             cmd_valid = 1;
             break;
         case   FILL_WHITE :
             MON_PRINTF("%s : CSystemMode is %d , FILL_WHITE\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_WHITE");
             cmd_valid = 1;
             break;
         case   FILL_GRAYSCALE11 :
             MON_PRINTF("%s : CSystemMode is %d , FILL_GRAYSCALE11\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode FILL_GRAYSCALE11");
             cmd_valid = 1;
             break;
         case   LOOP_TEST :
             MON_PRINTF("%s : CSystemMode is %d , LOOP_TEST\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode LOOP_TEST");
             cmd_valid = 1;
             break;
         case   DIAG_PAGE :
             MON_PRINTF("%s : CSystemMode is %d , DIAG_PAGE\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode DIAG_PAGE");
             cmd_valid = 1;
             break;
 #define SQUARE_LEFT         19
@@ -179,22 +177,18 @@ char    cmd_string[128];
 #define PROJECT_SPECIFIC_PAGE        22
         case   SQUARE_LEFT :
             MON_PRINTF("%s : CSystemMode is %d , SQUARE_LEFT\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_LEFT");
             cmd_valid = 1;
             break;
         case   SQUARE_CENTER :
             MON_PRINTF("%s : CSystemMode is %d , SQUARE_CENTER\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode SQUARE_CENTER");
             cmd_valid = 1;
             break;
         case   DEFAULT_PAGE_TEST :
             MON_PRINTF("%s : CSystemMode is %d , DEFAULT_PAGE_TEST\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode DEFAULT_PAGE_TEST");
             cmd_valid = 1;
             break;
         case   PROJECT_SPECIFIC_PAGE :
             MON_PRINTF("%s : CSystemMode is %d , PROJECT_SPECIFIC_PAGE\n",__FUNCTION__,CSystemMode);
-            LOG_SYS("INFO","MD_TASK","CSystemMode PROJECT_SPECIFIC_PAGE");
             cmd_valid = 1;
             break;
         default :
@@ -217,6 +211,7 @@ char    cmd_string[128];
 
 void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
 {
+
     MON_PRINTF("%s : comId=%d ip=%d.%d.%d.%d\n",__FUNCTION__, comId,
         (srcIpAddr >> 24) & 0xff,  (srcIpAddr >> 16) & 0xff,
         (srcIpAddr >> 8) & 0xff,  srcIpAddr  & 0xff);
@@ -230,7 +225,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     */
     if ( md_InDataMaint.Commands.CReset == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CReset Received");
+        LOG_SYS(DATAREC,INFO, "MD_TASK","CReset_Received");
         MON_PRINTF("%s : Received RESET Command\n",__FUNCTION__);
         system("kill -9 `pidof chrome_starter.sh`  >/dev/null 2>&1");
         system("kill -9 `pidof backlight_counter.sh`  >/dev/null 2>&1");
@@ -245,7 +240,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
         system("umount /tmp/store_mountpoint");
         system("mkdir -p /tmp/log_mountpoint");
         system("mount /dev/mmcblk0p2 /tmp/log_mountpoint");
-        system("cp /tmp/www/gds_log.xml /tmp/log_mountpoint/");
+        system("cp /tmp/www/check_xml_fileSizeD.xml /tmp/log_mountpoint/");
         system("umount /tmp/log_mountpoint");
         system("sync");
         system("sleep 2; reboot");
@@ -253,21 +248,22 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
 
     if ( md_InDataMaint.INFDCounterCommands.CDurationCounterReset == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CDurationCounterReset Received");
+        LOG_SYS(DATAREC,INFO, "MD_TASK","CDurationCounterReset Received");
         CDurationCounter = 0;
         system ("touch /tmp/monitor_on_reset");
         MON_PRINTF("%s : Received Duration Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CBackOnCounterReset == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CBackOnCounterReset Received");
+        LOG_SYS(DATAREC,INFO, "MD_TASK","CDurationCounterReset Received");
+
         CBackOnCounter = 0;
         system ("touch /tmp/backlight_on_reset");
         MON_PRINTF("%s : Received Back On Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CNormalStartsCounterReset == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CNormalStartsCounterReset Received");
+        LOG_SYS(DATAREC,INFO,"MD_TASK","CNormalStartsCounterReset Received");
         CNormalStartsCounter = 0;
         MON_PRINTF("%s : Received Normal Starts Counter Reset Command\n",__FUNCTION__);
         system("/tmp/www/store_all_counters");
@@ -275,7 +271,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     }
     if ( md_InDataMaint.INFDCounterCommands.CResetAllCounters == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CResetAllCounters Received");
+        LOG_SYS(DATAREC,INFO,"MD_TASK","CResetAllCounters Received");
         CDurationCounter = 0;
         CBackOnCounter = 0;
         CNormalStartsCounter = 0;
@@ -290,7 +286,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     }
     if ( md_InDataMaint.INFDCounterCommands.CWdogResetsCounterReset == 1 )
     {
-        LOG_SYS("INFO","MD_TASK","CWdogResetsCounterReset Received");
+        LOG_SYS(DATAREC,INFO,"MD_TASK","CWdogResetsCounterReset Received");
         CWdogResetsCounter = 0;
         system ("echo 0 > /tmp/wdog_counter");
         system("/tmp/www/store_all_counters");

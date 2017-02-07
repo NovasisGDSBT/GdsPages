@@ -35,8 +35,14 @@ mount /dev/mmcblk0p2 /tmp/log_mountpoint
 
  if [ $? -eq 0 ]  # test mount OK
  then
-    if [ -f /tmp/log_mountpoint/gds_log.xml ]; then
-	    cp /tmp/log_mountpoint/gds_log.xml /tmp/www/
+    if [ -f /tmp/log_mountpoint/DataRecording.xml ]; then
+	    cp /tmp/log_mountpoint/DataRecording.xml /tmp/www/
+    fi
+    if [ -f /tmp/log_mountpoint/AppActivityLog.xml ]; then
+	    cp /tmp/log_mountpoint/AppActivityLog.xml /tmp/www/
+    fi
+    if [ -f /tmp/log_mountpoint/SystemDiagnosticLog.xml ]; then
+	    cp /tmp/log_mountpoint/SystemDiagnosticLog.xml /tmp/www/
     fi
     umount /tmp/log_mountpoint
     sync
@@ -105,10 +111,10 @@ touch /tmp/ambientlight_value
 /tmp/www/cgi-bin/find_lvds
 # start application
 # auto_backlight_bkg sets the brightness to MAX@MAXLIGHT
-/tmp/www/auto_backlight_bkg &
+#/tmp/www/auto_backlight_bkg &
 # start counter
-/tmp/www/monitor_counter.sh &
-/tmp/www/backlight_counter.sh &
+#/tmp/www/monitor_counter.sh &
+#/tmp/www/backlight_counter.sh &
 # start ntp monitor
 /tmp/www/ntp_hwclock_update.sh &
 # start chrome_starter
@@ -172,4 +178,8 @@ RED_TIME=`cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//
 echo "./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $TIMEOUT_INFOTAINMENT $PAGE_EXISTS "
 ./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $TIMEOUT_INFOTAINMENT $PAGE_EXISTS &
 
-/tmp/www/check_xml_fileSize.sh &
+/tmp/www/check_xml_fileSizeS.sh &
+sleep 2
+/tmp/www/check_xml_fileSizeD.sh &
+sleep 2
+/tmp/www/check_xml_fileSizeA.sh &

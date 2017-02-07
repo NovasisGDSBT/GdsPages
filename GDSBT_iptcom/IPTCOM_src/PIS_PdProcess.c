@@ -24,16 +24,17 @@ extern  int infotainment_timeout;
 
 void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
-static unsigned char      flag=FALSE;
-static unsigned char      flagPostCalling=FALSE;
-static unsigned short int prev_lifecounter=0;
-static unsigned short int spacetime=0;
-static char               sys_URL[256];
-static char               URL[256];
-static char               txtURL[256];
-char                      cmd[256];
-FILE                      *fp;
-int                       defaultPageTimeOut = infotainment_timeout;
+    static unsigned char      flag=FALSE;
+    static unsigned char      flagPostCalling=FALSE;
+    static unsigned short int prev_lifecounter=0;
+    static unsigned short int spacetime=0;
+    static char               sys_URL[256];
+    static char               URL[256];
+    static char               txtURL[256];
+    char                      cmd[256];
+    FILE                      *fp;
+    int                       defaultPageTimeOut = infotainment_timeout;
+
 
     /* Placeholders */
     CDurationCounter++;
@@ -111,7 +112,8 @@ int                       defaultPageTimeOut = infotainment_timeout;
                     printf("URL %s NOT FOUND !!!\n",txtURL);
                     sprintf(cmd,"echo 1 > %s",URL_COM);
                     system(cmd);
-                    LOG_SYS("INFO", (char *)__FUNCTION__, "URL NOT FOUND");
+                    LOG_SYS(APPACTI,ERR,"PD_CCUCInfdis_Task",txtURL);
+
                 }
                 else
                 {
@@ -130,7 +132,7 @@ int                       defaultPageTimeOut = infotainment_timeout;
                     printf("chromium_server is now %s !!!\n",txtURL);
                     sprintf(cmd,"echo %s > /tmp/www/url.txt",txtURL);
                     system(cmd);
-                    LOG_SYS("INFO", (char *)__FUNCTION__, "URL CHANGED");
+                    LOG_SYS(APPACTI,INFO,"PD_CCUCInfdis_Task",txtURL);
                 }
             }
         }

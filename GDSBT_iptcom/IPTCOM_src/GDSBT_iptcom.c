@@ -57,17 +57,33 @@ NAME:       LOG_SYS
 ABSTRACT:
 RETURNS:
 */
-int LOG_SYS(char * type, char * funcname, char *message )
+
+int LOG_SYS(char *logtype,char * type, char * funcname, char *message )
 {
     int retval=0;
     char cmd[255];
 
     memset(cmd,0,sizeof(cmd));
 
-    if((type!=NULL) && (funcname!=NULL) && (message!=NULL) )
+    if((logtype!=NULL) && (type!=NULL) && (funcname!=NULL) && (message!=NULL) )
     {
-        snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s",type,funcname,message);
-        system(cmd);
+         if ( strncmp(logtype,SYSDIAG,4)== 0 )
+         {
+            snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",SYSDIAG,type,funcname,message);
+
+         }
+         else if ( strncmp(logtype,DATAREC,4)== 0 )
+         {
+             snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",DATAREC,type,funcname,message);
+         }
+         else if ( strncmp(logtype,APPACTI,4)== 0 )
+         {
+             snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",APPACTI,type,funcname,message);
+         }
+         else{
+                 snprintf(cmd,sizeof(cmd)-1,"echo LOG_SYS:logtype not right defined");
+         }
+         system(cmd);
     }
     else
     {
@@ -76,7 +92,6 @@ int LOG_SYS(char * type, char * funcname, char *message )
 
    return(retval);
 }
-
 
 /*******************************************************************************
 NAME:       IPTVosGetCh
@@ -229,7 +244,7 @@ int     i;
         iptcom_timeout--;
         if ( iptcom_timeout < 0)
         {
-            LOG_SYS("ERROR","TCMS","TIMEOUT");
+            LOG_SYS(SYSDIAG,ERR, "TCMS","TIMEOUT");
             break;
         }
     } while (0 == topoCnt);
@@ -245,11 +260,12 @@ int     i;
         if ( do_square_diag == 1 )
             SDL_Quit();
         system("sleep 1 ; touch /tmp/start_chrome");
-        LOG_SYS("ERROR","INIT","FAILED");
+        LOG_SYS(SYSDIAG,ERR, "INIT","APP_FAILED");
         return(-1);
     }
     MON_PRINTF("\nApplication init OK\n\n");
-    LOG_SYS("INFO","INIT","BOOT");
+
+    LOG_SYS(SYSDIAG,INFO, "INIT","BOOT");
     if ( do_square_diag == 1 )
         draw_green();
     IPTVosTaskDelay(green_square_time*1000);

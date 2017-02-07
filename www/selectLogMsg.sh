@@ -5,6 +5,22 @@ FILENAME=$(echo "uploadCbmLog_"`date -u +"%Y%m%d_%H%M%S"`".cbm")
 
 let TIMESTAMP_END=$1+$2
 
-xml sel -t -m "logging/LOG[@timestamp>=$1 and @timestamp<=$TIMESTAMP_END]" -v . -n /tmp/www/gds_log.xml >> /tmp/$FILENAME
+if [ "$1" = "S" ]; then
+
+xml sel -t -m "logging/LOG[@timestamp>=$1 and @timestamp<=$TIMESTAMP_END]" -v . -n /tmp/www/SystemDiagnosticLog.xml >> /tmp/$FILENAME
+
+elif [ "$1" = "D" ]; then
+
+xml sel -t -m "logging/LOG[@timestamp>=$1 and @timestamp<=$TIMESTAMP_END]" -v . -n /tmp/www/DataRecording.xml >> /tmp/$FILENAME
+
+elif [ "$1" = "A" ]; then
+
+xml sel -t -m "logging/LOG[@timestamp>=$1 and @timestamp<=$TIMESTAMP_END]" -v . -n /tmp/www/AppActivityLog.xml >> /tmp/$FILENAME
+
+else
+
+  echo "not defined"
+
+fi
 
 echo "log file created:"/tmp/$FILENAME

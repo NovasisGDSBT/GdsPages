@@ -263,7 +263,7 @@ static void setLog_Diagnostic()
         if(LOG_IPMODWATCHDOG ==0)
         {
             LOG_IPMODWATCHDOG=1;
-            LOG_SYS("ERROR","DIAG_TASK","WATCHDOG");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","WATCHDOG");
         }
     }
     else
@@ -274,7 +274,7 @@ static void setLog_Diagnostic()
         if(LOG_APPMODULEWATCHDOG ==0)
         {
             LOG_APPMODULEWATCHDOG=1;
-           LOG_SYS("ERROR","DIAG_TASK","APPMODULEWATCHDOG");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","APPMODULEWATCHDOG");
         }
 
     }
@@ -287,7 +287,7 @@ static void setLog_Diagnostic()
         if(LOG_LEDBKLFAULT==0)
         {
             LOG_LEDBKLFAULT=1;
-            LOG_SYS("ERROR","DIAG_TASK","LEDBKLFAULT");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","LEDBKLFAULT");
         }
     }
     else
@@ -300,7 +300,7 @@ static void setLog_Diagnostic()
         if(LOG_APPMODULEFAULT==0)
         {
             LOG_APPMODULEFAULT=1;
-            LOG_SYS("ERROR","DIAG_TASK","APPMODULEFAULT");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","APPMODULEFAULT");
         }
     }
     else
@@ -312,7 +312,7 @@ static void setLog_Diagnostic()
     if(LOG_IPMODCCUTIMEOUT==0)
         {
             LOG_IPMODCCUTIMEOUT=1;
-            LOG_SYS("ERROR","DIAG_TASK","CCUTIMEOUT");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","CCUTIMEOUT");
         }
     }
     else
@@ -325,7 +325,7 @@ static void setLog_Diagnostic()
         if(LOG_TFTTEMPRANGEHIGH==0)
         {
             LOG_TFTTEMPRANGEHIGH=1;
-            LOG_SYS("ERROR","DIAG_TASK","TEMPRANGEHIGH");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","TEMPRANGEHIGH");
         }
     }
     else
@@ -338,7 +338,7 @@ static void setLog_Diagnostic()
      if(LOG_TFTTEMPRANGELOW==0)
         {
             LOG_TFTTEMPRANGELOW=1;
-            LOG_SYS("ERROR","DIAG_TASK","TEMPRANGELOW");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","TEMPRANGELOW");
         }
     }
     else
@@ -350,7 +350,7 @@ static void setLog_Diagnostic()
       if(LOG_TEMPSENSFAULT==0)
         {
             LOG_TEMPSENSFAULT=1;
-            LOG_SYS("ERROR","DIAG_TASK","TEMPSENSFAULT");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","TEMPSENSFAULT");
         }
     }
     else
@@ -363,7 +363,7 @@ static void setLog_Diagnostic()
         if(LOG_AMBLIGHTFAULT==0)
         {
             LOG_AMBLIGHTFAULT=1;
-            LOG_SYS("ERROR","DIAG_TASK","AMBLIGHTFAULT");
+            LOG_SYS(SYSDIAG,ERR, "DIAG_TASK","AMBLIGHTFAULT");
         }
     }
     else
@@ -377,23 +377,23 @@ static void setLog_Diagnostic()
     {
         if(curr_mode == NORMAL )
         {
-            LOG_SYS("ERROR","DIAG_TASK","NORMAL MODE");
+            LOG_SYS(SYSDIAG,INFO, "DIAG_TASK","NORMAL_MODE");
         }
         if(curr_mode == ERROR )
         {
-            LOG_SYS("INFO","DIAG_TASK","ERROR MODE");
+            LOG_SYS(SYSDIAG,INFO, "DIAG_TASK","ERROR_MODE");
         }
         if(curr_mode == DEGRADED )
         {
-            LOG_SYS("INFO","DIAG_TASK","DEGRADED MODE");
+            LOG_SYS(SYSDIAG,INFO, "DIAG_TASK","DEGRADED_MODE");
         }
         if(curr_mode == TEST )
         {
-            LOG_SYS("INFO","DIAG_TASK","TEST MODE");
+            LOG_SYS(SYSDIAG,INFO, "DIAG_TASK","TEST_MODE");
         }
         if(curr_mode == PROGRAMMING )
         {
-            LOG_SYS("INFO","DIAG_TASK","PROGRAMMING MODE");
+            LOG_SYS(SYSDIAG,INFO, "DIAG_TASK","PROGRAMMING_MODE");
         }
 
 
