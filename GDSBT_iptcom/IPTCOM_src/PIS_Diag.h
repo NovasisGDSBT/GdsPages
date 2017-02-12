@@ -13,6 +13,10 @@ reference:
 #include "infd_icd.h"
 
 int Diagnostic(void);
+void checkErrorPost(void);
+#define START       1
+#define RUNTIME     2
+
 
 #define     NOERROR            (0x01FF)
 #define     IPMODWATCHDOG      ((unsigned int)0x001)

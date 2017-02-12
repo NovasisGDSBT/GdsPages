@@ -80,10 +80,11 @@ int LOG_SYS(char *logtype,char * type, char * funcname, char *message )
          {
              snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",APPACTI,type,funcname,message);
          }
-         else{
-                 snprintf(cmd,sizeof(cmd)-1,"echo LOG_SYS:logtype not right defined");
+         else
+         {
+            MON_PRINTF("echo LOG_SYS:logtype not defined");
          }
-         system(cmd);
+
     }
     else
     {
@@ -167,6 +168,8 @@ char    cmd[64];
 int     do_square_diag = 1;
 int     i;
 
+    memset(cmd,0,sizeof(cmd));
+
     printf("argc = %d\n", argc);
     for(i=1;i<=argc;i++)
         printf("%s : at %d argv is %s\n",__func__,i,argv[i]);
@@ -214,11 +217,10 @@ int     i;
         fscanf(fp,"%s",lvds_ptr);
         fclose(fp);
     }
-    /*********
 
-    POWERON SELF TEST
+    /* CHECK ERROR POWERON SELF TEST */
+    checkErrorPost();
 
-    *********/
 
     res = IPTCom_prepareInit(0, "TFT1.car1.lCst_20160812.xml");
     MON_PRINTF("iptcom_startUp load res=%d\n",res);
@@ -229,12 +231,14 @@ int     i;
 
     if ( do_square_diag == 1 )
     {
+        LOG_SYS(APPACTI,INFO, "IPTCOM_MAIN_TASK","Waiting TCMS: showing yellow square");
         do_sdl();
         do {
             yellow_square_time--;
             IPTVosTaskDelay(1000);
         } while (yellow_square_time > 0);
     }
+
 
     do {
         MON_PRINTF("Wait for TDC to complete\n");
@@ -244,7 +248,8 @@ int     i;
         iptcom_timeout--;
         if ( iptcom_timeout < 0)
         {
-            LOG_SYS(SYSDIAG,ERR, "TCMS","TIMEOUT");
+            snprintf(cmd,sizeof(cmd)-1,"Iptcom Connection Timeout: %d seconds",iptcom_timeout);
+            LOG_SYS(APPACTI,ERR, "IPTCOM_MAIN_TASK",cmd);
             break;
         }
     } while (0 == topoCnt);
@@ -260,22 +265,29 @@ int     i;
         if ( do_square_diag == 1 )
             SDL_Quit();
         system("sleep 1 ; touch /tmp/start_chrome");
-        LOG_SYS(SYSDIAG,ERR, "INIT","APP_FAILED");
+        LOG_SYS(APPACTI,ERR, "IPTCOM_MAIN_TASK","Showing default page");
         return(-1);
     }
     MON_PRINTF("\nApplication init OK\n\n");
 
-    LOG_SYS(SYSDIAG,INFO, "INIT","BOOT");
     if ( do_square_diag == 1 )
+    {
         draw_green();
-    IPTVosTaskDelay(green_square_time*1000);
+        LOG_SYS(APPACTI,ERR, "IPTCOM_MAIN_TASK","IPTCOM connection established: showing green square");
+        IPTVosTaskDelay(green_square_time*1000);
+    }
+
+
     if ( page_exists == 0 )
     {
         if ( do_square_diag == 1 )
+        {
             draw_red();
-        IPTVosTaskDelay(red_square_time*1000);
-        if ( do_square_diag == 1 )
+            IPTVosTaskDelay(red_square_time*1000);
+            LOG_SYS(APPACTI,ERR, "IPTCOM_MAIN_TASK","No valid URL found: showing red square");
             SDL_Quit();
+        }
+
         system("echo CHROMIUM_SERVER=\"http://127.0.0.1:8080/test_default_page/default_page.html\" > /etc/sysconfig/chromium_var");
         system("echo \"http://127.0.0.1:8080/test_default_page/default_page.html\" > /tmp/www/url.txt");
     }

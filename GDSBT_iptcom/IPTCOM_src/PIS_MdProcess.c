@@ -103,14 +103,14 @@ void md_Op(CINFDISCtrlOp md_InDataOp,int comId , int srcIpAddr)
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 2 )
     {
 
-        LOG_SYS(DATAREC,INFO, "MD_TASK","CBacklightCmd_2_Received");
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlOp_TASK","CBacklightCmd received value:2");
         sprintf(cmd_string,"echo 1 > %s",BACKLIGHT_CMD);
         system(cmd_string);
         backlight_state = 0;    /* The backlight is off */
     }
     if ( md_InDataOp.CtrlCommands.CBacklightCmd == 1 )
     {
-        LOG_SYS(DATAREC,INFO, "MD_TASK","CBacklightCmd_1_Received");
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlOp_TASK","CBacklightCmd received value:1");
         sprintf(cmd_string,"echo 0 > %s",BACKLIGHT_CMD);
         system(cmd_string);
         backlight_state = 1;    /* The backlight is on */
@@ -118,8 +118,8 @@ void md_Op(CINFDISCtrlOp md_InDataOp,int comId , int srcIpAddr)
 
     if ( md_InDataOp.CtrlCommands.CShutdownCmd == 1 )
     {
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlOp_TASK","CShutdownCmd received");
         system("touch /tmp/system_has_been_shutted_down");
-        LOG_SYS(DATAREC,INFO, "MD_TASK","CShutdownCmd_Received");
         MON_PRINTF("%s : Poweroff\n",__FUNCTION__);
         ShutDownReceived = 1;
         system("echo 1 > /sys/class/graphics/fb0/blank");
@@ -129,8 +129,9 @@ void md_Op(CINFDISCtrlOp md_InDataOp,int comId , int srcIpAddr)
 
     CSystemMode = md_InDataOp.CtrlCommands.CSystemMode;
 
-    snprintf(stringlog,sizeof(stringlog)-1,"Received_CSystemMode:%d",CSystemMode);
-    LOG_SYS(DATAREC,INFO, "MD_TASK",stringlog);
+    snprintf(stringlog,sizeof(stringlog)-1,"CSystemMode receivedValue:%d",CSystemMode);
+    LOG_SYS(DATAREC,INFO, "CINFDISCtrlOp_TASK",stringlog);
+
     switch (CSystemMode)
     {
 
@@ -225,7 +226,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     */
     if ( md_InDataMaint.Commands.CReset == 1 )
     {
-        LOG_SYS(DATAREC,INFO, "MD_TASK","CReset_Received");
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlMaint_Task","CReset received");
         MON_PRINTF("%s : Received RESET Command\n",__FUNCTION__);
         system("kill -9 `pidof chrome_starter.sh`  >/dev/null 2>&1");
         system("kill -9 `pidof backlight_counter.sh`  >/dev/null 2>&1");
@@ -248,14 +249,14 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
 
     if ( md_InDataMaint.INFDCounterCommands.CDurationCounterReset == 1 )
     {
-        LOG_SYS(DATAREC,INFO, "MD_TASK","CDurationCounterReset Received");
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlMaint_Task","CDurationCounterReset received");
         CDurationCounter = 0;
         system ("touch /tmp/monitor_on_reset");
         MON_PRINTF("%s : Received Duration Counter Reset Command\n",__FUNCTION__);
     }
     if ( md_InDataMaint.INFDCounterCommands.CBackOnCounterReset == 1 )
     {
-        LOG_SYS(DATAREC,INFO, "MD_TASK","CDurationCounterReset Received");
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlMaint_Task","CDurationCounterReset received");
 
         CBackOnCounter = 0;
         system ("touch /tmp/backlight_on_reset");
@@ -263,7 +264,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     }
     if ( md_InDataMaint.INFDCounterCommands.CNormalStartsCounterReset == 1 )
     {
-        LOG_SYS(DATAREC,INFO,"MD_TASK","CNormalStartsCounterReset Received");
+        LOG_SYS(DATAREC,INFO,"CINFDISCtrlMaint_Task","CNormalStartsCounterReset received");
         CNormalStartsCounter = 0;
         MON_PRINTF("%s : Received Normal Starts Counter Reset Command\n",__FUNCTION__);
         system("/tmp/www/store_all_counters");
@@ -271,7 +272,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     }
     if ( md_InDataMaint.INFDCounterCommands.CResetAllCounters == 1 )
     {
-        LOG_SYS(DATAREC,INFO,"MD_TASK","CResetAllCounters Received");
+        LOG_SYS(DATAREC,INFO,"CINFDISCtrlMaint_Task","CResetAllCounters received");
         CDurationCounter = 0;
         CBackOnCounter = 0;
         CNormalStartsCounter = 0;
@@ -286,7 +287,7 @@ void md_Maint(CINFDISCtrlMaint md_InDataMaint,int comId , int srcIpAddr )
     }
     if ( md_InDataMaint.INFDCounterCommands.CWdogResetsCounterReset == 1 )
     {
-        LOG_SYS(DATAREC,INFO,"MD_TASK","CWdogResetsCounterReset Received");
+        LOG_SYS(DATAREC,INFO,"CINFDISCtrlMaint_Task","CWdogResetsCounterReset received");
         CWdogResetsCounter = 0;
         system ("echo 0 > /tmp/wdog_counter");
         system("/tmp/www/store_all_counters");

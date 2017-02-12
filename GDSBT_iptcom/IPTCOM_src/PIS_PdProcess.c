@@ -26,8 +26,11 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
 {
     static unsigned char      flag=FALSE;
     static unsigned char      flagPostCalling=FALSE;
+    static unsigned char      prev_IInfdMode=0;
     static unsigned short int prev_lifecounter=0;
     static unsigned short int spacetime=0;
+    static unsigned short int flagLifesignBack=FALSE;
+    static unsigned short int logCountersTimer=0;
     static char               sys_URL[256];
     static char               URL[256];
     static char               txtURL[256];
@@ -36,6 +39,7 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
     int                       defaultPageTimeOut = infotainment_timeout;
 
 
+    memset(cmd,0,sizeof(cmd));
     /* Placeholders */
     CDurationCounter++;
     CBackOnCounter++;
@@ -46,6 +50,24 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
     sprintf(cmd,"echo 0 > %s",URL_COM);
     system(cmd);
     */
+
+    logCountersTimer++;
+
+    if(logCountersTimer%MINUTE)
+    {
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:lifesign=%d\0",prev_lifecounter);
+        LOG_SYS(DATAREC,DEBUG, "CCUCInfdis_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:CDurationCounter=%d\0",CDurationCounter);
+        LOG_SYS(DATAREC,DEBUG, "CCUCInfdis_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:CNormalStartsCounter=%d\0",CNormalStartsCounter);
+        LOG_SYS(DATAREC,DEBUG, "CCUCInfdis_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:CWdogResetsCounter=%d\0",CWdogResetsCounter);
+        LOG_SYS(DATAREC,DEBUG, "CCUCInfdis_TASK",cmd);
+        memset(cmd,0,sizeof(cmd));
+
+    }
+
+
     if(flag==FALSE)
     {
         prev_lifecounter=pd_InData.Lifesign.ICCUCLifeSign;
@@ -72,6 +94,9 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
                 sprintf(cmd,"echo 1 > %s",URL_COM);
                 system(cmd);
                 MON_PRINTF("%s : defaultPageTimeOut=%d\n",__FUNCTION__,defaultPageTimeOut);
+                snprintf(cmd,sizeof(cmd)-1,"NO lifesign within %d. Showing default page\0",defaultPageTimeOut);
+                flagLifesignBack=TRUE;
+                LOG_SYS(APPACTI,ERR, "CCUCInfdis_TASK",cmd);
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
@@ -88,6 +113,12 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
                 flagPostCalling=TRUE;
                 system("echo 1 > /tmp/www/POST_enable");
             }
+            if(flagLifesignBack == TRUE)
+            {
+                flagLifesignBack=FALSE;
+                LOG_SYS(APPACTI,INFO, "CCUCInfdis_TASK","Lifesign is back");
+            }
+
         }
     }
 
@@ -97,6 +128,10 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
         {
             sprintf(URL,"CHROMIUM_SERVER=%s",pd_InData.LoadResource2.IURL);
             sprintf(txtURL,"%s",pd_InData.LoadResource2.IURL);
+
+            snprintf(cmd,sizeof(cmd)-1,"IURL received:%s\0",txtURL);
+            LOG_SYS(DATAREC,INFO, "CCUCInfdis_TASK",cmd);
+
             if ( strcmp(chromium_server,URL) != 0 )
             {
                 printf("\n");
@@ -112,7 +147,8 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
                     printf("URL %s NOT FOUND !!!\n",txtURL);
                     sprintf(cmd,"echo 1 > %s",URL_COM);
                     system(cmd);
-                    LOG_SYS(APPACTI,ERR,"PD_CCUCInfdis_Task",txtURL);
+                    sprintf(cmd,"URL %s cannot be reached. Showing default page",txtURL);
+                    LOG_SYS(APPACTI,ERR, "PD_CCUCInfdis_Task",cmd);
 
                 }
                 else
@@ -132,7 +168,8 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
                     printf("chromium_server is now %s !!!\n",txtURL);
                     sprintf(cmd,"echo %s > /tmp/www/url.txt",txtURL);
                     system(cmd);
-                    LOG_SYS(APPACTI,INFO,"PD_CCUCInfdis_Task",txtURL);
+                    sprintf(cmd,"Starting chrome pointing at %s",txtURL);
+                    LOG_SYS(APPACTI,INFO,"PD_CCUCInfdis_Task",cmd);
                 }
             }
         }
@@ -140,6 +177,15 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
     /*
     MON_PRINTF("%s : Lifesign.ICCUCLifeSign:%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);
     */
+
+    if(prev_IInfdMode != pd_InData.LoadResource.IInfdMode)
+    {
+        prev_IInfdMode=pd_InData.LoadResource.IInfdMode;
+
+        snprintf(cmd,sizeof(cmd)-1,"IInfdMode received value:%d\0",prev_IInfdMode);
+        LOG_SYS(DATAREC,INFO, "CCUCInfdis_TASK",cmd);
+
+    }
 }
 
 int pd_get_value()
@@ -155,8 +201,15 @@ char    p[32];
 
 void pd_ReportProcess(BYTE *byte_pd_OutData)
 {
-    unsigned char BacklightStatus=0;
+    static unsigned char logCountersTimer=0;
+    static unsigned int  prev_ISystemMode=0;
+    static unsigned int  prev_CSystemMode=0;
+    static unsigned char prev_BacklightStatus=0;
+    unsigned char        BacklightStatus=0;
+    char                 cmd[256];
 
+
+    logCountersTimer++;
 
 
 
@@ -173,6 +226,7 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
     system("cat /tmp/reboot_counter | sed 's/REBOOT_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTPowerUp   = pd_get_value();
 
+
     system("cat /sys/class/backlight/backlight_lvds0.28/brightness > /tmp/ta");
     BacklightStatus=(unsigned char)pd_get_value();
     if(BacklightStatus>=5)
@@ -181,15 +235,46 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
     BacklightStatus=BacklightStatus*20;
     pd_OutData->StatusData.IBacklightStatus = BacklightStatus;
 
+    if (prev_BacklightStatus != BacklightStatus)
+    {
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – New IBacklightStatus sent:%d\0",BacklightStatus);
+        LOG_SYS(SYSDIAG,INFO, "InfdisReport_TASK",cmd);
+        prev_BacklightStatus=BacklightStatus;
+    }
+
+
+    if(prev_ISystemMode != curr_mode)
+    {
+        prev_ISystemMode=curr_mode;
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – New ISystemMode sent:%d\0",prev_ISystemMode);
+        LOG_SYS(SYSDIAG,INFO, "InfdisReport_TASK",cmd);
+    }
 
     if ( ShutDownReceived == 0)
         pd_OutData->StatusData.ISystemMode = curr_mode;
     else
+    {
         pd_OutData->StatusData.ISystemMode = 4;
+        LOG_SYS(SYSDIAG,INFO, "InfdisReport_TASK","TCMS – New ISystemMode sent:4");
+    }
+
 
     pd_OutData->StatusData.ITestMode = CSystemMode;
+    if(prev_CSystemMode!=CSystemMode)
+    {
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – New ITestMode sent:%d",CSystemMode);
+        LOG_SYS(SYSDIAG,INFO, "InfdisReport_TASK",cmd);
+        prev_CSystemMode=CSystemMode;
+    }
+
     system("cat /tmp/wdog_counter | sed 's/WATCHDOG_COUNTER=//g' > /tmp/ta");
     pd_OutData->CntData.ITFTWatchdog  = pd_get_value();
+
+    if(logCountersTimer%MINUTE)
+    {
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counters:lifesign=%d,ITFTBacklight=%d,ITFTWorkTime=%d, ITFTPowerUp=%d,ITFTWatchdog=%d\0",ISystemLifeSign,pd_OutData->CntData.ITFTBacklight,pd_OutData->CntData.ITFTWorkTime,pd_OutData->CntData.ITFTPowerUp,pd_OutData->CntData.ITFTWatchdog);
+        LOG_SYS(SYSDIAG,DEBUG, "InfdisReport_TASK",cmd);
+    }
 
     pd_OutData->DiagData.COMModule.FTimeoutComMod=ccmodTimeoutFault;
     pd_OutData->DiagData.TFTFaults.FBcklightFault=FBcklightFault;

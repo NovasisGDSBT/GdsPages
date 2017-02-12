@@ -111,10 +111,10 @@ touch /tmp/ambientlight_value
 /tmp/www/cgi-bin/find_lvds
 # start application
 # auto_backlight_bkg sets the brightness to MAX@MAXLIGHT
-#/tmp/www/auto_backlight_bkg &
+/tmp/www/auto_backlight_bkg &
 # start counter
-#/tmp/www/monitor_counter.sh &
-#/tmp/www/backlight_counter.sh &
+/tmp/www/monitor_counter.sh &
+/tmp/www/backlight_counter.sh &
 # start ntp monitor
 /tmp/www/ntp_hwclock_update.sh &
 # start chrome_starter

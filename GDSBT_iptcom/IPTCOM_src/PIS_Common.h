@@ -53,7 +53,8 @@ int LOG_SYS(char *logtype,char * type, char * funcname, char *message );
 //type log message
 #define ERR "ERROR"
 #define INFO "INFO"
-
+#define DEBUG "DEBUG"
+#define MINUTE 60
 
 //#define TIME_MEASURE
 #endif
