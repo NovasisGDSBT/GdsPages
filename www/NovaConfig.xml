@@ -9,4 +9,14 @@
 	<InfoT_TimeOut>
 		<InfotainmentTimeOut>15</InfotainmentTimeOut>
 	</InfoT_TimeOut>
+
+	<lightParam>
+	  <BACKLIGHT_MIN> </BACKLIGHT_MIN>  <!-- BACKLIGHT_MIN_AT_MINLIGHT -->
+		<BACKLIGHT_MAX> </BACKLIGHT_MAX>  <!-- BACKLIGHT_MAX_AT_MAXLIGHT -->
+		
+		<AMBIENTLIGHT_MIN> </AMBIENTLIGHT_MIN>  <!-- MIN_AMBIENT_LIGHT -->
+		<AMBIENTLIGHT_MAX> </AMBIENTLIGHT_MAX>  <!-- MAX_AMBIENT_LIGHT -->
+
+		<BACKLIGHT_FAULTY_AMBSENS> </BACKLIGHT_MAX>  <!-- UNKNOW -->
+	</lightParam>
 </data-set>

@@ -11,10 +11,14 @@ set -- $QUERY_STRING
 if [ "$1" == "username=gds" ]; then
 	if [ "$2" == "password=gds" ]; then
 # AUTHENTICATION SUCCESS 
+		/tmp/www/logwrite.sh "DREC" "INFO" "WEB - Successful Login" &
+
 		echo "<meta http-equiv=\"refresh\" content=\"1; url=/cgi-bin/main_menu.cgi\"/>"
 	fi
 else
 # AUTHENTICATION FAILURE
+    /tmp/www/logwrite.sh "DREC" "ERROR" "WEB - Login failed Wrong username or password provided: $1" &
+
     echo "<meta http-equiv="Content-Type" content="text/html; CHARSET=utf-8">"
 
     echo "<html>"
