@@ -69,21 +69,22 @@ int LOG_SYS(char *logtype,char * type, char * funcname, char *message )
     {
          if ( strncmp(logtype,SYSDIAG,4)== 0 )
          {
-            snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",SYSDIAG,type,funcname,message);
+            snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s '%s'",SYSDIAG,type,funcname,message);
 
          }
          else if ( strncmp(logtype,DATAREC,4)== 0 )
          {
-             snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",DATAREC,type,funcname,message);
+             snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s '%s'",DATAREC,type,funcname,message);
          }
          else if ( strncmp(logtype,APPACTI,4)== 0 )
          {
-             snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s %s",APPACTI,type,funcname,message);
+             snprintf(cmd,sizeof(cmd)-1,"/tmp/www/logwrite.sh %s %s %s '%s'",APPACTI,type,funcname,message);
          }
          else
          {
-            MON_PRINTF("echo LOG_SYS:logtype not defined");
+            snprintf(cmd,sizeof(cmd)-1,"echo LOG_SYS:logtype define wrong");
          }
+          system(cmd);
 
     }
     else

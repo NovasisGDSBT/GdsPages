@@ -21,9 +21,33 @@ else
 	cp /tmp/www/defaults/* /tmp/.
 	cp /tmp/www/defaults/* /tmp/store_mountpoint/webparams/.
 fi
+
+
 TIMEOUT_INFOTAINMENT=`cat /tmp/NovaConfig.xml | grep InfotainmentTimeOut | sed 's/<InfotainmentTimeOut>//g' | sed 's/<\/InfotainmentTimeOut>//g' | sed 's/\t//g'`
 cp /tmp/store_mountpoint/sysconfig/etc/sysconfig/ntp.conf /etc/ntp.conf
 
+
+#load light parameter from NovaConfig.xml
+BACKLIGHT_MIN_AT_MINLIGHT=$(xml sel -t -v "/data-set/lightParam/BACKLIGHT_MIN"  /tmp/NovaConfig.xml)
+BACKLIGHT_MAX_AT_MAXLIGHT=$(xml sel -t -v "/data-set/lightParam/BACKLIGHT_MAX"  /tmp/NovaConfig.xml)
+MIN_AMBIENT_LIGHT=$(xml sel -t -v "/data-set/lightParam/AMBIENTLIGHT_MIN"  /tmp/NovaConfig.xml)
+MAX_AMBIENT_LIGHT=$(xml sel -t -v "/data-set/lightParam/AMBIENTLIGHT_MAX"  /tmp/NovaConfig.xml)
+BACKLIGHT_FAULTY_AMBSENS=$(xml sel -t -v "/data-set/lightParam/BACKLIGHT_FAULTY_AMBSENS"  /tmp/NovaConfig.xml)
+
+if [ "${BACKLIGHT_FAULTY_AMBSENS}" -gt "0" ]; then
+	echo $BACKLIGHT_FAULTY_AMBSENS > /tmp/BACKLIGHT_FAULTY_AMBSENS
+else
+	echo 3 > /tmp/BACKLIGHT_FAULTY_AMBSENS
+
+fi
+
+cat /tmp/backlight_limits | sed "s/BACKLIGHT_MIN_AT_MINLIGHT=.*$/BACKLIGHT_MIN_AT_MINLIGHT=$BACKLIGHT_MIN_AT_MINLIGHT/g" | \
+sed "s/BACKLIGHT_MAX_AT_MAXLIGHT=.*$/BACKLIGHT_MAX_AT_MAXLIGHT=$BACKLIGHT_MAX_AT_MAXLIGHT/g" | \
+sed "s/MIN_AMBIENT_LIGHT=.*$/MIN_AMBIENT_LIGHT=$MIN_AMBIENT_LIGHT/g" | sed "s/MAX_AMBIENT_LIGHT=.*$/MAX_AMBIENT_LIGHT=$MAX_AMBIENT_LIGHT/g" > /tmp/templimits
+ 
+mv /tmp/templimits /tmp/backlight_limits
+ 
+ 
 CURRENT_DATE=`date -u +"%Y"`
 if [ "${CURRENT_DATE}" -le "1970" ]; then
 	date -s `cat /tmp/last_known_time` 
@@ -48,6 +72,8 @@ mount /dev/mmcblk0p2 /tmp/log_mountpoint
     sync
  fi
 
+ /tmp/www/logwrite.sh "APPA"  "INFO" "AutoRun.sh" "START-SYSTEM"
+ 
 # Default page, downloadable
 if [ -d /tmp/store_mountpoint/default_page ]; then
 	cp /tmp/store_mountpoint/default_page/* /tmp/www/test_default_page/.
@@ -166,6 +192,10 @@ else
         echo "http://127.0.0.1:8080/test_default_page/default_page.html" > /tmp/www/url.txt
 fi
 cat /etc/sysconfig/chromium_var
+
+############### RGB MATRIX ####################
+
+/tmp/www/apply_rgbmatrix
 
 ############### GDS APP IPTCOM #################
 # will start X 

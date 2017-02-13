@@ -136,6 +136,12 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	echo "$12" >> /tmp/backlight_limits
 	echo "$15" >> /tmp/backlight_limits
 	echo "$16" >> /tmp/backlight_limits
+		
+	xml ed --inplace -u "/data-set/lightParam/BACKLIGHT_MIN" -v $(echo $9 | sed 's/BACKLIGHT_MIN_AT_MINLIGHT=//g') /tmp/NovaConfig.xml
+	xml ed --inplace -u "/data-set/lightParam/BACKLIGHT_MAX" -v $(echo ${10} | sed 's/BACKLIGHT_MAX_AT_MAXLIGHT=//g') /tmp/NovaConfig.xml
+	xml ed --inplace -u "/data-set/lightParam/AMBIENTLIGHT_MIN" -v $(echo ${11} | sed 's/MIN_AMBIENT_LIGHT=//g') /tmp/NovaConfig.xml
+	xml ed --inplace -u "/data-set/lightParam/AMBIENTLIGHT_MAX" -v $(echo ${12} | sed 's/MAX_AMBIENT_LIGHT=//g') /tmp/NovaConfig.xml
+	xml ed --inplace -u "/data-set/lightParam/BACKLIGHT_FAULTY_AMBSENS" -v 1 /tmp/NovaConfig.xml
 
 	# Address
 	get_address
@@ -200,9 +206,9 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 
 	  DATE=`echo $38 | sed 's/TIME_SET=//g' | sed 's/%3A/:/g'`
 	  date -s $DATE > /dev/null 2>&1
-	  /tmp/www/logwrite.sh "DREC" "MAINTENANCE" "TIME_SET" &
+	  /tmp/www/logwrite.sh "DREC" "INFO" "WEB" "Saved new Date time:$DATE" &
 	else
-	  /tmp/www/logwrite.sh "DREC" "MAINTENANCE" "DIAGNOSTIC VALUE CHANGED" &
+	  /tmp/www/logwrite.sh "DREC" "INFO" "WEB" "Saved new parameters" &
 	fi
 	
 

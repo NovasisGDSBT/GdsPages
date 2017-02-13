@@ -17,7 +17,7 @@
 #define DEFAULT_PAGE_TEST   21
 #define PROJECT_SPECIFIC_PAGE        22
 
-unsigned int CSystemMode,cmd_valid = 0;
+unsigned int CSystemMode;
 int CDurationCounter=0,CBackOnCounter=0,CNormalStartsCounter=0,CWdogResetsCounter=0;
 extern  unsigned char lvds_ptr[256];
 extern  int     test_webpage;
@@ -91,6 +91,7 @@ void md_Op(CINFDISCtrlOp md_InDataOp,int comId , int srcIpAddr)
 {
     char    cmd_string[128];
     char    stringlog[128];
+    unsigned int cmd_valid = 0;
 
     memset(stringlog,0,sizeof(stringlog));
 
@@ -129,8 +130,11 @@ void md_Op(CINFDISCtrlOp md_InDataOp,int comId , int srcIpAddr)
 
     CSystemMode = md_InDataOp.CtrlCommands.CSystemMode;
 
-    snprintf(stringlog,sizeof(stringlog)-1,"CSystemMode receivedValue:%d",CSystemMode);
-    LOG_SYS(DATAREC,INFO, "CINFDISCtrlOp_TASK",stringlog);
+    if(CSystemMode > 0)
+    {
+        snprintf(stringlog,sizeof(stringlog)-1,"CSystemMode receivedValue:%d",CSystemMode);
+        LOG_SYS(DATAREC,INFO, "CINFDISCtrlOp_TASK",stringlog);
+    }
 
     switch (CSystemMode)
     {

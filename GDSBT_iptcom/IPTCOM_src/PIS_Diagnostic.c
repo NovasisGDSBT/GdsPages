@@ -253,6 +253,7 @@ char    cmd[64];
     {
         ErrorDescription |= AMBLIGHTFAULT;
         FAmbLightSensor=1;
+        system("cat /tmp/BACKLIGHT_FAULTY_AMBSENS > /sys/class/backlight/backlight_lvds0.28/brightness");
     }
     else
     {

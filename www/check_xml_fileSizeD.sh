@@ -45,7 +45,7 @@ while [ "$TRUE" == "1" ]; do
 	then
 	  sync
 	  cp /tmp/www/DataRecording.xml /tmp/log_mountpoint/tmpfileDataRecording
-	  mv /tmp/log_mountpoint/DataRecording /tmp/log_mountpoint/DataRecording.xml
+	  mv /tmp/log_mountpoint/tmpfileDataRecording /tmp/log_mountpoint/DataRecording.xml
 	  umount /tmp/log_mountpoint
 	  sync
 	  e2fsck /dev/mmcblk0p2

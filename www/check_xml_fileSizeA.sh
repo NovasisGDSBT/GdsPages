@@ -45,7 +45,7 @@ while [ "$TRUE" == "1" ]; do
 	then
 	  sync
 	  cp /tmp/www/AppActivityLog.xml /tmp/log_mountpoint/tmpfileAppActivityLog
-	  mv /tmp/log_mountpoint/AppActivityLog /tmp/log_mountpoint/AppActivityLog.xml
+	  mv /tmp/log_mountpoint/tmpfileAppActivityLog /tmp/log_mountpoint/AppActivityLog.xml
 	  umount /tmp/log_mountpoint
 	  sync
 	  e2fsck /dev/mmcblk0p2
