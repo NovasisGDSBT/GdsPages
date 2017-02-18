@@ -71,8 +71,9 @@ mount /dev/mmcblk0p2 /tmp/log_mountpoint
     umount /tmp/log_mountpoint
     sync
  fi
+. /etc/sysconfig/network
 
- /tmp/www/logwrite.sh "APPA"  "INFO" "AutoRun.sh" "START-SYSTEM"
+ /tmp/www/logwrite.sh "APPA"  "INFO" "AutoRun.sh" "************* DISPLAY:" $NET_HOSTNAME " STARTED *****************"
  
 # Default page, downloadable
 if [ -d /tmp/store_mountpoint/default_page ]; then

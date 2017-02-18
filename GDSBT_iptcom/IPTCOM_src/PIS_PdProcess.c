@@ -94,9 +94,13 @@ void pd_CCUProcess(CCCUC_INFDIS  pd_InData)
                 sprintf(cmd,"echo 1 > %s",URL_COM);
                 system(cmd);
                 MON_PRINTF("%s : defaultPageTimeOut=%d\n",__FUNCTION__,defaultPageTimeOut);
-                snprintf(cmd,sizeof(cmd)-1,"NO lifesign within %d. Showing default page",defaultPageTimeOut);
-                flagLifesignBack=TRUE;
-                LOG_SYS(APPACTI,ERR, "CCUCInfdis_TASK",cmd);
+
+                if(flagLifesignBack == FALSE)
+                {
+                    snprintf(cmd,sizeof(cmd)-1,"NO lifesign within %d. Showing default page",defaultPageTimeOut);
+                    flagLifesignBack=TRUE;
+                    LOG_SYS(APPACTI,ERR, "CCUCInfdis_TASK",cmd);
+                }
             }
             MON_PRINTF("%s : spacetime :%d ErrorDescription=%x\n",__FUNCTION__,spacetime,ErrorDescription);
             MON_PRINTF("%s : pd_InData.Lifesign.ICCUCLifeSign :%d\n",__FUNCTION__,pd_InData.Lifesign.ICCUCLifeSign);

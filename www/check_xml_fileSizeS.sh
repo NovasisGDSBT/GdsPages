@@ -5,9 +5,9 @@ SAVECOUNTER=0
 TIMETOSAVE=50
 
 SPACETIME=0
-FILEZISE_KBLIMIT=5
+FILEZISE_KBLIMIT=50000
 	        
-#  24 hh buffer log message timestamp from 1/01/1970
+#  24 hh=170000 buffer log message timestamp from 1/01/1970
 SPACETIME_LIMIT=170000
 
 
