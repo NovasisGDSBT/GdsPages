@@ -52,6 +52,7 @@ int iptcom_connected = 0;
 int yellow_square_time=3, green_square_time=3 ,red_square_time=3, iptcom_timeout=10, infotainment_timeout = 15;
 int page_exists=0;
 
+int PRINT_iptcom_timeout;
 /*******************************************************************************
 NAME:       LOG_SYS
 ABSTRACT:
@@ -189,6 +190,7 @@ int     i;
     printf("iptcom_timeout          = %d\n",iptcom_timeout);
     printf("infotainment_timeout    = %d\n",infotainment_timeout);
     printf("page_exists             = %d\n",page_exists);
+    PRINT_iptcom_timeout=iptcom_timeout;
 
     MON_PRINTF("START MAIN !\n\n");
     sprintf(cmd,"echo 1 > %s",URL_COM);
@@ -249,7 +251,7 @@ int     i;
         iptcom_timeout--;
         if ( iptcom_timeout < 0)
         {
-            snprintf(cmd,sizeof(cmd)-1,"Iptcom Connection Timeout: %d seconds",iptcom_timeout);
+            snprintf(cmd,sizeof(cmd)-1,"Iptcom Connection Timeout: %d seconds",PRINT_iptcom_timeout);
             LOG_SYS(APPACTI,ERR, "IPTCOM_MAIN_TASK",cmd);
             break;
         }

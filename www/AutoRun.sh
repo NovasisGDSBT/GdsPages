@@ -173,12 +173,16 @@ while [ ! -f /tmp/my_ip ]; do
 		# Assign a fake address so X can start
 		ifconfig eth0 10.0.0.199 up
 		echo "10.0.0.199" > /tmp/my_ip
+		MYIP=$(cat /tmp/my_ip)
+		/tmp/www/logwrite.sh "APPA"  "INFO" "AutoRun.sh" "New IP received:" $MYIP
 		#kill -9 `pidof udhcpc`
 		echo "No dhcp server found, default to 10.0.0.199"
 		break
 	fi
 done
 
+
+ 
 # test if page exists
 sleep 5
 . /etc/sysconfig/chromium_var
