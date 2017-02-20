@@ -50,7 +50,7 @@ while [ "$TRUE" == "1" ]; do
 	  sync
 	  e2fsck /dev/mmcblk0p2
 	else
-	   echo "APPA ERROR" "$0" "DataRecording /dev/mmcblk0p2 busy"
+	  echo "ERROR" "$0" "DataRecording /dev/mmcblk0p2 busy"
 	fi
     fi
    

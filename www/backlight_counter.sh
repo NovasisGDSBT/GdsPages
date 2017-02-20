@@ -47,7 +47,7 @@ while [ "$TRUE" == "1" ]; do
 		  sync
 		  e2fsck /dev/mmcblk0p3
 		  #echo "$0" "Save"
-		  /tmp/www/logwrite.sh "APPA" "INFO" "$0" "Save counters"
+		  #/tmp/www/logwrite.sh "APPA" "INFO" "$0" "Save counters"
 
 		#else
 
