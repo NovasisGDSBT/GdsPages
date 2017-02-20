@@ -275,8 +275,18 @@ void pd_ReportProcess(BYTE *byte_pd_OutData)
 
     if((logCountersTimer%MINUTE)==0)
     {
-        snprintf(cmd,sizeof(cmd)-1,"TCMS – counters:lifesign=%d,ITFTBacklight=%d,ITFTWorkTime=%d, ITFTPowerUp=%d,ITFTWatchdog=%d",ISystemLifeSign,pd_OutData->CntData.ITFTBacklight,pd_OutData->CntData.ITFTWorkTime,pd_OutData->CntData.ITFTPowerUp,pd_OutData->CntData.ITFTWatchdog);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:lifesign=%d",ISystemLifeSign);
         LOG_SYS(SYSDIAG,DEBUG, "InfdisReport_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:ITFTBacklight=%d",pd_OutData->CntData.ITFTBacklight);
+        LOG_SYS(SYSDIAG,DEBUG, "InfdisReport_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:ITFTWorkTime=%d",pd_OutData->CntData.ITFTWorkTime);
+        LOG_SYS(SYSDIAG,DEBUG, "InfdisReport_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:ITFTPowerUp=%d",pd_OutData->CntData.ITFTPowerUp);
+        LOG_SYS(SYSDIAG,DEBUG, "InfdisReport_TASK",cmd);
+        snprintf(cmd,sizeof(cmd)-1,"TCMS – counter:ITFTWatchdog=%d",pd_OutData->CntData.ITFTWatchdog);
+        LOG_SYS(SYSDIAG,DEBUG, "InfdisReport_TASK",cmd);
+        memset(cmd,0,sizeof(cmd));
+
     }
 
     pd_OutData->DiagData.COMModule.FTimeoutComMod=ccmodTimeoutFault;

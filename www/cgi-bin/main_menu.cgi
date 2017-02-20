@@ -33,7 +33,7 @@ echo "     <center><a href=\"update_default_page.cgi\"><input type=\"button\" va
 echo "     <br>"
 echo "     <center><a href=\"do_reboot.cgi\"><input type=\"button\" value=\"Reboot\"></center></a>"
 echo "     <br>"
-echo "     <center><a href=\"test_only.cgi\"><input type=\"button\" value=\"Change MAC ( for production only )\"></center></a>"
+#echo "     <center><a href=\"test_only.cgi\"><input type=\"button\" value=\"Change MAC ( for production only )\"></center></a>"
 SW_VERSION=`cat /tmp/sw_version | sed 's/IMAGE_REV=//g'`
 echo "<center>Software Version : ${SW_VERSION}</center><br>"
 echo "</body>"

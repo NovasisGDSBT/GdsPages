@@ -9,7 +9,7 @@ TIMETOSAVE=300
 if [ -f /tmp/monitor_on_counter ]; then
         . /tmp/monitor_on_counter
         COUNTER=$MONITOR_ON_COUNTER
-        /tmp/www/logwrite.sh "APPA"  "INFO" "$0" "Setting MONITOR_ON_COUNTER=s0"
+      #  /tmp/www/logwrite.sh "APPA"  "INFO" "$0" "Setting MONITOR_ON_COUNTER=s0"
 fi
 
 
@@ -19,7 +19,7 @@ while [ "$TRUE" == "1" ]; do
         if [ -f /tmp/monitor_on_reset ]; then
                 rm /tmp/monitor_on_reset		
 		echo "MONITOR_ON_COUNTER=0" > /tmp/monitor_on_counter
-        	/tmp/www/logwrite.sh "APPA"  "ERROR" "$0" "ReSetting MONITOR_ON_COUNTER=0"
+        	
                 COUNTER=0
 	else
 		let COUNTER=$COUNTER+1
@@ -37,11 +37,11 @@ while [ "$TRUE" == "1" ]; do
 			  cp /tmp/monitor_on_counter /tmp/store_mountpoint/webparams/tmpfile
 			  mv /tmp/store_mountpoint/webparams/tmpfile /tmp/store_mountpoint/webparams/monitor_on_counter
 			  umount /tmp/store_mountpoint
-        		  /tmp/www/logwrite.sh "APPA"  "INFO" "$0" "Save monitor_on_counter"
+        		  
 			  sync
 			  e2fsck /dev/mmcblk0p3
-			else
-        		  /tmp/www/logwrite.sh "APPA"  "INFO" "$0" "Partition /dev/mmcblk0p3 busy"
+			#else
+        		  #echo "APPA"  "INFO" "$0" "Partition /dev/mmcblk0p3 busy"
 			fi
         	fi
         fi

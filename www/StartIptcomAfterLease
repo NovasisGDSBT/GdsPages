@@ -13,9 +13,11 @@ else
 fi
 export SDL_NOMOUSE=1
 
+TIMEOUT_INFOTAINMENT=`cat /tmp/NovaConfig.xml | grep InfotainmentTimeOut | sed 's/<InfotainmentTimeOut>//g' | sed 's/<\/InfotainmentTimeOut>//g' | sed 's/\t//g'`
 TIMEOUTTCMS=`cat /tmp/setup_boot | grep WAIT_TIME_FOR_COMMUNICATIONS | sed 's/WAIT_TIME_FOR_COMMUNICATIONS=//g'`
 YELLOW_TIME=`cat /tmp/setup_boot | grep YELLOW_SQUARE_TIME | sed 's/YELLOW_SQUARE_TIME=//g'`
 GREEN_TIME=`cat /tmp/setup_boot | grep TCMS_GREEN_SQUARE_TIME | sed 's/TCMS_GREEN_SQUARE_TIME=//g'`
 RED_TIME=`cat /tmp/setup_boot | grep TIME_END_SQUARE | sed 's/TIME_END_SQUARE=//g'`
-./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $PAGE_EXISTS &
+./GDSBT_iptcom $YELLOW_TIME $GREEN_TIME $RED_TIME $TIMEOUTTCMS $TIMEOUT_INFOTAINMENT $PAGE_EXISTS &
+
 

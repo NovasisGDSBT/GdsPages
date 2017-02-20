@@ -9,7 +9,7 @@ if [ -f /tmp/backlight_on_counter ]; then
 	COUNTER=$BACKLIGHT_ON_COUNTER
 else
 	echo "BACKLIGHT_ON_COUNTER=0" > /tmp/backlight_on_counter
-	/tmp/www/logwrite.sh "APPA" "INFO" "$0" "Setting BACKLIGHT_ON_COUNTER=0"
+	
 fi
 
 while [ "$TRUE" == "1" ]; do
@@ -30,7 +30,6 @@ while [ "$TRUE" == "1" ]; do
 	if [ -f /tmp/backlight_on_reset ]; then
 		rm /tmp/backlight_on_reset
 		echo "BACKLIGHT_ON_COUNTER=0" > /tmp/backlight_on_counter
-		/tmp/www/logwrite.sh "APPA" "ERROR" "$0" "ReSetting BACKLIGHT_ON_COUNTER=0"
 		COUNTER=0
 	fi
 	let SAVECOUNTER=$SAVECOUNTER+1
@@ -47,11 +46,12 @@ while [ "$TRUE" == "1" ]; do
 		  umount /tmp/store_mountpoint
 		  sync
 		  e2fsck /dev/mmcblk0p3
-		  echo "$0" "Save"
+		  #echo "$0" "Save"
+		  /tmp/www/logwrite.sh "APPA" "INFO" "$0" "Save counters"
 
-		else
+		#else
 
-		  echo "$0" "Partition /dev/mmcblk0p3 busy"
+		 # echo "$0" "Partition /dev/mmcblk0p3 busy"
 
 		fi
 	fi
