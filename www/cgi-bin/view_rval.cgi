@@ -135,7 +135,8 @@ if [ "$REQUEST_METHOD" == "POST" ];then
 	echo "$11" >> /tmp/backlight_limits
 	echo "$12" >> /tmp/backlight_limits
 	echo "$15" >> /tmp/backlight_limits
-	echo "$16" >> /tmp/backlight_limits
+	#echo "$16" >> /tmp/backlight_limits
+	echo "BACKLIGHT_REF_DEFAULT=4" >> /tmp/backlight_limits
 		
 	xml ed --inplace -u "/data-set/lightParam/BACKLIGHT_MIN" -v $(echo $9 | sed 's/BACKLIGHT_MIN_AT_MINLIGHT=//g') /tmp/NovaConfig.xml
 	xml ed --inplace -u "/data-set/lightParam/BACKLIGHT_MAX" -v $(echo ${10} | sed 's/BACKLIGHT_MAX_AT_MAXLIGHT=//g') /tmp/NovaConfig.xml
